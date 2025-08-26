@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Promoção Especial - JC Pescados</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #e0f7fa;
+            color: #003c4d;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        header {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            background: #007b8a;
+            position: relative;
+        }
+        header .logo-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        header img {
+            max-height: 80px;
+        }
+        header h1 {
+            margin-top: 5px;
+            font-size: 30px;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+            background: linear-gradient(to right, #ffffff, #e0f7fa, #ffffff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradient-animation 3s infinite alternate;
+        }
+        header p {
+            color: white;
+            font-size: 16px;
+            margin-top: 5px;
+        }
+        .return-button {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+        }
+        .return-button button {
+            background-color: #1a73e8;
+            color: white;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        @keyframes gradient-animation {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 100% 50%; }
+        }
+        .produtos-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-top: 30px;
+            align-items: flex-start;
+            flex-grow: 1;
+        }
+        .produto-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .produto {
+            background: white;
+            border-radius: 12px;
+            width: 300px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            padding: 20px;
+            text-align: left;
+            transition: all 0.3s ease-in-out;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            height: auto;
+            border: 2px solid black;
+            cursor: pointer;
+        }
+        .produto:hover {
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            transform: translateY(-5px);
+        }
+        .produto img {
+            height: 250px;
+            width: 100%;
+            object-fit: cover;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .produto h2, .produto .preco {
+            color: #000000;
+            transition: text-shadow 0.3s ease-in-out;
+            font-size: 22px;
+            text-align: center;
+        }
+        .produto h2:hover, .produto .preco:hover {
+            text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.5);
+        }
+        .preco {
+            font-size: 22px;
+            margin: 15px 0;
+            text-align: center;
+        }
+        .instrucao {
+            color: #007b8a;
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-size: 16px;
+            text-align: center;
+        }
+
+        /* ESTILOS DA PROMOÇÃO COM EFEITO DINÂMICO */
+        .promocao-container {
+            position: relative;
+            overflow: hidden;
+        }
+        .promocao-container .instrucao {
+            font-weight: bold;
+            font-size: 20px;
+            color: #e91e63;
+            animation: text-pop-out 1.5s ease-in-out infinite alternate;
+        }
+        .promocao-container img {
+            animation: pulse-border 1.5s infinite;
+        }
+
+        @keyframes text-pop-out {
+            0% {
+                text-shadow: 0 0 5px #ff5252, 0 0 10px #ff5252, 0 0 15px #ff5252;
+                transform: scale(1);
+            }
+            100% {
+                text-shadow: 0 0 20px #ff1744, 0 0 30px #ff1744, 0 0 40px #ff1744;
+                transform: scale(1.1);
+                color: #ff1744;
+            }
+        }
+        @keyframes pulse-border {
+            0% { box-shadow: 0 0 0 0 rgba(233, 30, 99, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(233, 30, 99, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(233, 30, 99, 0); }
+        }
+
+        .form-box {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            padding: 20px;
+            margin-top: 20px;
+            box-sizing: border-box;
+        }
+        .pedido-form {
+            width: 100%;
+        }
+        .pedido-form input, .pedido-form select, .pedido-form button {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        .botao-whatsapp {
+            background-color: #25d366;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        .botao-whatsapp:hover {
+            background-color: #1ebe5d;
+        }
+
+        #pix-area-promocao {
+            margin-top: 20px;
+            border: 1px dashed #ccc;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+        }
+        #pix-area-promocao.show {
+            display: block;
+        }
+        #qrcode-canvas-promocao {
+            display: block;
+            margin: 15px auto;
+        }
+        .pix-copy-button {
+            background: #1a73e8;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+        }
+        .pix-copy-button:hover {
+            background: #0d47a1;
+        }
+        #pix-info-copy-promocao {
+            width: 100%;
+            border: none;
+            background: transparent;
+            font-size: 14px;
+            color: #003c4d;
+            text-align: center;
+        }
+        #loadingOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.8);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: #007b8a;
+            z-index: 1000;
+        }
+        .loading-spinner {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #007b8a;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin-top: 10px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .total-container {
+            font-size: 18px;
+            line-height: 1.5;
+            text-align: center;
+        }
+        .taxa-entrega {
+            color: #007b8a;
+        }
+        .total-valor {
+            font-weight: bold;
+            font-size: 22px;
+            color: #003c4d;
+        }
+        .whatsapp-float {
+            position: fixed;
+            width: 60px;
+            height: 60px;
+            bottom: 20px;
+            right: 20px;
+            background-color: #25d366;
+            color: #fff;
+            border-radius: 50px;
+            text-align: center;
+            font-size: 30px;
+            box-shadow: 2px 2px 3px #999;
+            z-index: 999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        .whatsapp-float:hover {
+            background-color: #1ebe5d;
+        }
+        .whatsapp-icon {
+            margin-top: 5px;
+        }
+        footer {
+            background: #007b8a;
+            color: white;
+            padding: 10px 0;
+            text-align: center;
+            margin-top: auto;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="return-button">
+            <button onclick="window.location.href='index.html'">Voltar para a página inicial</button>
+        </div>
+        <div class="logo-container">
+            <img src="logo.jpeg" alt="JC Pescados">
+            <h1>JC PESCADOS</h1>
+            <p>Promoção Especial!</p>
+        </div>
+    </header>
+
+    <div class="produtos-container">
+        <div class="produto-container">
+            <div class="produto promocao-container" id="promocao-produto-container">
+                <p class="instrucao">PROMOÇÃO ESPECIAL! 🎁</p>
+                <img src="promocao.jpeg" alt="Promoção">
+                <h2>Compre 5 cordas de caranguejo</h2>
+                <p class="preco">E ganhe 1 totalmente grátis!</p>
+            </div>
+            <div id="pedidoFormPromocao" class="form-box">
+                <form class="pedido-form">
+                    <input type="text" id="nomePromocao" placeholder="Seu nome" required>
+                    <select id="tipoEntregaPromocao" required>
+                        <option value="">Selecione: Entrega ou Retirada</option>
+                        <option value="Entrega">Entrega</option>
+                        <option value="Retirada">Retirada</option>
+                    </select>
+                    
+                    <div id="enderecoEntregaPromocao" style="display: none;">
+                        <select id="cidadePromocao" required>
+                            <option value="">Selecione sua cidade</option>
+                            <option value="Teresina">Teresina - PI</option>
+                            <option value="Timon">Timon - MA</option>
+                        </select>
+                        <select id="zonaPromocao" required style="display: none;">
+                            <option value="">Selecione sua zona</option>
+                        </select>
+                        <select id="bairroPromocao" required style="display: none;">
+                            <option value="">Selecione seu bairro</option>
+                        </select>
+                        <input type="text" id="ruaPromocao" placeholder="Rua" required>
+                        <input type="text" id="numeroPromocao" placeholder="Número" required>
+                        <input type="text" id="referenciaPromocao" placeholder="Referência (opcional)">
+                    </div>
+
+                    <div id="enderecoRetiradaPromocao" style="display: none;">
+                        <input type="text" id="enderecoRetiradaPromocaoInput" value="Rua Nossa Senhora do Porto 4566 - Bairro Palitolândia" readonly>
+                    </div>
+
+                    <div id="calculoFretePromocao" style="display: none;">
+                        <span id="loadingFretePromocao" style="display: none;">Calculando frete...</span>
+                        <div id="spinnerPromocao" class="loading-spinner" style="display: none;"></div>
+                    </div>
+                    
+                    <input type="number" id="quantidadePromocao" value="5" readonly>
+
+                    <div id="totalContainerPromocao">
+                        <p id="valorPedidoPromocao" style="display: none;"></p>
+                        <p id="entregaInfoPromocao" class="taxa-entrega" style="display: none;">Taxa de Entrega: R$ 0,00</p>
+                        <p id="totalValorPromocao" class="total-valor">Total: R$ 0,00</p>
+                    </div>
+
+                    <select id="pagamentoPromocao" required>
+                        <option value="">Forma de Pagamento</option>
+                        <option value="PIX">PIX</option>
+                    </select>
+
+                    <div id="pix-area-promocao" style="display:none;">
+                        <canvas id="qrcode-canvas-promocao"></canvas>
+                        <input type="text" id="pix-info-copy-promocao" value="" readonly>
+                        <button type="button" class="pix-copy-button" onclick="copyPixPromocao()">Copiar Código PIX</button>
+                    </div>
+                    <button type="submit" class="botao-whatsapp">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/1200px-WhatsApp.svg.png" alt="WhatsApp Icon" style="width: 20px; height: 20px;">
+                        Enviar pedido
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        © JC Pescados - Todos os direitos reservados
+    </footer>
+
+    <a href="https://wa.me/5586994494783?text=Olá, tenho uma dúvida sobre o pedido!" class="whatsapp-float" target="_blank">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/1200px-WhatsApp.svg.png" alt="WhatsApp Icon" style="width: 35px; height: 35px;">
+    </a>
+
+    <div id="loadingOverlay">
+        Calculando valor da entrega...
+        <div class="loading-spinner"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+    <script>
+        const promocaoContainer = document.getElementById('promocao-produto-container');
+        const pedidoFormPromocao = document.getElementById('pedidoFormPromocao');
+
+        const precoUnitarioCaranguejo = 25.00;
+        const enderecoRetiradaPadrao = "Rua Nossa Senhora do Porto 4566 - Bairro Palitolândia";
+        const pixDataPadrao = "00020126360014br.gov.bcb.pix0114400864570001855204000053039865802BR5925JULIO CESAR FERREIRA LIMA6008TERESINA6211050726f787963044C48";
+
+       const cidadesEZonas = {
+            "Teresina": {
+                "Zona Norte": {
+                    "Acarape": 12.00,
+                    "Aeroporto": 12.00,
+                    "Água Mineral": 15.00,
+                    "Alto Alegre": 15.00,
+                    "Aroeiras": 15.00,
+                    "Bom Jesus": 15.00,
+                    "Buenos Aires": 15.00,
+                    "Chapadinha": 15.00,
+                    "Cidade Industrial": 20.00,
+                    "Embrapa": 20.00,
+                    "Itaperu": 12.00,
+                    "Jacinta Andrade": 20.00,
+                    "Mafrense": 15.00,
+                    "Matadouro": 12.00,
+                    "Memorare": 15.00,
+                    "Mocambinho": 15.00,
+                    "Monte Verde": 20.00,
+                    "Morro da Esperança": 12.00,
+                    "Nova Brasília": 12.00,
+                    "Olarias": 15.00,
+                    "Parque Alvorada": 15.00,
+                    "Parque Brasil": 20.00,
+                    "Poti Velho": 15.00,
+                    "Primavera": 12.00,
+                    "Real Copagre": 12.00,
+                    "Santa Maria da Codipe": 20.00,
+                    "Santa Rosa": 15.00,
+                    "Santa Sofia": 15.00,
+                    "São Joaquim": 12.00,
+                    "Vila Operária": 12.00,
+                    "Vila São Francisco": 12.00
+                },
+                "Zona Sul": {
+                    "Angelim": 7.00,
+                    "Angélica": 10.00,
+                    "Areias": 10.00,
+                    "Bela Vista": 10.00,
+                    "Brasilar": 10.00,
+                    "Catarina": 10.00,
+                    "Cidade Nova": 10.00,
+                    "Cristo Rei": 12.00,
+                    "Distrito Industrial": 11.00,
+                    "Esplanada": 5.00,
+                    "Lourival Parente": 11.00,
+                    "Macaúba": 10.00,
+                    "Monte Castelo": 11.00,
+                    "Morada Nova": 11.00,
+                    "Nossa Senhora das Graças": 12.00,
+                    "Parque Jacinta": 12.00,
+                    "Parque Juliana": 12.00,
+                    "Parque Piauí": 11.00,
+                    "Parque São João": 12.00,
+                    "Parque Sul": 11.00,
+                    "Pedra Miúda": 12.00,
+                    "Pio XII": 12.00,
+                    "Portal da Alegria": 11.00,
+                    "Promorar": 10.00,
+                    "Redenção": 11.00,
+                    "Saci": 11.00,
+                    "Santa Cruz": 10.00,
+                    "Santa Luzia": 11.00,
+                    "Santo Antônio": 12.00,
+                    "São Lourenço": 12.00,
+                    "São Pedro": 12.00,
+                    "Tabuleta": 11.00,
+                    "Três Andares": 12.00,
+                    "Triunfo": 12.00,
+                    "Vermelha": 12.00
+                },
+                "Zona Leste": {
+                    "Árvores Verdes": 20.00,
+                    "Campestre": 20.00,
+                    "Cidade Jardim": 20.00,
+                    "Fátima": 15.00,
+                    "Horto": 18.00,
+                    "Ininga": 15.00,
+                    "Jockey": 15.00,
+                    "Morada do Sol": 15.00,
+                    "Morros": 15.00,
+                    "Noivos": 15.00,
+                    "Novo Uruguai": 18.00,
+                    "Parque Universitário": 18.00,
+                    "Pedra Mole": 20.00,
+                    "Piçarreira": 18.00,
+                    "Planalto Uruguai": 18.00,
+                    "Porto do Centro": 18.00,
+                    "Recanto das Palmeiras": 15.00,
+                    "Samapi": 18.00,
+                    "Santa Isabel": 18.00,
+                    "Santa Lia": 18.00,
+                    "São Cristovão": 15.00,
+                    "São João": 15.00,
+                    "Satélite": 18.00,
+                    "Socopo": 20.00,
+                    "Tabajaras": 18.00,                    
+                    "Vale do Gavião": 20.00,
+                    "Vale Quem Tem": 20.00,
+                    "Verde Lar": 15.00,
+                    "Vila Santa Bárbara": 20.00,
+                    "Vila Uruguai": 18.00,
+                    "Zoobotânico": 20.00
+                },
+                "Zona Sudeste": {
+                    "Angelim": 15.00,
+                    "Beira Rio": 18.00,
+                    "Bom Princípio": 20.00,
+                    "Colorado": 20.00,
+                    "Comprida": 20.00,
+                    "Dirceu Arcoverde": 18.00,
+                    "Extrema": 20.00,
+                    "Flor do Campo": 20.00,
+                    "Grande Dirceu": 15.00,
+                    "Gurupi": 20.00,
+                    "Itararé": 18.00,
+                    "Livramento": 18.00,                
+                    "Novo Horizonte": 18.00,
+                    "Parque Ideal": 18.00,
+                    "Parque Poti": 18.00,                    
+                    "Redonda": 15.00,
+                    "Renascença": 18.00,
+                    "São Raimundo": 18.00,
+                    "São Sebastião": 18.00,
+                    "Tancredo Neves": 13.00,
+                    "Todos os Santos": 20.00,
+                    "Verdecap": 18.00
+                }
+            },
+            "Timon": {
+                "Única": {
+                    "Centro": 15.00,
+                    "Mangueira": 15.00,
+                    "Santo Antônio": 15.00,
+                    "Formosa": 15.00,
+                    "Planalto Formosa": 15.00,
+                    "Parque Aliança": 15.00,
+                    "Mateuzinho": 15.00,
+                    "Cajueiro": 15.00,
+                    "Parque Alvorada": 15.00,
+                    "Vila do Bec": 15.00,
+                    "Jóia": 15.00,
+                    "Vila Bandeirante": 15.00,
+                    "Cidade Nova": 15.00,
+                    "Mutirão": 15.00,
+                    "Flores": 15.00,
+                    "Bela Vista": 15.00,
+                    "Marimar": 15.00,
+                    "Boa Esperança": 15.00,
+                    "Cidade Industrial": 15.00,
+                    "Parque São Francisco": 15.00,
+                    "Boa Vista": 15.00,
+                    "Parque União": 15.00,
+                    "Guarita": 15.00,
+                    "Parque Piauí": 15.00,
+                    "São Benedito": 15.00,
+                    "Vila Angélica": 15.00,
+                    "Pedro Patrício": 15.00,
+                    "São Marcos": 15.00,
+                }
+            }
+        };
+
+        // Funções de cálculo e envio para a Promoção
+        window.addEventListener('load', function() {
+            pedidoFormPromocao.style.display = 'block';
+            finalizarCalculoPromocao();
+        });
+
+        function updateZones(citySelect, zoneSelect) {
+            zoneSelect.innerHTML = '<option value="">Selecione sua zona</option>';
+            const selectedCity = citySelect.value;
+            if (selectedCity) {
+                const zonas = Object.keys(cidadesEZonas[selectedCity]);
+                zonas.forEach(zona => {
+                    const option = document.createElement('option');
+                    option.value = zona;
+                    option.textContent = zona;
+                    zoneSelect.appendChild(option);
+                });
+                zoneSelect.style.display = 'block';
+            } else {
+                zoneSelect.style.display = 'none';
+            }
+        }
+
+        function updateBairros(citySelect, zoneSelect, bairroSelect) {
+            bairroSelect.innerHTML = '<option value="">Selecione seu bairro</option>';
+            const selectedCity = citySelect.value;
+            const selectedZone = zoneSelect.value;
+            if (selectedCity && selectedZone) {
+                const bairros = Object.keys(cidadesEZonas[selectedCity][selectedZone]);
+                bairros.forEach(bairro => {
+                    const option = document.createElement('option');
+                    option.value = bairro;
+                    option.textContent = bairro;
+                    bairroSelect.appendChild(option);
+                });
+                bairroSelect.style.display = 'block';
+            } else {
+                bairroSelect.style.display = 'none';
+            }
+        }
+
+        function finalizarCalculoPromocao() {
+            const tipoEntrega = document.getElementById('tipoEntregaPromocao').value;
+            const cidadeSelecionada = document.getElementById('cidadePromocao').value;
+            const zonaSelecionada = document.getElementById('zonaPromocao').value;
+            const bairroSelecionado = document.getElementById('bairroPromocao').value;
+            
+            const cordasCompradas = 5;
+            const valorTotalCompradas = cordasCompradas * precoUnitarioCaranguejo;
+            let total = valorTotalCompradas;
+            let taxaEntrega = 0;
+
+            if (tipoEntrega === 'Entrega' && cidadeSelecionada && zonaSelecionada && bairroSelecionado) {
+                const loadingFrete = document.getElementById('loadingFretePromocao');
+                const spinner = document.getElementById('spinnerPromocao');
+                const entregaInfo = document.getElementById('entregaInfoPromocao');
+                loadingFrete.style.display = 'block';
+                spinner.style.display = 'block';
+                entregaInfo.style.display = 'none';
+
+                setTimeout(() => {
+                    loadingFrete.style.display = 'none';
+                    spinner.style.display = 'none';
+                    taxaEntrega = cidadesEZonas[cidadeSelecionada][zonaSelecionada][bairroSelecionado] || 0;
+                    total = valorTotalCompradas + taxaEntrega;
+                    entregaInfo.innerHTML = `Taxa de Entrega: R$ ${taxaEntrega.toFixed(2).replace('.', ',')}`;
+                    entregaInfo.style.display = 'block';
+                    document.getElementById('totalValorPromocao').innerHTML = `Total: R$ ${total.toFixed(2).replace('.', ',')}`;
+                }, 2000);
+            } else {
+                document.getElementById('entregaInfoPromocao').style.display = 'none';
+                document.getElementById('totalValorPromocao').innerHTML = `Total: R$ ${total.toFixed(2).replace('.', ',')}`;
+            }
+
+            document.getElementById('valorPedidoPromocao').innerHTML = `Valor do pedido: R$ ${valorTotalCompradas.toFixed(2).replace('.', ',')} + 1 grátis`;
+            document.getElementById('valorPedidoPromocao').style.display = 'block';
+        }
+
+        document.getElementById('tipoEntregaPromocao').addEventListener('change', function() {
+            const enderecoEntrega = document.getElementById('enderecoEntregaPromocao');
+            const enderecoRetirada = document.getElementById('enderecoRetiradaPromocao');
+            const calculoFrete = document.getElementById('calculoFretePromocao');
+            const cidadeSelect = document.getElementById('cidadePromocao');
+            const zonaSelect = document.getElementById('zonaPromocao');
+            const bairroSelect = document.getElementById('bairroPromocao');
+
+            if (this.value === 'Entrega') {
+                enderecoEntrega.style.display = 'block';
+                enderecoRetirada.style.display = 'none';
+                calculoFrete.style.display = 'block';
+                cidadeSelect.required = true;
+                zonaSelect.required = true;
+                bairroSelect.required = true;
+                document.getElementById('ruaPromocao').required = true;
+                document.getElementById('numeroPromocao').required = true;
+                finalizarCalculoPromocao();
+            } else if (this.value === 'Retirada') {
+                enderecoEntrega.style.display = 'none';
+                enderecoRetirada.style.display = 'block';
+                calculoFrete.style.display = 'none';
+                document.getElementById('entregaInfoPromocao').style.display = 'none';
+                cidadeSelect.required = false;
+                zonaSelect.required = false;
+                bairroSelect.required = false;
+                document.getElementById('ruaPromocao').required = false;
+                document.getElementById('numeroPromocao').required = false;
+                finalizarCalculoPromocao();
+            } else {
+                enderecoEntrega.style.display = 'none';
+                enderecoRetirada.style.display = 'none';
+                calculoFrete.style.display = 'none';
+                document.getElementById('entregaInfoPromocao').style.display = 'none';
+                cidadeSelect.required = false;
+                zonaSelect.required = false;
+                bairroSelect.required = false;
+                document.getElementById('ruaPromocao').required = false;
+                document.getElementById('numeroPromocao').required = false;
+                finalizarCalculoPromocao();
+            }
+        });
+
+        document.getElementById('cidadePromocao').addEventListener('change', function() {
+            const cidadeSelect = this;
+            const zonaSelect = document.getElementById('zonaPromocao');
+            const bairroSelect = document.getElementById('bairroPromocao');
+            
+            updateZones(cidadeSelect, zonaSelect);
+            updateBairros(cidadeSelect, zonaSelect, bairroSelect);
+            finalizarCalculoPromocao();
+        });
+
+        document.getElementById('zonaPromocao').addEventListener('change', function() {
+            const cidadeSelect = document.getElementById('cidadePromocao');
+            const zonaSelect = this;
+            const bairroSelect = document.getElementById('bairroPromocao');
+            
+            updateBairros(cidadeSelect, zonaSelect, bairroSelect);
+            finalizarCalculoPromocao();
+        });
+        
+        document.getElementById('bairroPromocao').addEventListener('change', finalizarCalculoPromocao);
+        
+        document.getElementById('pagamentoPromocao').addEventListener('change', function() {
+            document.getElementById('pix-area-promocao').style.display = this.value === 'PIX' ? 'block' : 'none';
+            if (this.value === 'PIX') generateQRCodeAndTextPromocao();
+        });
+
+        function generateQRCodeAndTextPromocao() {
+            QRCode.toCanvas(document.getElementById('qrcode-canvas-promocao'), pixDataPadrao, function(error) {
+                if (error) console.error('Erro ao gerar QR Code:', error);
+            });
+            document.getElementById('pix-info-copy-promocao').value = pixDataPadrao;
+        }
+
+        function copyPixPromocao() {
+            const input = document.getElementById('pix-info-copy-promocao');
+            input.select();
+            input.setSelectionRange(0, 99999);
+            navigator.clipboard.writeText(input.value)
+                .then(() => alert('✅ PIX copiado! Continue com o pedido da promoção.'))
+                .catch(err => console.error('Erro ao copiar: ', err));
+        }
+
+        document.getElementById('pedidoFormPromocao').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const nome = document.getElementById('nomePromocao').value.trim();
+            const tipo = document.getElementById('tipoEntregaPromocao').value;
+            const formaPagamento = document.getElementById('pagamentoPromocao').value;
+            
+            let texto = `Pedido de Caranguejo:\n`;
+            texto += `- Nome: ${nome}\n`;
+            texto += `- Tipo: ${tipo}\n`;
+
+            const precoPromocao = precoUnitarioCaranguejo;
+            const cordasCompradas = 5;
+            const cordasGratis = 1;
+            const valorTotalCompradas = cordasCompradas * precoPromocao;
+            let total = valorTotalCompradas;
+            let taxaEntrega = 0;
+
+            if (tipo === 'Entrega') {
+                const cidade = document.getElementById('cidadePromocao').value;
+                const zona = document.getElementById('zonaPromocao').value;
+                const bairro = document.getElementById('bairroPromocao').value;
+                const rua = document.getElementById('ruaPromocao').value.trim();
+                const numero = document.getElementById('numeroPromocao').value.trim();
+                const referencia = document.getElementById('referenciaPromocao').value.trim();
+                taxaEntrega = cidadesEZonas[cidade][zona][bairro] || 0;
+                total = valorTotalCompradas + taxaEntrega;
+
+                if (!cidade || !zona || !bairro || !rua || !numero) {
+                    alert('Por favor, preencha todos os campos obrigatórios de entrega.');
+                    return;
+                }
+
+                texto += `- Cidade: ${cidade}\n`;
+                texto += `- Zona: ${zona}\n`;
+                texto += `- Bairro: ${bairro}\n`;
+                texto += `- Rua: ${rua}, Nº ${numero}\n`;
+                if (referencia) {
+                    texto += `- Referência: ${referencia}\n`;
+                }
+            } else if (tipo === 'Retirada') {
+                const enderecoRetirada = enderecoRetiradaPadrao;
+                texto += `- Endereço: ${enderecoRetirada}\n`;
+            } else {
+                 alert('Por favor, selecione o tipo de entrega.');
+                 return;
+            }
+
+            texto += `- Quantidade: ${cordasCompradas} unidades + ${cordasGratis} grátis\n`;
+            texto += `- Valor: R$ ${valorTotalCompradas.toFixed(2).replace('.', ',')}\n`;
+            
+            if (tipo === 'Entrega') {
+                texto += `- Taxa de Entrega: R$ ${taxaEntrega.toFixed(2).replace('.', ',')}\n`;
+            }
+
+            texto += `- Total: R$ ${total.toFixed(2).replace('.', ',')}\n`;
+            texto += `- Pagamento: ${formaPagamento}`;
+            
+            if (!formaPagamento) {
+                alert('Por favor, selecione a forma de pagamento.');
+                return;
+            }
+
+            window.open("https://wa.me/5586994494783?text=" + encodeURIComponent(texto), '_blank');
+        });
+    </script>
+</body>
+</html>

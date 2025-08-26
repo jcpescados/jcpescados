@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JC Pescados</title>
+    <style>
+        /* Paleta de Cores e Estilos Gerais */
+        :root {
+            --cor-principal: #1a237e; /* Azul marinho profissional */
+            --cor-secundaria: #ff6f00; /* Laranja vibrante para destaque */
+            --cor-fundo: #f0f4f7; /* Cinza claro suave */
+            --cor-card: #ffffff;
+            --cor-texto: #333;
+            --cor-titulo: #0d123d;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: var(--cor-fundo);
+            color: var(--cor-texto);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        /* Estrutura do Layout */
+        .dashboard-container {
+            max-width: 1000px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: var(--cor-fundo);
+        }
+
+        header {
+            background-color: var(--cor-principal);
+            color: white;
+            padding: 20px 0;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+        }
+        
+        header img {
+            height: 60px; /* Ajuste o tamanho da logo aqui */
+            width: auto;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2.2em;
+        }
+
+        /* Menu de Navegação */
+        nav {
+            background-color: var(--cor-principal);
+            padding: 10px 0;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        nav button {
+            background-color: transparent;
+            color: white;
+            padding: 10px 20px;
+            border: 2px solid transparent;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+
+        nav button:hover, nav button.active {
+            background-color: #0d123d;
+            border-color: white;
+        }
+
+        /* Estilo dos Cards */
+        .card {
+            background-color: var(--cor-card);
+            padding: 25px;
+            margin-bottom: 20px;
+            border-radius: 12px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+            text-align: left;
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card h2 {
+            color: var(--cor-titulo);
+            margin-top: 0;
+            font-size: 1.5em;
+        }
+
+        /* Efeito visual nos números de destaque */
+        .highlight-data, .relatorio-data {
+            font-weight: bold;
+            color: var(--cor-secundaria);
+            background-color: #ffe0b2;
+            padding: 2px 8px;
+            border-radius: 5px;
+            transition: background-color 0.5s ease;
+        }
+
+        .highlight-flash {
+            background-color: var(--cor-secundaria);
+            color: white;
+            transition: background-color 0s;
+        }
+
+        /* Formulários e Botões */
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .form-group input {
+            width: calc(100% - 20px);
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            font-size: 1em;
+        }
+        
+        .form-section {
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            background-color: #f9f9f9;
+        }
+        .form-section h3 {
+            margin-top: 0;
+            color: var(--cor-principal);
+        }
+        
+        .input-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .input-group input {
+            width: 100%;
+        }
+        .input-group label {
+            white-space: nowrap;
+        }
+
+        button {
+            background-color: var(--cor-secundaria);
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s ease, transform 0.1s ease;
+        }
+
+        button:hover {
+            background-color: #cc5800;
+            transform: translateY(-2px);
+        }
+        
+        #limpar-lucro {
+            background-color: #d32f2f;
+        }
+        #limpar-lucro:hover {
+            background-color: #c62828;
+        }
+
+        /* Seções e Relatório */
+        .section-content {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        .section-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+        }
+
+        th {
+            background-color: var(--cor-principal);
+            color: white;
+            font-weight: bold;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f8f8f8;
+        }
+
+        .total-summary {
+            margin-top: 20px;
+            font-size: 1.1em;
+            font-weight: bold;
+            text-align: right;
+            padding-right: 15px;
+        }
+        
+        .action-button {
+            margin: 5px;
+            padding: 8px 12px;
+            font-size: 0.9em;
+            border-radius: 5px;
+            background-color: #607d8b; /* Cor para os novos botões */
+            color: white;
+            border: none;
+        }
+
+        .action-button.edit {
+            background-color: #2196f3;
+        }
+        .action-button.edit:hover {
+            background-color: #1976d2;
+        }
+        .action-button.delete {
+            background-color: #f44336;
+        }
+        .action-button.delete:hover {
+            background-color: #d32f2f;
+        }
+        .action-button.nf {
+            background-color: #4caf50;
+        }
+        .action-button.nf:hover {
+            background-color: #388e3c;
+        }
+
+        footer {
+            margin-top: 30px;
+            font-size: 0.9em;
+            color: #777;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <header>
+            <img src="logo.jpeg" alt="Logo JC Pescados">
+            <h1>JC Pescados</h1>
+        </header>
+        
+        <nav>
+            <button id="dashboard-btn" class="active">Dashboard</button>
+            <button id="relatorio-btn">Relatório de Vendas</button>
+        </nav>
+
+        <div id="main-dashboard-section" class="section-content active">
+            <div class="card">
+                <h2>Estoque de Caranguejo Pré-Cozido</h2>
+                <p>Quantidade em estoque: <span id="estoque" class="highlight-data">100</span> unidades</p>
+            </div>
+
+            <div class="card">
+                <h2>Registrar Venda</h2>
+
+                <div class="form-section">
+                    <h3>Venda sem Desconto</h3>
+                    <form id="form-venda-sem-desconto">
+                        <div class="form-group">
+                            <label for="nome-cliente-sem">Nome do Cliente:</label>
+                            <input type="text" id="nome-cliente-sem">
+                        </div>
+                        <div class="form-group">
+                            <label for="quantidade-sem-desconto">Caranguejo (cordas):</label>
+                            <input type="number" id="quantidade-sem-desconto" min="1" required>
+                        </div>
+                        <p><small>Preço de venda: R$ 25,00 por corda</small></p>
+                        <button type="submit">Registrar Venda</button>
+                    </form>
+                </div>
+
+                <div class="form-section">
+                    <h3>Venda com Desconto</h3>
+                    <form id="form-venda-com-desconto">
+                        <div class="form-group">
+                            <label for="nome-cliente-com">Nome do Cliente:</label>
+                            <input type="text" id="nome-cliente-com">
+                        </div>
+                        <div class="form-group">
+                            <label for="quantidade-com-desconto">Caranguejo (cordas):</label>
+                            <input type="number" id="quantidade-com-desconto" min="1" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="preco-com-desconto">Preço de Venda:</label>
+                            <input type="number" id="preco-com-desconto" step="0.01" min="0" required>
+                        </div>
+                        <button type="submit">Registrar Venda</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Ajustar Estoque</h2>
+                <form id="form-estoque">
+                    <div class="form-group">
+                        <label for="quantidade-comprada">Adicionar ao Estoque:</label>
+                        <input type="number" id="quantidade-comprada" min="1" required>
+                    </div>
+                    <button type="submit">Atualizar Estoque</button>
+                </form>
+            </div>
+
+            <div class="card">
+                <h2>Lucro Total</h2>
+                <p id="lucro-total">Lucro Total: R$ 0,00</p>
+                <button id="limpar-lucro">Limpar Lucro</button>
+            </div>
+        </div>
+
+        <div id="relatorio-section" class="section-content">
+            <div class="card">
+                <h2>Relatório de Vendas Detalhado</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Data e Hora</th>
+                            <th>Cliente</th>
+                            <th>Qtd</th>
+                            <th>Preço/Unid</th>
+                            <th>Valor Recebido</th>
+                            <th>Custo Total</th>
+                            <th>Lucro</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="relatorio-body">
+                        </tbody>
+                </table>
+                <div class="total-summary" id="resumo-total">
+                    </div>
+                <button id="limparMesBtn">Limpar Vendas do Mês</button>
+            </div>
+        </div>
+
+        <footer>
+            © JC Pescados - Todos os direitos reservados
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const estoqueEl = document.getElementById('estoque');
+            const lucroTotalEl = document.getElementById('lucro-total');
+            const formVendaSemDesconto = document.getElementById('form-venda-sem-desconto');
+            const formVendaComDesconto = document.getElementById('form-venda-com-desconto');
+            const formEstoque = document.getElementById('form-estoque');
+            const limparLucroBtn = document.getElementById('limpar-lucro');
+            const limparMesBtn = document.getElementById('limparMesBtn');
+            const nomeClienteSemInput = document.getElementById('nome-cliente-sem');
+            const quantidadeSemDescontoInput = document.getElementById('quantidade-sem-desconto');
+            const nomeClienteComInput = document.getElementById('nome-cliente-com');
+            const quantidadeComDescontoInput = document.getElementById('quantidade-com-desconto');
+            const precoComDescontoInput = document.getElementById('preco-com-desconto');
+            
+            const dashboardBtn = document.getElementById('dashboard-btn');
+            const relatorioBtn = document.getElementById('relatorio-btn');
+            const mainDashboardSection = document.getElementById('main-dashboard-section');
+            const relatorioSection = document.getElementById('relatorio-section');
+            const relatorioBody = document.getElementById('relatorio-body');
+            const resumoTotal = document.getElementById('resumo-total');
+
+            const precoVendaPadrao = 25.00;
+            const custoPorUnidade = 12.00;
+            
+            let estoque = localStorage.getItem('estoque') ? parseInt(localStorage.getItem('estoque')) : 100;
+            let lucroTotal = localStorage.getItem('lucroTotal') ? parseFloat(localStorage.getItem('lucroTotal')) : 0;
+            let vendasReport;
+            
+            try {
+                vendasReport = JSON.parse(localStorage.getItem('vendasReport')) || [];
+            } catch (e) {
+                console.error("Erro ao carregar vendas do localStorage. Limpando dados...", e);
+                vendasReport = [];
+                localStorage.setItem('vendasReport', JSON.stringify([]));
+            }
+
+            function highlightAndFade(element) {
+                element.classList.add('highlight-flash');
+                setTimeout(() => {
+                    element.classList.remove('highlight-flash');
+                }, 500); // Remove a classe após 0.5s
+            }
+
+            function atualizarDashboard() {
+                estoqueEl.textContent = estoque;
+                lucroTotalEl.textContent = `Lucro Total: R$ ${lucroTotal.toFixed(2).replace('.', ',')}`;
+                
+                // Aplica o efeito visual nas atualizações
+                highlightAndFade(estoqueEl);
+                highlightAndFade(lucroTotalEl);
+            }
+
+            function salvarDados() {
+                localStorage.setItem('estoque', estoque);
+                localStorage.setItem('lucroTotal', lucroTotal);
+                localStorage.setItem('vendasReport', JSON.stringify(vendasReport));
+            }
+
+            function salvarVenda(nomeCliente, quantidade, precoVendido) {
+                const agora = new Date();
+                const dataFormatada = `${agora.toLocaleDateString('pt-BR')} ${agora.toLocaleTimeString('pt-BR')}`;
+                
+                const valorRecebido = quantidade * precoVendido;
+                const custoTotal = quantidade * custoPorUnidade;
+                const lucroTransacao = valorRecebido - custoTotal;
+                
+                vendasReport.push({
+                    data: dataFormatada,
+                    cliente: nomeCliente || 'Não Informado',
+                    quantidade: quantidade,
+                    precoVendido: precoVendido,
+                    valorRecebido: valorRecebido,
+                    custoTotal: custoTotal,
+                    lucro: lucroTransacao
+                });
+
+                estoque -= quantidade;
+                lucroTotal += lucroTransacao;
+                salvarDados();
+                atualizarDashboard();
+            }
+
+            function carregarRelatorio() {
+                relatorioBody.innerHTML = '';
+                let totalVendido = 0;
+                let totalRecebido = 0;
+                let totalCusto = 0;
+                let totalLucro = 0;
+
+                vendasReport.forEach((venda, index) => {
+                    // Adicionando fallback para dados antigos sem os novos campos
+                    const nomeCliente = venda.cliente || 'Não Informado';
+                    const precoVendido = (venda.precoVendido !== undefined) ? venda.precoVendido : precoVendaPadrao;
+                    const custoTotal = (venda.custoTotal !== undefined) ? venda.custoTotal : (venda.quantidade * custoPorUnidade);
+                    const valorRecebido = venda.valorRecebido || (venda.quantidade * precoVendido);
+                    const lucro = venda.lucro || (valorRecebido - custoTotal);
+                    
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${venda.data}</td>
+                        <td>${nomeCliente}</td>
+                        <td>${venda.quantidade}</td>
+                        <td>R$ ${precoVendido.toFixed(2).replace('.', ',')}</td>
+                        <td>R$ ${valorRecebido.toFixed(2).replace('.', ',')}</td>
+                        <td>R$ ${custoTotal.toFixed(2).replace('.', ',')}</td>
+                        <td>R$ ${lucro.toFixed(2).replace('.', ',')}</td>
+                        <td>
+                            <button class="action-button edit" data-index="${index}">Editar</button>
+                            <button class="action-button delete" data-index="${index}">Excluir</button>
+                            <button class="action-button nf" data-index="${index}">Gerar NF</button>
+                        </td>
+                    `;
+                    relatorioBody.appendChild(row);
+
+                    totalVendido += venda.quantidade;
+                    totalRecebido += valorRecebido;
+                    totalCusto += custoTotal;
+                    totalLucro += lucro;
+                });
+
+                // Aqui está a mudança para adicionar efeitos aos totais
+                resumoTotal.innerHTML = `
+                    <p>Total de Unidades Vendidas: <span class="relatorio-data">${totalVendido}</span></p>
+                    <p>Valor Total Recebido: R$ <span class="relatorio-data">${totalRecebido.toFixed(2).replace('.', ',')}</span></p>
+                    <p>Custo Total: R$ <span class="relatorio-data">${totalCusto.toFixed(2).replace('.', ',')}</span></p>
+                    <p>Lucro Total: R$ <span class="relatorio-data">${totalLucro.toFixed(2).replace('.', ',')}</span></p>
+                `;
+                
+                // Aplica o efeito visual imediatamente após carregar o relatório
+                const totalSpans = resumoTotal.querySelectorAll('.relatorio-data');
+                totalSpans.forEach(span => highlightAndFade(span));
+            }
+
+            function gerarNotaFiscal(venda, nomeCliente, taxaEntrega, formaPagamento) {
+                const totalProdutos = venda.valorRecebido;
+                const totalGeral = totalProdutos + taxaEntrega;
+                
+                // Prompts para CPF
+                const cpf = prompt('Digite o CPF do cliente (opcional):');
+
+                // Lógica para mostrar o desconto
+                let precoItemHtml = `<td>R$ ${venda.precoVendido.toFixed(2).replace('.', ',')}</td>`;
+                let descontoTotal = 0;
+                if (venda.precoVendido < precoVendaPadrao) {
+                    descontoTotal = (precoVendaPadrao - venda.precoVendido) * venda.quantidade;
+                    precoItemHtml = `
+                        <td>
+                            R$ ${precoVendaPadrao.toFixed(2).replace('.', ',')}
+                            <br>(Vendido por: R$ ${venda.precoVendido.toFixed(2).replace('.', ',')})
+                        </td>
+                    `;
+                }
+
+                const nfHTML = `
+                    <!DOCTYPE html>
+                    <html lang="pt-BR">
+                    <head>
+                        <title>Nota Fiscal</title>
+                        <style>
+                            body { font-family: Arial, sans-serif; padding: 20px; color: #333; }
+                            .invoice-container { max-width: 600px; margin: auto; border: 1px solid #ddd; padding: 20px; border-radius: 8px; }
+                            .header { text-align: center; margin-bottom: 20px; }
+                            .header img { height: 80px; }
+                            h1 { color: #1a237e; margin: 0; }
+                            .invoice-details p, .company-details p { margin: 5px 0; }
+                            .details { margin-bottom: 20px; border-bottom: 1px dashed #ccc; padding-bottom: 15px; }
+                            .details p { margin: 5px 0; }
+                            .item-list table { width: 100%; border-collapse: collapse; }
+                            .item-list th, .item-list td { border-bottom: 1px solid #eee; padding: 10px; text-align: left; }
+                            .item-list th { background-color: #f4f4f4; }
+                            .totals { text-align: right; margin-top: 20px; }
+                            .totals p { margin: 5px 0; font-weight: bold; }
+                            .print-btn-container { text-align: center; margin-top: 30px; }
+                            @media print {
+                                .print-btn-container { display: none; }
+                                .invoice-container { border: none; box-shadow: none; }
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="invoice-container">
+                            <div class="header">
+                                <img src="logo.jpeg" alt="Logo JC Pescados">
+                                <h1>Nota Fiscal</h1>
+                                <p><strong>CNPJ: 40.086.457/0001-85</strong></p>
+                            </div>
+                            <div class="details">
+                                <p><strong>Cliente:</strong> ${nomeCliente}</p>
+                                ${cpf ? `<p><strong>CPF:</strong> ${cpf}</p>` : ''}
+                                <p><strong>Data da Compra:</strong> ${venda.data}</p>
+                                <p><strong>Forma de Pagamento:</strong> ${formaPagamento}</p>
+                            </div>
+                            <div class="item-list">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Descrição</th>
+                                            <th>Quantidade</th>
+                                            <th>Valor Unitário</th>
+                                            <th>Subtotal</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Caranguejo Pré-cozido</td>
+                                            <td>${venda.quantidade} unidades</td>
+                                            ${precoItemHtml}
+                                            <td>R$ ${venda.valorRecebido.toFixed(2).replace('.', ',')}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Taxa de Entrega</td>
+                                            <td>1</td>
+                                            <td>R$ ${taxaEntrega.toFixed(2).replace('.', ',')}</td>
+                                            <td>R$ ${taxaEntrega.toFixed(2).replace('.', ',')}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="totals">
+                                ${descontoTotal > 0 ? `<p>Desconto Aplicado: - R$ ${descontoTotal.toFixed(2).replace('.', ',')}</p>` : ''}
+                                <p>Total dos Produtos: R$ ${totalProdutos.toFixed(2).replace('.', ',')}</p>
+                                <p>Taxa de Entrega: R$ ${taxaEntrega.toFixed(2).replace('.', ',')}</p>
+                                <p>TOTAL GERAL: R$ ${totalGeral.toFixed(2).replace('.', ',')}</p>
+                            </div>
+                            <div class="print-btn-container">
+                                <button onclick="window.print()">Imprimir (Salvar como PDF)</button>
+                            </div>
+                        </div>
+                    </body>
+                    </html>
+                `;
+
+                const novaJanela = window.open('', '_blank');
+                novaJanela.document.write(nfHTML);
+                novaJanela.document.close();
+            }
+
+            // Event Listeners para a nova funcionalidade
+            relatorioBody.addEventListener('click', (e) => {
+                const target = e.target;
+                const index = parseInt(target.dataset.index);
+                
+                if (target.classList.contains('delete')) {
+                    const venda = vendasReport[index];
+                    if (confirm(`Tem certeza que deseja excluir a venda de ${venda.quantidade} unidades? Isso não irá alterar o seu estoque.`)) {
+                        lucroTotal -= venda.lucro;
+                        vendasReport.splice(index, 1);
+                        salvarDados();
+                        atualizarDashboard();
+                        carregarRelatorio();
+                    }
+                } else if (target.classList.contains('edit')) {
+                    const venda = vendasReport[index];
+                    const novoNomeCliente = prompt(`Digite o novo nome para o cliente (${venda.cliente}):`, venda.cliente);
+                    const novaQuantidadeStr = prompt(`Digite a nova quantidade para a venda de ${venda.quantidade} unidades:`, venda.quantidade);
+                    
+                    if (novaQuantidadeStr !== null) {
+                        const novaQuantidade = parseInt(novaQuantidadeStr);
+                        if (!isNaN(novaQuantidade) && novaQuantidade > 0) {
+                            const oldQuantidade = venda.quantidade;
+                            
+                            // Reverte a venda antiga
+                            estoque += oldQuantidade;
+                            lucroTotal -= venda.lucro;
+                            
+                            // Aplica a nova venda
+                            venda.cliente = novoNomeCliente || venda.cliente;
+                            venda.quantidade = novaQuantidade;
+                            venda.valorRecebido = novaQuantidade * venda.precoVendido;
+                            venda.custoTotal = novaQuantidade * custoPorUnidade;
+                            venda.lucro = venda.valorRecebido - venda.custoTotal;
+                            
+                            estoque -= novaQuantidade;
+                            lucroTotal += venda.lucro;
+                            
+                            salvarDados();
+                            atualizarDashboard();
+                            carregarRelatorio();
+                        } else {
+                            alert('Quantidade inválida.');
+                        }
+                    }
+                } else if (target.classList.contains('nf')) {
+                    const venda = vendasReport[index];
+                    const nomeCliente = venda.cliente || prompt('Digite o nome do cliente:');
+                    if (!nomeCliente) {
+                        alert('Nome do cliente é obrigatório para gerar a nota.');
+                        return;
+                    }
+                    const taxaEntregaStr = prompt('Digite a taxa de entrega (deixe em branco se não houver):', '0');
+                    const taxaEntrega = parseFloat(taxaEntregaStr.replace(',', '.')) || 0;
+                    
+                    const formaPagamento = prompt('Forma de Pagamento:\n1 - PIX\n2 - Dinheiro\n3 - Cartão de Crédito\n4 - Cartão de Débito', '1');
+                    let textoFormaPagamento = '';
+                    switch (formaPagamento) {
+                        case '1':
+                            textoFormaPagamento = 'PIX';
+                            break;
+                        case '2':
+                            textoFormaPagamento = 'Dinheiro';
+                            break;
+                        case '3':
+                            textoFormaPagamento = 'Cartão de Crédito';
+                            break;
+                        case '4':
+                            textoFormaPagamento = 'Cartão de Débito';
+                            break;
+                        default:
+                            textoFormaPagamento = 'Não especificada';
+                            break;
+                    }
+                    
+                    gerarNotaFiscal(venda, nomeCliente, taxaEntrega, textoFormaPagamento);
+                }
+            });
+
+            limparMesBtn.addEventListener('click', () => {
+                if (confirm('Tem certeza que deseja apagar todas as vendas deste mês?')) {
+                    const mesAtual = new Date().getMonth();
+                    const anoAtual = new Date().getFullYear();
+                    
+                    vendasReport = vendasReport.filter(venda => {
+                        const dataParts = venda.data.split(' ')[0].split('/');
+                        const dataVenda = new Date(`${dataParts[2]}-${dataParts[1]}-${dataParts[0]}`);
+                        return !(dataVenda.getMonth() === mesAtual && dataVenda.getFullYear() === anoAtual);
+                    });
+                    
+                    // Recalcula o lucro total a partir dos registros restantes
+                    lucroTotal = 0;
+                    vendasReport.forEach(venda => {
+                        lucroTotal += venda.lucro;
+                    });
+                    
+                    salvarDados();
+                    atualizarDashboard();
+                    carregarRelatorio();
+                    alert('Vendas do mês atual foram limpas com sucesso.');
+                }
+            });
+
+            // Lidar com o formulário de venda SEM desconto
+            formVendaSemDesconto.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const nomeCliente = nomeClienteSemInput.value.trim();
+                const quantidade = parseInt(quantidadeSemDescontoInput.value);
+                
+                if (isNaN(quantidade) || quantidade <= 0) {
+                    alert('Por favor, digite uma quantidade válida.');
+                    return;
+                }
+
+                if (estoque >= quantidade) {
+                    salvarVenda(nomeCliente, quantidade, precoVendaPadrao);
+                    nomeClienteSemInput.value = '';
+                    quantidadeSemDescontoInput.value = '';
+                    alert(`Venda sem desconto de ${quantidade} unidades registrada com sucesso!`);
+                } else {
+                    alert('Erro: Estoque insuficiente!');
+                }
+            });
+
+            // Lidar com o formulário de venda COM desconto
+            formVendaComDesconto.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const nomeCliente = nomeClienteComInput.value.trim();
+                const quantidade = parseInt(quantidadeComDescontoInput.value);
+                const precoComDesconto = parseFloat(precoComDescontoInput.value);
+                
+                if (isNaN(quantidade) || quantidade <= 0) {
+                    alert('Por favor, digite uma quantidade válida.');
+                    return;
+                }
+
+                if (isNaN(precoComDesconto) || precoComDesconto <= 0) {
+                    alert('Por favor, defina um preço válido para a venda com desconto.');
+                    return;
+                }
+
+                if (estoque >= quantidade) {
+                    salvarVenda(nomeCliente, quantidade, precoComDesconto);
+                    nomeClienteComInput.value = '';
+                    quantidadeComDescontoInput.value = '';
+                    precoComDescontoInput.value = '';
+                    alert(`Venda com desconto de ${quantidade} unidades registrada com sucesso!`);
+                } else {
+                    alert('Erro: Estoque insuficiente!');
+                }
+            });
+
+            // Lidar com o formulário de ajuste de estoque
+            formEstoque.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const quantidadeComprada = parseInt(document.getElementById('quantidade-comprada').value);
+
+                if (isNaN(quantidadeComprada) || quantidadeComprada <= 0) {
+                    alert('Por favor, digite uma quantidade válida.');
+                    return;
+                }
+
+                estoque += quantidadeComprada;
+                salvarDados();
+                atualizarDashboard();
+                alert(`Estoque atualizado! Adicionadas ${quantidadeComprada} unidades.`);
+            });
+            
+            // Lidar com o botão de limpar lucro
+            limparLucroBtn.addEventListener('click', () => {
+                const confirmacao = confirm('Tem certeza que deseja limpar o lucro total? Esta ação não pode ser desfeita.');
+                if (confirmacao) {
+                    lucroTotal = 0;
+                    salvarDados();
+                    alert('Lucro total foi limpo.');
+                    atualizarDashboard();
+                }
+            });
+            
+            // Funções para gerenciar as seções
+            function showSection(sectionId) {
+                document.querySelectorAll('.section-content').forEach(section => {
+                    section.classList.remove('active');
+                });
+                document.getElementById(sectionId).classList.add('active');
+                
+                document.querySelectorAll('nav button').forEach(button => {
+                    button.classList.remove('active');
+                });
+                if (sectionId === 'main-dashboard-section') {
+                    dashboardBtn.classList.add('active');
+                } else {
+                    relatorioBtn.classList.add('active');
+                    carregarRelatorio(); // Recarrega o relatório ao mostrar
+                }
+            }
+            
+            // Eventos do menu
+            dashboardBtn.addEventListener('click', () => showSection('main-dashboard-section'));
+            relatorioBtn.addEventListener('click', () => showSection('relatorio-section'));
+            
+            // Inicializa a interface
+            atualizarDashboard();
+        });
+    </script>
+</body>
+</html>
