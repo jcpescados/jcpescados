@@ -1206,9 +1206,8 @@
                 </li>
             </ul>
         </nav>
-
+        
         <div class="content" id="main-content">
-
             <section id="caranguejo" class="product-sections">
                 <h2 class="section-title">Caranguejo</h2>
                 <div class="produtos-container">
@@ -1224,7 +1223,7 @@
                     </div>
                 </div>
             </section>
-
+            
             <section id="empresa-caranguejo" class="product-sections">
                 <h2 class="section-title">Caranguejo (Oferta Empresa)</h2>
                 <div class="produtos-container">
@@ -1244,7 +1243,7 @@
                     </div>
                 </div>
             </section>
-
+            
             <section id="camarao-p" class="product-sections">
                 <h2 class="section-title">Camarão P</h2>
                 <div class="produtos-container">
@@ -1258,7 +1257,6 @@
                     </div>
                 </div>
             </section>
-
             <section id="camarao-m" class="product-sections">
                 <h2 class="section-title">Camarão M</h2>
                 <div class="produtos-container">
@@ -1272,7 +1270,6 @@
                     </div>
                 </div>
             </section>
-
             <section id="camarao-g" class="product-sections">
                 <h2 class="section-title">Camarão G</h2>
                 <div class="produtos-container">
@@ -1286,7 +1283,6 @@
                     </div>
                 </div>
             </section>
-
             <section id="camarao-gg" class="product-sections">
                 <h2 class="section-title">Camarão GG</h2>
                 <div class="produtos-container">
@@ -1300,7 +1296,6 @@
                     </div>
                 </div>
             </section>
-
             <section id="patinha" class="product-sections">
                 <h2 class="section-title">Patinha de Caranguejo</h2>
                 <div class="produtos-container">
@@ -1314,7 +1309,6 @@
                     </div>
                 </div>
             </section>
-
             <section id="carne" class="product-sections">
                 <h2 class="section-title">Carne de Caranguejo</h2>
                 <div class="produtos-container">
@@ -1328,7 +1322,6 @@
                     </div>
                 </div>
             </section>
-
             <section id="lagosta" class="product-sections">
                 <h2 class="section-title">Lagosta</h2>
                 <div class="produtos-container">
@@ -1342,7 +1335,6 @@
                     </div>
                 </div>
             </section>
-
             <section id="salmao" class="product-sections">
                 <h2 class="section-title">Salmão</h2>
                 <div class="produtos-container">
@@ -1356,7 +1348,6 @@
                     </div>
                 </div>
             </section>
-
             <section id="polvo" class="product-sections">
                 <h2 class="section-title">Polvo</h2>
                 <div class="produtos-container">
@@ -1370,7 +1361,6 @@
                     </div>
                 </div>
             </section>
-
             <section id="lula" class="product-sections">
                 <h2 class="section-title">Lula</h2>
                 <div class="produtos-container">
@@ -1384,7 +1374,6 @@
                     </div>
                 </div>
             </section>
-
             <section id="carrinho" class="product-sections">
                 <h2 class="section-title">Meu Carrinho</h2>
                 <div id="carrinho-container">
@@ -1401,7 +1390,6 @@
                     </div>
                 </div>
             </section>
-
             <section id="finalizar-compra" class="product-sections">
                 <h2 class="section-title">Finalizar Compra</h2>
                 <div id="finalizarCompraForm">
@@ -1411,7 +1399,7 @@
                     </button>
                 </div>
             </section>
-
+            
             <div id="productModal" class="modal">
                 <div class="modal-content">
                     <span class="close-button" onclick="closeModal('productModal')">&times;</span>
@@ -1437,8 +1425,8 @@
                     <h3>Digite seu nome</h3>
                     <p>Precisamos do seu nome para identificar o pedido.</p>
                     <input type="text" id="modal-nomeCliente" placeholder="Seu nome" required>
-                    <div class="modal-actions">
-                        <button class="btn-quero" onclick="finalizeOrder()">Continuar</button>
+                    <div class="modal-actions" style="justify-content: center;">
+                        <button class="btn-quero" onclick="processNameInput()">Continuar</button>
                     </div>
                 </div>
             </div>
@@ -1446,621 +1434,539 @@
             <div id="checkoutModal" class="modal">
                 <div class="modal-content">
                     <span class="close-button" onclick="closeModal('checkoutModal')">&times;</span>
-                    <h3>Finalizar Pedido</h3>
+                    <h3 id="modal-checkout-title">Finalizar Pedido</h3>
                     
-                    <div id="step-1" class="step active">
-                        <h4>1. Selecione a Cidade</h4>
-                        <select id="select-cidade">
-                            <option value="">Selecione sua Cidade</option>
-                            <option value="Teresina">Teresina</option>
-                            <option value="Timon">Timon</option>
-                            <option value="Outra">Outra (Verificar frete)</option>
+                    <div id="checkout-step-1" class="step active">
+                        <h4>Passo 1: Entrega ou Retirada?</h4>
+                        <select id="modal-tipo-entrega" required>
+                            <option value="">Selecione uma opção</option>
+                            <option value="Entrega">Entrega</option>
+                            <option value="Retirada">Retirada</option>
                         </select>
                         <div class="modal-actions">
+                            <button onclick="nextStep(1)">Próximo</button>
+                        </div>
+                    </div>
+
+                    <div id="checkout-step-2" class="step">
+                        <h4>Passo 2: Onde você mora?</h4>
+                        <input type="text" id="modal-cidade" placeholder="Sua cidade" required>
+                        <input type="text" id="modal-bairro" placeholder="Seu bairro" required>
+                        <div class="modal-actions">
+                            <button class="back" onclick="prevStep(2)">Voltar</button>
                             <button onclick="nextStep(2)">Próximo</button>
                         </div>
                     </div>
                     
-                    <div id="step-2" class="step">
-                        <h4>2. Selecione o Bairro</h4>
-                        <select id="select-bairro">
-                            <option value="">Selecione seu Bairro</option>
-                        </select>
-                        <input type="text" id="outros-bairros" placeholder="Digite seu Bairro (Taxa de R$ 10,00)" style="display: none;">
+                    <div id="checkout-step-3" class="step">
+                        <h4>Passo 3: Detalhes do Endereço</h4>
+                        <input type="text" id="modal-rua" placeholder="Rua" required>
+                        <input type="text" id="modal-numero" placeholder="Número" required>
+                        <input type="text" id="modal-referencia" placeholder="Ponto de Referência (opcional)">
                         <div class="modal-actions">
-                            <button class="back" onclick="prevStep(1)">Voltar</button>
+                            <button class="back" onclick="prevStep(3)">Voltar</button>
                             <button onclick="nextStep(3)">Próximo</button>
                         </div>
                     </div>
-
-                    <div id="step-3" class="step">
-                        <h4>3. Dados de Entrega e Pagamento</h4>
-                        <input type="text" id="rua" placeholder="Rua/Av" required>
-                        <input type="text" id="numero" placeholder="Nº (Opcional)">
-                        <input type="text" id="ponto-referencia" placeholder="Ponto de Referência" required>
-                        <input type="tel" id="telefone" placeholder="Telefone (WhatsApp)" required>
-                        
-                        <select id="select-pagamento">
-                            <option value="">Forma de Pagamento</option>
-                            <option value="Pix">PIX</option>
-                            <option value="Dinheiro">Dinheiro</option>
-                            <option value="Cartao">Cartão de Crédito/Débito</option>
+                    
+                    <div id="checkout-step-4" class="step">
+                        <h4>Passo 4: Resumo e Pagamento</h4>
+                        <div id="modal-resumo-pedido" style="margin-bottom: 20px;"></div>
+                        <select id="modal-pagamento" onchange="togglePixArea()" required>
+                            <option value="">Selecione a forma de pagamento</option>
+                            <option value="PIX">PIX</option>
                         </select>
-                        
-                        <div id="troco-input" style="display: none;">
-                            <input type="number" id="troco-para" placeholder="Precisa de troco para quanto?">
+                        <div id="modal-pix-area" style="display:none;">
+                            <canvas id="modal-qrcode-canvas"></canvas>
+                            <input type="text" id="modal-pix-info-copy" value="" readonly>
+                            <button type="button" class="pix-copy-button" onclick="copyPix()">Copiar Código PIX</button>
                         </div>
-                        
                         <div class="modal-actions">
-                            <button class="back" onclick="prevStep(2)">Voltar</button>
-                            <button onclick="submitOrder()">Confirmar Pedido</button>
+                            <button class="back" onclick="prevStep(4)">Voltar</button>
+                            <button class="botao-whatsapp" onclick="enviarPedido()">
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/1200px-WhatsApp.svg.png" alt="WhatsApp Icon" style="width: 20px; height: 20px;">
+                                Enviar pedido
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="checkout-step-retirada" class="step">
+                        <h4>Confirmação de Retirada</h4>
+                        <p>Você selecionou **Retirada**. O endereço é:</p>
+                        <p style="font-weight: bold; color: #004d60;">Rua Nossa Senhora do Porto 4566 - Bairro Palitolândia</p>
+                        <p>Você será direcionado ao WhatsApp para confirmar o horário de retirada.</p>
+                        <div class="modal-actions">
+                            <button class="back" onclick="prevStep('retirada')">Voltar</button>
+                            <button onclick="nextStep('retirada')">Próximo</button>
                         </div>
                     </div>
                 </div>
             </div>
 
             <div id="empresaModal" class="modal">
-                <div class="modal-content empresa-modal-content">
+                <div class="empresa-modal-content modal-content">
                     <span class="close-button" onclick="closeModal('empresaModal')">&times;</span>
-                    <h3>Você é uma Empresa/Restaurante?</h3>
-                    <p class="oferta-descricao">Temos ofertas exclusivas para você que compra em <span class="quantidade-oferta">grandes quantidades!</span></p>
+                    <h3 class="oferta-titulo">SUPER OFERTA!</h3>
+                    <p class="oferta-descricao">
+                        Você que é dono de empresa e quer colocar o nosso **Caranguejo** no seu negócio, temos uma oferta especial!
+                    </p>
                     <div class="oferta-box">
-                        <p class="oferta-titulo">OFERTA ESPECIAL!</p>
-                        <p class="oferta-descricao">Caranguejo a partir de <span class="preco-oferta">R$ 21,00 a corda!</span> (Para 20+ cordas)</p>
+                        <p class="oferta-descricao">
+                            Na compra acima de
+                            <span class="quantidade-oferta">10 cordas</span>, você vai pagar apenas
+                            <span class="preco-oferta">R$ 22,00 a corda</span>.
+                        </p>
+                        <p class="oferta-descricao">
+                            E na compra acima de
+                            <span class="quantidade-oferta">20 cordas</span>, você vai pagar apenas
+                            <span class="preco-oferta">R$ 21,00 a corda</span>.
+                        </p>
                     </div>
                     <div class="modal-buttons">
-                        <button class="btn-quero" onclick="selectEmpresaOption(true)">Sim, eu sou</button>
-                        <button class="btn-nao-quero" onclick="selectEmpresaOption(false)">Não, eu sou Pessoa Física</button>
+                        <button class="btn-quero" onclick="selectCompanyOffer()">EMPRESA</button>
+                        <button class="btn-nao-quero" onclick="selectNormalPurchase()">COMPRA NORMAL</button>
                     </div>
                 </div>
             </div>
 
-            <div id="loadingOverlay">
-                <p>Processando seu pedido...</p>
-                <div class="loading-spinner"></div>
-            </div>
+        </div>
+    </div>
+    
+    <footer>
+        © JC Pescados - Todos os direitos reservados
+    </footer>
 
+    <a href="#carrinho" class="cart-float">
+        <span class="cart-icon">🛒</span>
+        <span class="cart-notification" id="cart-notification">0</span>
+    </a>
+
+    <div id="loadingOverlay">
+        <div class="loading-text">
+            <span>Enviando pedido...</span>
+            <div class="loading-spinner"></div>
         </div>
     </div>
 
-    <a href="#" class="cart-float cart-link" onclick="showCart()">
-        <span class="cart-icon">🛒</span>
-        <span class="cart-notification" id="cart-float-count" style="display: none;">0</span>
-    </a>
-
-    <footer>
-        <p>&copy; 2024 JC Pescados. Todos os direitos reservados.</p>
-    </footer>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
     <script>
-        // Variáveis globais para armazenar dados do pedido
-        let cart = [];
-        let nomeCliente = '';
-        let currentStep = 1;
-        
-        // Mapeamento de preços por produto
-        const productPrices = {
-            "Caranguejo Pré-Cozido": 25.00,
-            "Camarão P": null, // Preço definido como null ou string "!!SEM ESTOQUE!!"
-            "Camarão M": null,
-            "Camarão G": null,
-            "Camarão GG": null,
-            "Patinha de Caranguejo": 22.00, // PREÇO DE R$ 22,00
-            "Carne de Caranguejo": 60.00,  // PREÇO DE R$ 60,00
-            "Lagosta": null,
-            "Salmão": null,
-            "Polvo": null,
-            "Lula": null,
-            // Preço especial para Empresa
-            "Caranguejo (Oferta Empresa)": 22.00 
-        };
-        
-        // Mapeamento de taxa de entrega por Bairro (apenas para exemplo)
-        const deliveryFees = {
-            "Teresina": {
-                "Centro": 5.00,
-                "Bairro de Exemplo 1": 7.00,
-                "Bairro de Exemplo 2": 7.00,
-                "Outro Bairro (Padrão 10)": 10.00
+        // Objeto para armazenar as informações do carrinho
+        let carrinho = [];
+
+        // Informações sobre os produtos e promoções
+        const produtos = {
+            'Caranguejo Pré-Cozido': { preco: 25.00, imagem: 'caranguejo.jpeg', nome: 'Caranguejo Pré-Cozido' },
+            'Caranguejo (Oferta Empresa)': {
+                preco: 23.00,
+                imagem: 'caranguejo.jpeg',
+                nome: 'Caranguejo (Oferta Empresa)',
+                oferta: {
+                    min10: 23.00,
+                    min20: 23.00
+                },
+                minimo: 10
             },
-            "Timon": {
-                "Centro": 10.00,
-                "Outro Bairro (Padrão 15)": 15.00
-            }
+            'Camarão P': { preco: 0.00, imagem: 'CAMARAOP.jpg', nome: 'Camarão P', semEstoque: true },
+            'Camarão M': { preco: 0.00, imagem: 'CAMARAOM.jpg', nome: 'Camarão M', semEstoque: true },
+            'Camarão G': { preco: 0.00, imagem: 'CAMARAOG.jpg', nome: 'Camarão G', semEstoque: true },
+            'Camarão GG': { preco: 0.00, imagem: 'CAMARAOGG.jpeg', nome: 'Camarão GG', semEstoque: true },
+            'Patinha de Caranguejo': { preco: 22.00, imagem: 'patinha.jpg', nome: 'Patinha de Caranguejo', semEstoque: false },
+            'Carne de Caranguejo': { preco: 60.00, imagem: 'carnedecaranguejo.jpeg', nome: 'Carne de Caranguejo', semEstoque: false },
+            'Lagosta': { preco: 0.00, imagem: 'LAGOSTA.jpg', nome: 'Lagosta', semEstoque: true },
+            'Salmão': { preco: 0.00, imagem: 'salmao.jpg', nome: 'Salmão', semEstoque: true },
+            'Polvo': { preco: 0.00, imagem: 'polvo.jpeg', nome: 'Polvo', semEstoque: true },
+            'Lula': { preco: 0.00, imagem: 'lula.jpeg', nome: 'Lula', semEstoque: true }
         };
 
-        // ===========================================
-        // FUNÇÕES GERAIS DE MODAL E NAVEGAÇÃO
-        // ===========================================
-
+        function formatarPreco(valor) {
+            return `R$ ${valor.toFixed(2).replace('.', ',')}`;
+        }
+        
         function showProduct(sectionId) {
             document.querySelectorAll('.product-sections').forEach(section => {
                 section.style.display = 'none';
             });
             document.getElementById(sectionId).style.display = 'block';
-            document.getElementById('carrinho-container').style.display = 'none';
-            document.getElementById('finalizarCompraForm').style.display = 'none';
+            document.querySelectorAll('.sidebar a').forEach(link => link.classList.remove('active'));
+            document.querySelector(`[href="#${sectionId}"]`).classList.add('active');
+            scrollToSection(sectionId); // Adiciona a rolagem automática
         }
 
-        function openProductModal(productName) {
-            const price = productPrices[productName];
-            const modal = document.getElementById('productModal');
-            const modalName = document.getElementById('modal-product-name');
-            const modalPricePromo = document.getElementById('modal-preco-promocao');
-            const modalPriceRiscado = document.getElementById('modal-preco-riscado');
-            const modalImg = document.getElementById('modal-product-img');
-            const modalQty = document.getElementById('modal-quantidade');
-            
-            // Verifica se o produto está em estoque
-            if (price === null) {
-                alert(`O produto "${productName}" está atualmente sem estoque.`);
-                return;
-            }
-
-            modalName.textContent = productName;
-            modalPricePromo.textContent = price !== null ? `R$ ${price.toFixed(2)}` : '';
-            modalPriceRiscado.textContent = ''; // Limpa preço riscado
-            
-            // Configura imagem baseada no nome
-            let imgSrc = '';
-            if (productName.includes("Caranguejo")) {
-                imgSrc = productName.includes("Carne") ? 'carnedecaranguejo.jpeg' : 
-                         productName.includes("Patinha") ? 'patinha.jpg' : 'caranguejo.jpeg';
-            } else if (productName.includes("Camarão")) {
-                imgSrc = productName.toLowerCase().replace(' ', '') + '.jpg';
-            } else if (productName.includes("Lagosta")) {
-                imgSrc = 'LAGOSTA.jpg';
-            } else if (productName.includes("Salmão")) {
-                imgSrc = 'salmao.jpg';
-            } else if (productName.includes("Polvo")) {
-                imgSrc = 'polvo.jpeg';
-            } else if (productName.includes("Lula")) {
-                imgSrc = 'lula.jpeg';
-            }
-
-            // Ajuste para o nome da imagem do camarão P, M, G, GG
-            if (productName === "Camarão P") imgSrc = 'CAMARAOP.jpg';
-            if (productName === "Camarão M") imgSrc = 'CAMARAOM.jpg';
-            if (productName === "Camarão G") imgSrc = 'CAMARAOG.jpg';
-            if (productName === "Camarão GG") imgSrc = 'CAMARAOGG.jpeg';
-            if (productName === "Carne de Caranguejo") imgSrc = 'carnedecaranguejo.jpeg';
-            if (productName === "Patinha de Caranguejo") imgSrc = 'patinha.jpg';
-
-
-            modalImg.src = imgSrc;
-            
-            // Define o step para Lagosta (pode ser kg ou unidade)
-            modalQty.step = (productName === "Caranguejo Pré-Cozido" || productName.includes("(Oferta Empresa)")) ? "1" : "0.1";
-            modalQty.min = "1";
-            modalQty.value = "1"; // Valor padrão 1
-
-            modal.style.display = 'block';
-            modal.setAttribute('data-product-name', productName); // Armazena o nome para uso no add to cart
-        }
-
-        function closeModal(modalId) {
-            document.getElementById(modalId).style.display = 'none';
-        }
-        
-        // Fecha o modal se o usuário clicar fora dele
-        window.onclick = function(event) {
-            if (event.target.classList.contains('modal')) {
-                event.target.style.display = 'none';
-            }
-        }
-        
-        // ===========================================
-        // FUNÇÕES DO CARRINHO
-        // ===========================================
-
-        function updateCartCount() {
-            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-            const cartCountElement = document.getElementById('cart-count');
-            const cartFloatCountElement = document.getElementById('cart-float-count');
-
-            cartCountElement.textContent = totalItems;
-            cartFloatCountElement.textContent = totalItems;
-            cartFloatCountElement.style.display = totalItems > 0 ? 'flex' : 'none';
-
-            // Mostra/Esconde botão de finalizar compra
-            const finalizeButton = document.querySelector('.botao-finalizar-carrinho');
-            finalizeButton.style.display = totalItems > 0 ? 'inline-block' : 'none';
-            document.getElementById('carrinho-totais').style.display = totalItems > 0 ? 'block' : 'none';
-        }
-
-        function addToCartFromModal() {
-            const modal = document.getElementById('productModal');
-            const productName = modal.getAttribute('data-product-name');
-            const quantityInput = document.getElementById('modal-quantidade');
-            let quantity = parseFloat(quantityInput.value);
-
-            if (isNaN(quantity) || quantity <= 0) {
-                alert('Por favor, insira uma quantidade válida.');
-                return;
-            }
-            
-            const price = productPrices[productName];
-            
-            if (price === null) {
-                alert(`Erro: Preço indisponível para ${productName}.`);
-                return;
-            }
-
-            const existingItem = cart.find(item => item.name === productName);
-
-            if (existingItem) {
-                existingItem.quantity += quantity;
-            } else {
-                cart.push({
-                    name: productName,
-                    price: price,
-                    quantity: quantity
-                });
-            }
-
-            updateCartCount();
-            closeModal('productModal');
-            
-            alert(`${quantity} ${productName} adicionado(s) ao carrinho!`);
-        }
-
-        function showCart() {
+        function showInitialMessage() {
             document.querySelectorAll('.product-sections').forEach(section => {
                 section.style.display = 'none';
             });
+        }
+        
+        function openProductModal(productName) {
+            const product = produtos[productName];
+            if (product.semEstoque) {
+                alert('Este produto está sem estoque no momento.');
+                return;
+            }
+            const modal = document.getElementById('productModal');
+            document.getElementById('modal-product-img').src = product.imagem;
+            document.getElementById('modal-product-name').innerText = product.nome;
             
-            const carrinhoSection = document.getElementById('carrinho');
-            carrinhoSection.style.display = 'block';
-            document.getElementById('carrinho-container').style.display = 'block';
-            document.getElementById('finalizarCompraForm').style.display = 'none';
-
-            const cartList = document.getElementById('carrinho-lista');
-            const subtotalProdutos = document.getElementById('subtotal-produtos');
-            const totalFinal = document.getElementById('total-final');
-            let subtotal = 0;
-
-            cartList.innerHTML = ''; // Limpa a lista atual
-
-            if (cart.length === 0) {
-                cartList.innerHTML = '<p class="carrinho-vazio">Seu carrinho está vazio.</p>';
-                document.getElementById('carrinho-totais').style.display = 'none';
+            const quantidadeInput = document.getElementById('modal-quantidade');
+            if (product.minimo) {
+                quantidadeInput.min = product.minimo;
+                quantidadeInput.value = product.minimo;
             } else {
-                cart.forEach((item, index) => {
-                    const totalItem = item.price * item.quantity;
-                    subtotal += totalItem;
-
-                    const itemDiv = document.createElement('div');
-                    itemDiv.classList.add('carrinho-item');
-                    itemDiv.innerHTML = `
-                        <img src="${getImgSrc(item.name)}" alt="${item.name}">
-                        <div class="carrinho-item-info">
-                            <h4>${item.name}</h4>
-                            <p>Qtd: ${item.quantity.toFixed(1).replace('.0', '')} | Preço Unit: R$ ${item.price.toFixed(2)}</p>
-                        </div>
-                        <div class="carrinho-item-total">
-                            R$ ${totalItem.toFixed(2)}
-                        </div>
-                        <button class="botao-remover" onclick="removeFromCart(${index})">X</button>
-                    `;
-                    cartList.appendChild(itemDiv);
-                });
-                
-                subtotalProdutos.textContent = `R$ ${subtotal.toFixed(2)}`;
-                // Por enquanto, o total final é o subtotal, a taxa de entrega é calculada no modal de checkout
-                totalFinal.textContent = `R$ ${subtotal.toFixed(2)}`;
-                document.getElementById('carrinho-totais').style.display = 'block';
+                quantidadeInput.min = 1;
+                quantidadeInput.value = 1;
             }
+
+            const precoRiscado = document.getElementById('modal-preco-riscado');
+            const precoPromocaoSpan = document.getElementById('modal-preco-promocao');
             
-            updateCartCount();
-        }
-        
-        // Função auxiliar para obter a imagem para a lista do carrinho
-        function getImgSrc(productName) {
-            if (productName.includes("Carne")) return 'carnedecaranguejo.jpeg';
-            if (productName.includes("Patinha")) return 'patinha.jpg';
-            if (productName.includes("Caranguejo")) return 'caranguejo.jpeg';
-            if (productName.includes("Camarão P")) return 'CAMARAOP.jpg';
-            if (productName.includes("Camarão M")) return 'CAMARAOM.jpg';
-            if (productName.includes("Camarão G")) return 'CAMARAOG.jpg';
-            if (productName.includes("Camarão GG")) return 'CAMARAOGG.jpeg';
-            if (productName.includes("Lagosta")) return 'LAGOSTA.jpg';
-            if (productName.includes("Salmão")) return 'salmao.jpg';
-            if (productName.includes("Polvo")) return 'polvo.jpeg';
-            if (productName.includes("Lula")) return 'lula.jpeg';
-            return ''; // Imagem padrão
+            precoRiscado.style.display = 'none';
+            precoPromocaoSpan.innerText = formatarPreco(product.preco);
+            
+            modal.style.display = 'block';
         }
 
-        function removeFromCart(index) {
-            if (index > -1) {
-                cart.splice(index, 1);
-                showCart(); // Recarrega a visualização do carrinho
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            modal.style.display = 'none';
+        }
+
+        function addToCartFromModal() {
+            const productName = document.getElementById('modal-product-name').innerText;
+            const quantidade = parseFloat(document.getElementById('modal-quantidade').value);
+            
+            const produto = produtos[productName];
+            if (produto.minimo && quantidade < produto.minimo) {
+                 alert(`A quantidade mínima para este produto é de ${produto.minimo} cordas.`);
+                 return;
             }
-        }
-        
-        function calculateSubtotal() {
-            return cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-        }
 
-        // ===========================================
-        // FUNÇÕES DE CHECKOUT
-        // ===========================================
-        
-        function showNameInputModal() {
-            document.getElementById('nameInputModal').style.display = 'block';
-            document.getElementById('modal-nomeCliente').value = nomeCliente;
-        }
-
-        function finalizeOrder() {
-            const inputNome = document.getElementById('modal-nomeCliente');
-            nomeCliente = inputNome.value.trim();
-            
-            if (nomeCliente === "") {
-                alert("Por favor, digite seu nome para continuar.");
+            if (isNaN(quantidade) || quantidade <= 0) {
+                alert("Por favor, digite uma quantidade válida.");
                 return;
             }
             
-            closeModal('nameInputModal');
-            showCheckoutModal();
-        }
+            let preco;
+            if (produto.oferta) {
+                if (quantidade >= 20) {
+                    preco = produto.oferta.min20;
+                } else if (quantidade >= 10) {
+                    preco = produto.oferta.min10;
+                } else {
+                    preco = produto.preco; // Fallback, though we have a min quantity check
+                }
+            } else {
+                preco = produto.preco;
+            }
 
-        function showCheckoutModal() {
-            const modal = document.getElementById('checkoutModal');
-            modal.style.display = 'block';
-            currentStep = 1;
-            updateCheckoutSteps();
-            document.getElementById('troco-input').style.display = 'none'; // Reseta o troco
-            document.getElementById('select-pagamento').value = '';
-            document.getElementById('outros-bairros').style.display = 'none';
-        }
-
-        function updateCheckoutSteps() {
-            document.querySelectorAll('#checkoutModal .step').forEach(step => {
-                step.classList.remove('active');
-            });
-            document.getElementById(`step-${currentStep}`).classList.add('active');
+            const totalItem = quantidade * preco;
             
-            if (currentStep === 2) {
-                populateBairros();
+            const itemExistente = carrinho.find(item => item.nome === productName);
+            
+            if (itemExistente) {
+                itemExistente.quantidade += quantidade;
+                itemExistente.total = itemExistente.quantidade * preco;
+            } else {
+                carrinho.push({
+                    nome: productName,
+                    quantidade: quantidade,
+                    preco: preco,
+                    total: totalItem,
+                    imagem: produto.imagem
+                });
+            }
+            
+            updateCartCount();
+            renderCart();
+            closeModal('productModal');
+            showCart();
+        }
+
+        function updateCartCount() {
+            const count = carrinho.reduce((sum, item) => sum + item.quantidade, 0);
+            document.getElementById('cart-count').innerText = count;
+            document.getElementById('cart-notification').innerText = count;
+            document.querySelector('.botao-finalizar-carrinho').style.display = count > 0 ? 'block' : 'none';
+        }
+
+        function showCart() {
+            showProduct('carrinho');
+            renderCart();
+            scrollToSection('carrinho');
+        }
+
+        function renderCart() {
+            const carrinhoLista = document.getElementById('carrinho-lista');
+            const carrinhoContainer = document.getElementById('carrinho-container');
+            carrinhoLista.innerHTML = '';
+            
+            if (carrinho.length === 0) {
+                carrinhoLista.innerHTML = '<p class="carrinho-vazio">Seu carrinho está vazio.</p>';
+                document.getElementById('carrinho-totais').style.display = 'none';
+                carrinhoContainer.style.display = 'none';
+            } else {
+                let subtotal = 0;
+                carrinho.forEach(item => {
+                    subtotal += item.total;
+                    const itemDiv = document.createElement('div');
+                    itemDiv.classList.add('carrinho-item');
+                    itemDiv.innerHTML = `
+                        <img src="${item.imagem}" alt="${item.nome}">
+                        <div class="carrinho-item-info">
+                            <h4>${item.nome}</h4>
+                            <p>Quantidade: ${item.quantidade}</p>
+                            <p>Preço unitário: ${formatarPreco(item.preco)}</p>
+                        </div>
+                        <div class="carrinho-item-total">
+                            ${formatarPreco(item.total)}
+                        </div>
+                        <button class="botao-remover" onclick="removeFromCart('${item.nome}')">&times;</button>
+                    `;
+                    carrinhoLista.appendChild(itemDiv);
+                });
+                
+                document.getElementById('subtotal-produtos').innerText = formatarPreco(subtotal);
+                document.getElementById('total-final').innerText = formatarPreco(subtotal);
+                document.getElementById('carrinho-totais').style.display = 'block';
+                carrinhoContainer.style.display = 'block';
+            }
+        }
+
+        function removeFromCart(productName) {
+            carrinho = carrinho.filter(item => item.nome !== productName);
+            updateCartCount();
+            renderCart();
+        }
+
+        function showNameInputModal() {
+            document.getElementById('modal-nomeCliente').value = '';
+            document.getElementById('nameInputModal').style.display = 'block';
+        }
+
+        function processNameInput() {
+            const nomeCliente = document.getElementById('modal-nomeCliente').value.trim();
+            if (nomeCliente) {
+                closeModal('nameInputModal');
+                openCheckoutModal(nomeCliente);
+            } else {
+                alert('Por favor, digite seu nome.');
+            }
+        }
+        
+        function openCheckoutModal(nomeCliente) {
+            document.getElementById('modal-checkout-title').innerText = `Finalizar Pedido: ${nomeCliente}`;
+            document.getElementById('checkoutModal').style.display = 'block';
+            document.getElementById('checkout-step-1').classList.add('active');
+        }
+
+        let currentStep = 1;
+
+        function nextStep(step) {
+            let formIsValid = true;
+            
+            if (step === 1) {
+                const tipoEntrega = document.getElementById('modal-tipo-entrega').value;
+                if (!tipoEntrega) {
+                    alert('Por favor, selecione uma opção de entrega.');
+                    formIsValid = false;
+                } else {
+                    if (tipoEntrega === 'Retirada') {
+                        document.getElementById('checkout-step-1').classList.remove('active');
+                        document.getElementById('checkout-step-retirada').classList.add('active');
+                        currentStep = 'retirada';
+                    } else {
+                        document.getElementById('checkout-step-1').classList.remove('active');
+                        document.getElementById('checkout-step-2').classList.add('active');
+                        currentStep = 2;
+                    }
+                }
+            } else if (step === 2) {
+                const cidade = document.getElementById('modal-cidade').value;
+                const bairro = document.getElementById('modal-bairro').value;
+                
+                if (!cidade || !bairro) {
+                    alert('Por favor, preencha a cidade e o bairro.');
+                    formIsValid = false;
+                } else {
+                    document.getElementById('checkout-step-2').classList.remove('active');
+                    document.getElementById('checkout-step-3').classList.add('active');
+                    currentStep = 3;
+                }
+            } else if (step === 3) {
+                const rua = document.getElementById('modal-rua').value;
+                const numero = document.getElementById('modal-numero').value;
+
+                if (!rua || !numero) {
+                    alert('Por favor, preencha a rua e o número.');
+                    formIsValid = false;
+                } else {
+                    document.getElementById('checkout-step-3').classList.remove('active');
+                    document.getElementById('checkout-step-4').classList.add('active');
+                    currentStep = 4;
+                    renderResumoPedido();
+                }
+            } else if (step === 'retirada') {
+                enviarPedido();
             }
         }
 
         function prevStep(step) {
-            currentStep = step;
-            updateCheckoutSteps();
+            if (step === 2) {
+                document.getElementById('checkout-step-2').classList.remove('active');
+                document.getElementById('checkout-step-1').classList.add('active');
+                currentStep = 1;
+            } else if (step === 3) {
+                document.getElementById('checkout-step-3').classList.remove('active');
+                document.getElementById('checkout-step-2').classList.add('active');
+                currentStep = 2;
+            } else if (step === 4) {
+                document.getElementById('checkout-step-4').classList.remove('active');
+                document.getElementById('checkout-step-3').classList.add('active');
+                currentStep = 3;
+            } else if (step === 'retirada') {
+                document.getElementById('checkout-step-retirada').classList.remove('active');
+                document.getElementById('checkout-step-1').classList.add('active');
+                currentStep = 1;
+            }
         }
 
-        function nextStep(step) {
-            if (!validateStep(currentStep)) {
-                return;
-            }
-            currentStep = step;
-            updateCheckoutSteps();
-        }
-
-        function validateStep(step) {
-            if (step === 1) {
-                const cidade = document.getElementById('select-cidade').value;
-                if (cidade === "") {
-                    alert("Por favor, selecione sua cidade.");
-                    return false;
-                }
-                if (cidade === "Outra") {
-                    alert("Infelizmente, por enquanto, só atendemos Teresina e Timon. Por favor, entre em contato via WhatsApp para verificar a possibilidade de entrega.");
-                    return false;
-                }
-                return true;
-            } else if (step === 2) {
-                const bairroSelect = document.getElementById('select-bairro');
-                const outrosBairros = document.getElementById('outros-bairros');
-                
-                let bairro;
-                if (outrosBairros.style.display === 'block') {
-                    bairro = outrosBairros.value.trim();
-                } else {
-                    bairro = bairroSelect.value;
-                }
-
-                if (bairro === "") {
-                    alert("Por favor, selecione ou digite seu bairro.");
-                    return false;
-                }
-                
-                // Recalcular a taxa de entrega e o total final
-                updateTotalWithDeliveryFee();
-                return true;
-            }
-            return true;
-        }
-        
-        function populateBairros() {
-            const cidade = document.getElementById('select-cidade').value;
-            const bairroSelect = document.getElementById('select-bairro');
-            const outrosBairrosInput = document.getElementById('outros-bairros');
+        function renderResumoPedido() {
+            const resumoDiv = document.getElementById('modal-resumo-pedido');
+            const tipoEntrega = document.getElementById('modal-tipo-entrega').value;
+            let subtotal = 0;
             
-            bairroSelect.innerHTML = '<option value="">Selecione seu Bairro</option>';
-            outrosBairrosInput.value = '';
-            outrosBairrosInput.style.display = 'none';
-
-            if (deliveryFees[cidade]) {
-                const bairros = deliveryFees[cidade];
-                for (const bairro in bairros) {
-                    const option = document.createElement('option');
-                    option.value = bairro;
-                    option.textContent = `${bairro} (R$ ${bairros[bairro].toFixed(2)})`;
-                    bairroSelect.appendChild(option);
-                }
-                
-                // Adicionar a opção "Outro" que mostra o campo de texto
-                const otherOption = document.createElement('option');
-                otherOption.value = 'Outro';
-                otherOption.textContent = 'Meu bairro não está na lista';
-                bairroSelect.appendChild(otherOption);
-                
-                // Evento para mostrar/esconder o campo de "Outros Bairros"
-                bairroSelect.onchange = function() {
-                    if (this.value === 'Outro') {
-                        outrosBairrosInput.style.display = 'block';
-                        outrosBairrosInput.placeholder = `Digite seu Bairro (Taxa de R$ ${cidade === 'Teresina' ? 10.00.toFixed(2) : 15.00.toFixed(2)})`;
-                    } else {
-                        outrosBairrosInput.style.display = 'none';
-                    }
-                    updateTotalWithDeliveryFee();
-                }
-            }
-            
-            updateTotalWithDeliveryFee(); // Atualiza total inicial para o step 2
-        }
-
-        function updateTotalWithDeliveryFee() {
-            const cidade = document.getElementById('select-cidade').value;
-            const bairroSelect = document.getElementById('select-bairro');
-            const outrosBairros = document.getElementById('outros-bairros');
-            const subtotal = calculateSubtotal();
-            let taxaEntrega = 0;
-            let bairroName = '';
-
-            if (cidade && deliveryFees[cidade]) {
-                if (bairroSelect.value && bairroSelect.value !== 'Outro') {
-                    taxaEntrega = deliveryFees[cidade][bairroSelect.value];
-                    bairroName = bairroSelect.value;
-                } else if (outrosBairros.style.display === 'block' && outrosBairros.value.trim() !== "") {
-                    // Taxa padrão para outros bairros
-                    taxaEntrega = cidade === 'Teresina' ? 10.00 : 15.00;
-                    bairroName = outrosBairros.value.trim();
-                }
-            }
-            
-            const total = subtotal + taxaEntrega;
-            
-            document.getElementById('subtotal-produtos').textContent = `R$ ${subtotal.toFixed(2)}`;
-            
-            // Adiciona a linha de taxa de entrega dinamicamente
-            let totaisDiv = document.getElementById('carrinho-totais');
-            let taxaEntregaP = document.getElementById('taxa-entrega-p');
-            
-            if (!taxaEntregaP) {
-                taxaEntregaP = document.createElement('p');
-                taxaEntregaP.id = 'taxa-entrega-p';
-                totaisDiv.insertBefore(taxaEntregaP, document.getElementById('total-final').parentNode);
-            }
-            
-            taxaEntregaP.innerHTML = `Taxa de Entrega (<span class="taxa-entrega">${bairroName || 'Aguardando Bairro'}</span>): <span id="taxa-entrega-valor">R$ ${taxaEntrega.toFixed(2)}</span>`;
-            document.getElementById('total-final').textContent = `R$ ${total.toFixed(2)}`;
-        }
-        
-        // Event listener para o pagamento (mostrar campo de troco)
-        document.getElementById('select-pagamento').addEventListener('change', function() {
-            const trocoInputDiv = document.getElementById('troco-input');
-            if (this.value === 'Dinheiro') {
-                trocoInputDiv.style.display = 'block';
-            } else {
-                trocoInputDiv.style.display = 'none';
-                document.getElementById('troco-para').value = ''; // Limpa o valor
-            }
-        });
-
-        function submitOrder() {
-            const cidade = document.getElementById('select-cidade').value;
-            const bairroSelect = document.getElementById('select-bairro');
-            const outrosBairros = document.getElementById('outros-bairros');
-            const rua = document.getElementById('rua').value.trim();
-            const numero = document.getElementById('numero').value.trim();
-            const pontoReferencia = document.getElementById('ponto-referencia').value.trim();
-            const telefone = document.getElementById('telefone').value.trim();
-            const pagamento = document.getElementById('select-pagamento').value;
-            const trocoPara = document.getElementById('troco-para').value.trim();
-
-            if (rua === "" || pontoReferencia === "" || telefone === "" || pagamento === "") {
-                alert("Por favor, preencha todos os campos obrigatórios (Rua, Ponto de Referência, Telefone e Pagamento).");
-                return;
-            }
-            
-            // Determina o bairro e taxa
-            let bairro = bairroSelect.value;
-            let taxaEntrega = 0;
-
-            if (bairro === 'Outro' && outrosBairros.style.display === 'block') {
-                bairro = outrosBairros.value.trim() || "Bairro Não Informado (Taxa Padrão)";
-                taxaEntrega = cidade === 'Teresina' ? 10.00 : 15.00;
-            } else if (deliveryFees[cidade] && deliveryFees[cidade][bairro]) {
-                 taxaEntrega = deliveryFees[cidade][bairro];
-            } else {
-                taxaEntrega = cidade === 'Teresina' ? 10.00 : 15.00; // Taxa padrão de segurança
-            }
-            
-            const subtotal = calculateSubtotal();
-            const total = subtotal + taxaEntrega;
-            
-            // Montar a mensagem do WhatsApp
-            let pedidoMensagem = `*🛒 NOVO PEDIDO - JC PESCADOS 🛒*\n\n`;
-            pedidoMensagem += `*Nome do Cliente:* ${nomeCliente}\n\n`;
-            
-            pedidoMensagem += `*📍 Dados de Entrega*\n`;
-            pedidoMensagem += `Cidade: ${cidade}\n`;
-            pedidoMensagem += `Bairro: ${bairro}\n`;
-            pedidoMensagem += `Rua/Av: ${rua}${numero ? `, Nº ${numero}` : ''}\n`;
-            pedidoMensagem += `Referência: ${pontoReferencia}\n`;
-            pedidoMensagem += `Telefone: ${telefone}\n\n`;
-            
-            pedidoMensagem += `*📦 Itens do Pedido*\n`;
-            cart.forEach(item => {
-                const totalItem = item.price * item.quantity;
-                const unit = item.name.includes("Caranguejo") && !item.name.includes("Carne") && !item.name.includes("Patinha") ? 'corda(s)' : 'kg';
-                pedidoMensagem += `▪ ${item.name} (${item.quantity.toFixed(1).replace('.0', '')} ${unit}) - R$ ${totalItem.toFixed(2)}\n`;
+            let resumoHTML = '<h4>Seu Pedido:</h4><ul>';
+            carrinho.forEach(item => {
+                resumoHTML += `<li>${item.nome}: ${item.quantidade} x ${formatarPreco(item.preco)} = ${formatarPreco(item.total)}</li>`;
+                subtotal += item.total;
             });
-            pedidoMensagem += `\n`;
-            
-            pedidoMensagem += `*💰 Totais e Pagamento*\n`;
-            pedidoMensagem += `Subtotal: R$ ${subtotal.toFixed(2)}\n`;
-            pedidoMensagem += `Taxa de Entrega: R$ ${taxaEntrega.toFixed(2)}\n`;
-            pedidoMensagem += `*Total Final: R$ ${total.toFixed(2)}*\n`;
-            pedidoMensagem += `Forma de Pagamento: ${pagamento}\n`;
-            
-            if (pagamento === 'Dinheiro' && trocoPara) {
-                pedidoMensagem += `Troco para: R$ ${parseFloat(trocoPara).toFixed(2)}\n`;
-            } else if (pagamento === 'Dinheiro') {
-                 pedidoMensagem += `Troco para: Não Precisa de Troco\n`;
-            }
+            resumoHTML += '</ul>';
 
-            // Exibir overlay de loading
-            document.getElementById('loadingOverlay').style.display = 'flex';
+            const totalPedido = subtotal;
+
+            resumoHTML += `
+                <div class="total-container">
+                    <p>Subtotal: ${formatarPreco(subtotal)}</p>
+                    <p>Total do Pedido: <span class="total-valor">${formatarPreco(totalPedido)}</span></p>
+                </div>
+            `;
             
-            // Simular o envio e redirecionar
-            setTimeout(() => {
-                document.getElementById('loadingOverlay').style.display = 'none';
-                closeModal('checkoutModal');
-                
-                // Redirecionamento para o WhatsApp
-                const whatsappUrl = `https://wa.me/5586994494783?text=${encodeURIComponent(pedidoMensagem)}`;
-                window.open(whatsappUrl, '_blank');
-                
-                // Limpar o carrinho após a submissão bem-sucedida
-                cart = [];
-                updateCartCount();
-                showProduct('caranguejo'); // Volta para a tela inicial
-            }, 1500); // Atraso de 1.5s
-        }
-        
-        // ===========================================
-        // FUNÇÕES DE EMPRESA (AO CARREGAR)
-        // ===========================================
-        
-        function showEmpresaModal() {
-            // Se o nome do cliente já foi definido, não mostrar o modal de empresa.
-            if (!nomeCliente) {
-                document.getElementById('empresaModal').style.display = 'block';
-            }
+            resumoDiv.innerHTML = resumoHTML;
         }
 
-        function selectEmpresaOption(isEmpresa) {
-            closeModal('empresaModal');
-            if (isEmpresa) {
-                showProduct('empresa-caranguejo');
-                scrollToSection('empresa-caranguejo');
+        function togglePixArea() {
+            const pagamento = document.getElementById('modal-pagamento').value;
+            const pixArea = document.getElementById('modal-pix-area');
+            if (pagamento === 'PIX') {
+                pixArea.style.display = 'block';
+                generatePixInfo();
             } else {
-                showProduct('caranguejo');
-                scrollToSection('caranguejo');
+                pixArea.style.display = 'none';
             }
+        }
+
+        function generatePixInfo() {
+            const pixKey = "40086457000185";
+            const pixInfoText = `PIX: ${pixKey} (CNPJ)`;
+            document.getElementById('modal-pix-info-copy').value = pixKey;
+
+            const total = carrinho.reduce((sum, item) => sum + item.total, 0);
+
+            const qrCodeData = "00020126360014br.gov.bcb.pix0114400864570001855204000053039865802BR5925JULIO CESAR FERREIRA LIMA6008TERESINA6211050726f787963044C48";
+            
+            const qr = new QRious({
+                element: document.getElementById('modal-qrcode-canvas'),
+                value: qrCodeData,
+                size: 200
+            });
+        }
+
+        function copyPix() {
+            const pixInfo = document.getElementById('modal-pix-info-copy');
+            pixInfo.select();
+            pixInfo.setSelectionRange(0, 99999);
+            document.execCommand("copy");
+            alert("Código PIX copiado!");
+        }
+
+        function enviarPedido() {
+            const nome = document.getElementById('modal-nomeCliente').value;
+            const tipoEntrega = document.getElementById('modal-tipo-entrega').value;
+            const pagamento = document.getElementById('modal-pagamento').value;
+            
+            if (!nome || !tipoEntrega || (tipoEntrega === 'Entrega' && (!document.getElementById('modal-cidade').value || !document.getElementById('modal-bairro').value || !document.getElementById('modal-rua').value || !document.getElementById('modal-numero').value)) || (tipoEntrega === 'Retirada' && currentStep !== 'retirada')) {
+                alert("Por favor, preencha todos os campos obrigatórios.");
+                return;
+            }
+
+            let resumoPedido = '';
+            let totalPedido = 0;
+            carrinho.forEach(item => {
+                resumoPedido += `- ${item.nome}: ${item.quantidade} unidade(s) x ${formatarPreco(item.preco)}\n`;
+                totalPedido += item.total;
+            });
+            
+            // Formatando a mensagem de forma mais organizada e bonita
+            let mensagem = `Olá, meu nome é *${nome}*.\n\n` +
+                           `Gostaria de fazer o seguinte pedido:\n\n` +
+                           `🛒 *RESUMO DO PEDIDO*\n` +
+                           `--------------------------\n` +
+                           `${resumoPedido}` +
+                           `--------------------------\n` +
+                           `✅ *TOTAL DOS PRODUTOS*: ${formatarPreco(totalPedido)}\n\n` +
+                           `---\n\n`;
+
+            if (tipoEntrega === 'Entrega') {
+                const cidade = document.getElementById('modal-cidade').value;
+                const bairro = document.getElementById('modal-bairro').value;
+                const rua = document.getElementById('modal-rua').value;
+                const numero = document.getElementById('modal-numero').value;
+                const referencia = document.getElementById('modal-referencia').value;
+
+                mensagem += `📍 *DETALHES DA ENTREGA*\n` +
+                            `- *Endereço*: ${rua}, Nº ${numero}\n` +
+                            `- *Bairro*: ${bairro}\n` +
+                            `- *Cidade*: ${cidade}\n` +
+                            (referencia ? `- *Ponto de Referência*: ${referencia}\n\n` : `\n`);
+                
+                mensagem += `_Atenção: O valor da taxa de entrega será calculado à parte, de acordo com a taxa do 99 ou Uber._\n\n`;
+                mensagem += `---\n\n`;
+                mensagem += `💰 *PAGAMENTO*\n` +
+                            `- *Total Final*: ${formatarPreco(totalPedido)}\n` +
+                            `- *Forma de Pagamento*: ${pagamento}`;
+            } else if (tipoEntrega === 'Retirada') {
+                mensagem += `📍 *DETALHES DA RETIRADA*\n` +
+                            `- *Endereço*: Rua Nossa Senhora do Porto 4566 - Bairro Palitolândia\n\n`;
+                
+                mensagem += `---\n\n`;
+                mensagem += `💰 *PAGAMENTO*\n` +
+                            `- *Total Final*: ${formatarPreco(totalPedido)}\n` +
+                            `- *Forma de Pagamento*: ${pagamento}`;
+            }
+
+            const whatsappUrl = `https://wa.me/5586994494783?text=${encodeURIComponent(mensagem)}`;
+            window.open(whatsappUrl, '_blank');
+            
+            closeModal('checkoutModal');
+            
+            carrinho = [];
+            updateCartCount();
+            renderCart();
+            showInitialMessage();
+        }
+
+        function showEmpresaModal() {
+            document.getElementById('empresaModal').style.display = 'block';
+        }
+
+        function selectCompanyOffer() {
+            closeModal('empresaModal');
+            openProductModal('Caranguejo (Oferta Empresa)');
+        }
+
+        function selectNormalPurchase() {
+            closeModal('empresaModal');
+            showProduct('caranguejo');
         }
 
         // Função para rolar até a seção com um efeito suave
@@ -2101,3 +2007,6 @@
 </body>
 
 </html>
+
+
+
