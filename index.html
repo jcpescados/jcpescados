@@ -927,7 +927,7 @@
         </div>
     </div>
 
-    <!-- NOVO MODAL DE PERGUNTA DE CONCLUSÃO DE PAGAMENTO -->
+    <!-- MODAL DE PERGUNTA - SÓ APARECE SE O CLIENTE VOLTAR -->
     <div id="payment-check-modal" class="modal" style="z-index: 1100;">
         <div class="modal-content" style="text-align: center; max-width: 460px;">
             <h3 style="font-size: 20px;">Você já concluiu seu pagamento? 🤔</h3>
@@ -1096,7 +1096,6 @@
         }
 
         function renderStoreProducts(filter = 'destaque') {
-            currentFilter = filter;
             const grid = document.getElementById("store-products-grid");
             grid.innerHTML = "";
             
@@ -1479,7 +1478,7 @@
         }
 
         /* ========================================================================= */
-        /* CORREÇÃO DO FLUXO: CAPTURA DO BOTÃO VOLTAR DO MERCADO PAGO OU NAVEGADOR */
+        /* FLUXO CORRIGIDO: REDIRECIONA PRIMEIRO -> PERGUNTA DO MODAL SÓ NO POPSTATE */
         /* ========================================================================= */
         function processOrderCheckout() {
             const name = document.getElementById("customer-name").value;
@@ -1493,20 +1492,6 @@
                 sendOrderToWhatsApp("A combinar / Dinheiro na Retirada");
                 return;
             }
-
-            // Injeta um estado artificial no histórico do navegador
-            history.pushState({ checkoutAtivo: true }, "Pagamento", window.location.href);
-
-            // Escuta imediatamente o gatilho de retorno do cliente (Botão Voltar)
-            window.onpopstate = function (event) {
-                // Força o fechamento das telas do checkout e abre o painel de verificação
-                closeModal('pix-payment-modal');
-                closeModal('cart-modal');
-                document.getElementById("payment-check-modal").style.display = "flex";
-                
-                // Desliga o evento temporariamente para que o cliente use o "voltar" normalmente depois
-                window.onpopstate = null;
-            };
 
             const payButton = document.getElementById("mp-pay-button");
             payButton.disabled = true;
@@ -1548,10 +1533,20 @@
                 .then(response => response.json())
                 .then(data => {
                     if(data.init_point) {
-                        // Abre o ambiente seguro do Mercado Pago
+                        // Fecha os modais atuais da tela antes de sair para o fluxo parecer limpo
+                        closeModal('cart-modal');
+
+                        // 1. Injeta o estado falso no histórico para capturar o "Voltar" futuro
+                        history.pushState({ checkoutAtivo: true }, "Pagamento", window.location.href);
+
+                        // 2. Cria a escuta que SÓ vai disparar quando o usuário retornar ao site
+                        window.onpopstate = function (event) {
+                            document.getElementById("payment-check-modal").style.display = "flex";
+                            window.onpopstate = null; // Desliga para não prender o botão voltar nativo
+                        };
+
+                        // 3. Redireciona o usuário para o Mercado Pago imediatamente
                         window.open(data.init_point, "_blank");
-                        // Caso ele não feche a aba mas clique na principal, o modal já fica engatilhado por baixo
-                        document.getElementById("payment-check-modal").style.display = "flex";
                     } else {
                         throw new Error("Erro ao estruturar preferência de Pix.");
                     }
@@ -1583,8 +1578,20 @@
                 .then(response => response.json())
                 .then(data => {
                     if(data.init_point) {
+                        // Fecha os modais atuais da tela antes de sair
+                        closeModal('cart-modal');
+
+                        // 1. Injeta o estado falso no histórico para capturar o "Voltar" futuro
+                        history.pushState({ checkoutAtivo: true }, "Pagamento", window.location.href);
+
+                        // 2. Cria a escuta que SÓ vai disparar quando o usuário retornar ao site
+                        window.onpopstate = function (event) {
+                            document.getElementById("payment-check-modal").style.display = "flex";
+                            window.onpopstate = null;
+                        };
+
+                        // 3. Redireciona para o checkout do cartão imediatamente
                         window.open(data.init_point, "_blank");
-                        document.getElementById("payment-check-modal").style.display = "flex";
                     } else {
                         throw new Error("Erro na API.");
                     }
@@ -1600,20 +1607,17 @@
             }
         }
 
-        // FUNÇÃO QUE CAPTURA A RESPOSTA DO NOVO MODAL E ENVIA DETALHADO PRO WHATSAPP
+        // CONTROLADOR DE RESPOSTAS DO MODAL NA VOLTA DO CLIENTE
         function handleCheckPaymentResponse(responseType) {
-            // Limpa o interceptador nativo caso o usuário tome uma ação manual nos botões do modal
-            window.onpopstate = null;
+            window.onpopstate = null; // Garante a liberação do histórico
             closeModal('payment-check-modal');
             
             if (responseType === 'sim') {
-                closeModal('cart-modal');
                 sendOrderToWhatsApp(`CONCLUÍDO VIA ${selectedPaymentMethod.toUpperCase()} (COMPROVANTE EM ANEXO)`);
             } else if (responseType === 'whats') {
-                closeModal('cart-modal');
                 sendOrderToWhatsApp(`DESEJA PAGAR VIA WHATSAPP COM COLABORADOR`);
             } else if (responseType === 'cancelar') {
-                // Se ele apenas cancelou a checagem, devolve ele para o modal do carrinho
+                // Abre o carrinho de volta se ele clicar em cancelar a checagem
                 document.getElementById("cart-modal").style.display = "flex";
             }
         }
