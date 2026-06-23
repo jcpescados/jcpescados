@@ -895,6 +895,7 @@
         </div>
     </div>
 
+    <!-- RODAPÉ -->
     <footer>
         <div class="footer-container">
             <p>&copy; 2026 JC Pescados. Todos os direitos reservados.</p>
@@ -950,12 +951,31 @@
 
         document.addEventListener("DOMContentLoaded", () => {
             registerStoreVisit();
+            
+            // Recupera carrinho temporário ou dados do cliente caso a página recarregue pós-pagamento
+            if (localStorage.getItem("jc_cart_backup")) {
+                cart = JSON.parse(localStorage.getItem("jc_cart_backup"));
+                updateCartBadge();
+            }
+            if (localStorage.getItem("jc_customer_name")) {
+                setTimeout(() => {
+                    const elName = document.getElementById("customer-name");
+                    if(elName) elName.value = localStorage.getItem("jc_customer_name");
+                }, 500);
+            }
+            if (localStorage.getItem("jc_payment_method")) {
+                selectedPaymentMethod = localStorage.getItem("jc_payment_method");
+            }
+
             productsRef.on("value", (snapshot) => {
                 products = [];
                 const data = snapshot.val();
                 if (data) {
                     Object.keys(data).forEach(key => { products.push({ id: key, ...data[key] }); });
-                    if (localStorage.getItem("jc_payment_waiting") === "true") { isWaitingPaymentConfirm = true; openCartModal(); }
+                    if (localStorage.getItem("jc_payment_waiting") === "true") { 
+                        isWaitingPaymentConfirm = true; 
+                        openCartModal(); 
+                    }
                     renderStoreProducts(currentFilter);
                     populateAdminDropdowns();
                 }
@@ -1030,7 +1050,14 @@
         function setModalQuantity(v) { document.getElementById("modal-quantity").value = v; }
         function confirmAddToCart() {
             const qty = parseFloat(document.getElementById("modal-quantity").value); const prod = products.find(p => p.id == activeProductId);
-            if(prod && qty > 0) { const ex = cart.find(i => i.product.id === prod.id); if(ex) ex.quantity += qty; else cart.push({ product: prod, quantity: qty }); updateCartBadge(); closeModal('purchase-modal'); document.getElementById("next-step-modal").style.display = "flex"; }
+            if(prod && qty > 0) { 
+                const ex = cart.find(i => i.product.id === prod.id); 
+                if(ex) ex.quantity += qty; else cart.push({ product: prod, quantity: qty }); 
+                localStorage.setItem("jc_cart_backup", JSON.stringify(cart));
+                updateCartBadge(); 
+                closeModal('purchase-modal'); 
+                document.getElementById("next-step-modal").style.display = "flex"; 
+            }
         }
         function goToCartFromModal() { closeModal('next-step-modal'); openCartModal(); }
         function updateCartBadge() { document.getElementById("global-cart-count").innerText = cart.reduce((t, i) => t + i.quantity, 0).toFixed(0); }
@@ -1045,6 +1072,7 @@
                 });
             }
             handleDeliveryMethodChange();
+            selectPaymentCard(selectedPaymentMethod);
             updateCartTotalWithFees();
             if (isWaitingPaymentConfirm) changeModalToPostPaymentState(); else resetModalToInitialState();
             document.getElementById("cart-modal").style.display = "flex";
@@ -1064,14 +1092,14 @@
                 const instElement = document.getElementById("cc-installments");
                 if (instElement && instElement.value) {
                     const parcelas = parseInt(instElement.value);
-                    let taxaPorcentagem = 0.0498; // 4,98% À vista de base
+                    let taxaPorcentagem = 0.0498; 
 
                     if (parcelas === 1) {
-                        taxaPorcentagem = 0.0498; // À vista (apenas os 4,98%)
+                        taxaPorcentagem = 0.0498; 
                     } else if (parcelas >= 2 && parcelas <= 6) {
-                        taxaPorcentagem = 0.0498 + 0.0299; // Base + 2,99%
+                        taxaPorcentagem = 0.0498 + 0.0299; 
                     } else if (parcelas >= 7 && parcelas <= 12) {
-                        taxaPorcentagem = 0.0498 + 0.0309; // Base + 3,09%
+                        taxaPorcentagem = 0.0498 + 0.0309; 
                     }
 
                     currentTaxValue = subtotalProducts * taxaPorcentagem;
@@ -1104,14 +1132,21 @@
                 option.text = `${i}x de R$ ${valorPac.toFixed(2)} ${(i===1) ? '(À vista)' : ''}`;
                 select.appendChild(option);
             }
+            
+            // Recupera a parcela se já houver salva
+            if(localStorage.getItem("jc_cc_installments")) {
+                select.value = localStorage.getItem("jc_cc_installments");
+            }
         }
 
         function selectPaymentCard(v) {
             selectedPaymentMethod = v;
+            localStorage.setItem("jc_payment_method", v);
             document.querySelectorAll(".payment-card").forEach(c => c.classList.remove("selected"));
-            document.querySelector(`.payment-card[data-value="${v}"]`).classList.add("selected");
             
-            // Exibe ou oculta seletor de parcelas do crédito
+            const targetCard = document.querySelector(`.payment-card[data-value="${v}"]`);
+            if(targetCard) targetCard.classList.add("selected");
+            
             document.getElementById("cc-installments-wrapper").style.display = (v === 'cartao') ? "block" : "none";
             
             if (v === 'cartao') generateInstallmentsOptions();
@@ -1125,16 +1160,56 @@
             updateCartTotalWithFees();
         }
 
-        function removeCartItem(idx) { cart.splice(idx, 1); updateCartBadge(); openCartModal(); }
+        function removeCartItem(idx) { 
+            cart.splice(idx, 1); 
+            localStorage.setItem("jc_cart_backup", JSON.stringify(cart));
+            updateCartBadge(); 
+            openCartModal(); 
+        }
+        
         function handleDeliveryMethodChange() { const m = document.getElementById("delivery-method").value; document.getElementById("card-especie").style.display = m === "Retirada no Local" ? "flex" : "none"; if(m !== "Retirada no Local" && selectedPaymentMethod === "especie") selectPaymentCard("pix"); }
-        function changeModalToPostPaymentState() { document.getElementById("cart-inputs-wrapper").style.display = "none"; document.getElementById("post-pay-alert").style.display = "block"; const b = document.getElementById("mp-pay-button"); b.disabled = false; b.style.background = "var(--success)"; b.innerText = "✅ Já paguei! Enviar para o WhatsApp"; b.onclick = sendFinalWhatsAppNotification; }
-        function resetModalToInitialState() { document.getElementById("cart-inputs-wrapper").style.display = "block"; document.getElementById("post-pay-alert").style.display = "none"; localStorage.removeItem("jc_payment_waiting"); const b = document.getElementById("mp-pay-button"); b.onclick = processOrderCheckout; selectPaymentCard(selectedPaymentMethod); }
+        
+        function changeModalToPostPaymentState() { 
+            document.getElementById("cart-inputs-wrapper").style.display = "none"; 
+            document.getElementById("post-pay-alert").style.display = "block"; 
+            const b = document.getElementById("mp-pay-button"); 
+            b.disabled = false; 
+            b.style.background = "var(--success)"; 
+            b.innerText = "✅ Já paguei! Enviar para o WhatsApp"; 
+            b.onclick = sendFinalWhatsAppNotification; 
+        }
+        
+        function resetModalToInitialState() { 
+            document.getElementById("cart-inputs-wrapper").style.display = "block"; 
+            document.getElementById("post-pay-alert").style.display = "none"; 
+            localStorage.removeItem("jc_payment_waiting"); 
+            localStorage.removeItem("jc_customer_name");
+            localStorage.removeItem("jc_cc_installments");
+            const b = document.getElementById("mp-pay-button"); 
+            b.onclick = processOrderCheckout; 
+            selectPaymentCard(selectedPaymentMethod); 
+        }
         
         function processOrderCheckout() {
-            const name = document.getElementById("customer-name").value; if(!name) { alert("Digite seu nome!"); return; } if(cart.length === 0) return;
-            if(selectedPaymentMethod === "especie") { sendOrderToWhatsApp("A combinar na Entrega", true); closeModal('cart-modal'); return; }
+            const name = document.getElementById("customer-name").value; 
+            if(!name) { alert("Digite seu nome!"); return; } 
+            if(cart.length === 0) return;
             
-            const b = document.getElementById("mp-pay-button"); b.disabled = true; b.innerText = "⏳ Conectando ao Mercado Pago...";
+            // Guarda metadados no localStorage para persistência após abertura de abas externas
+            localStorage.setItem("jc_customer_name", name);
+            if(selectedPaymentMethod === 'cartao') {
+                localStorage.setItem("jc_cc_installments", document.getElementById("cc-installments").value);
+            }
+            
+            if(selectedPaymentMethod === "especie") { 
+                sendOrderToWhatsApp("A combinar na Entrega", true); 
+                closeModal('cart-modal'); 
+                return; 
+            }
+            
+            const b = document.getElementById("mp-pay-button"); 
+            b.disabled = true; 
+            b.innerText = "⏳ Conectando ao Mercado Pago...";
             
             fetch("https://api.mercadopago.com/checkout/preferences", {
                 method: "POST",
@@ -1145,31 +1220,77 @@
                     back_urls: { success: window.location.href, pending: window.location.href, failure: window.location.href },
                     auto_return: "approved"
                 })
-            }).then(r => r.json()).then(d => { if(d.init_point) { localStorage.setItem("jc_payment_waiting", "true"); window.open(d.init_point, '_blank'); changeModalToPostPaymentState(); } }).catch(() => { alert("Erro ao gerar pagamento."); b.disabled = false; resetModalToInitialState(); });
+            }).then(r => r.json()).then(d => { 
+                if(d.init_point) { 
+                    localStorage.setItem("jc_payment_waiting", "true"); 
+                    window.open(d.init_point, '_blank'); 
+                    changeModalToPostPaymentState(); 
+                } 
+            }).catch(() => { 
+                alert("Erro ao gerar pagamento."); 
+                b.disabled = false; 
+                resetModalToInitialState(); 
+            });
         }
 
-        function sendFinalWhatsAppNotification() { sendOrderToWhatsApp(`PAGO VIA ${selectedPaymentMethod.toUpperCase()}`, true); resetModalToInitialState(); closeModal('cart-modal'); }
+        function sendFinalWhatsAppNotification() { 
+            sendOrderToWhatsApp(`PAGO VIA ${selectedPaymentMethod.toUpperCase()}`, true); 
+            resetModalToInitialState(); 
+            closeModal('cart-modal'); 
+        }
         
         function sendOrderToWhatsApp(status = "Pendente", clear = true) {
-            countWhatsAppClick(); const name = document.getElementById("customer-name").value; const method = document.getElementById("delivery-method").value;
-            let nParcelas = selectedPaymentMethod === 'cartao' ? document.getElementById("cc-installments").value : "1";
+            countWhatsAppClick();[cite: 1]
             
-            let t = `*NOVO PEDIDO - JC PESCADOS*\n\n`;
-            t += `*Cliente:* ${name}\n`;
-            t += `*Envio:* ${method}\n`;
-            t += `*Forma de Pagamento:* ${selectedPaymentMethod.toUpperCase()}\n`;
-            if(selectedPaymentMethod === 'cartao') t += `*Plano Selecionado:* ${nParcelas}x no Crédito\n`;
-            t += `*Status do Pagamento:* ${status}\n\n`;
+            const name = localStorage.getItem("jc_customer_name") || document.getElementById("customer-name").value;[cite: 1]
+            const method = document.getElementById("delivery-method").value;[cite: 1]
+            let nParcelas = selectedPaymentMethod === 'cartao' ? (localStorage.getItem("jc_cc_installments") || document.getElementById("cc-installments").value) : "1";[cite: 1]
             
-            t += `*PRODUTOS:*\n`;
-            cart.forEach(i => { const sub = i.product.price * i.quantity; t += `- ${i.quantity} x ${i.product.name} = R$ ${sub.toFixed(2)}\n`; });
+            // Gerar data e hora atuais dinamicamente
+            const agora = new Date();
+            const dataFormatada = agora.toLocaleDateString('pt-BR');
+            const horaFormatada = agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+
+            let t = `*🟢 NOVO PEDIDO - JC PESCADOS*\n`;[cite: 1]
+            t += `------------------------------------------\n\n`;
             
-            t += `\nSubtotal Produtos: R$ ${subtotalProducts.toFixed(2)}`;
-            t += `\nTaxas Administrativas: R$ ${currentTaxValue.toFixed(2)}`;
-            t += `\n*TOTAL FINAL DO PEDIDO: R$ ${globalTotalValue.toFixed(2)}*`;
+            t += `👤 *DADOS DO CLIENTE*\n`;
+            t += `*Nome:* ${name}\n`;[cite: 1]
+            t += `*Data:* ${dataFormatada}\n`;
+            t += `*Horário:* ${horaFormatada}h\n\n`;
             
-            if(clear) { cart = []; updateCartBadge(); }
-            window.open(`https://wa.me/5586994494783?text=${encodeURIComponent(t)}`, '_blank');
+            t += `🚚 *LOGÍSTICA E ENTREGA*\n`;
+            t += `*Forma de Envio:* ${method}\n\n`;[cite: 1]
+            
+            t += `💳 *PAGAMENTO*\n`;
+            t += `*Meio de Pagamento:* ${selectedPaymentMethod.toUpperCase()}\n`;[cite: 1]
+            if(selectedPaymentMethod === 'cartao') {
+                t += `*Parcelamento:* ${nParcelas}\n`;[cite: 1]
+            }
+            t += `*Status do Pagamento:* ${status}\n\n`;[cite: 1]
+            
+            t += `------------------------------------------\n`;
+            t += `📦 *DETALHES DO PRODUTO*\n`;
+            
+            cart.forEach(i => {[cite: 1]
+                const sub = i.product.price * i.quantity;[cite: 1]
+                t += `• ${i.quantity}x _${i.product.name}_\n`;[cite: 1]
+                t += `  Ref: R$ ${i.product.price.toFixed(2)} | *Subtotal:* R$ ${sub.toFixed(2)}\n\n`;[cite: 1]
+            });
+            
+            t += `------------------------------------------\n`;
+            t += `💰 *RESUMO DE VALORES*\n`;
+            t += `*Subtotal Produtos:* R$ ${subtotalProducts.toFixed(2)}\n`;[cite: 1]
+            t += `*Taxas Administ.:* R$ ${currentTaxValue.toFixed(2)}\n`;[cite: 1]
+            t += `*TOTAL GERAL: R$ ${globalTotalValue.toFixed(2)}*\n\n`;[cite: 1]
+            t += `------------------------------------------`;
+            
+            if(clear) { 
+                cart = [];[cite: 1]
+                localStorage.removeItem("jc_cart_backup");[cite: 1]
+                updateCartBadge();[cite: 1]
+            }
+            window.open(`https://wa.me/5586994494783?text=${encodeURIComponent(t)}`, '_blank');[cite: 1]
         }
 
         /* FUNÇÕES ADMIN ADICIONAIS */
