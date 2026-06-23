@@ -949,7 +949,6 @@
         document.addEventListener("DOMContentLoaded", () => {
             registerStoreVisit();
             
-            // Recupera carrinho temporário ou dados do cliente caso a página recarregue pós-pagamento
             if (localStorage.getItem("jc_cart_backup")) {
                 cart = JSON.parse(localStorage.getItem("jc_cart_backup"));
                 updateCartBadge();
@@ -997,6 +996,22 @@
             const grid = document.getElementById("store-products-grid");
             grid.innerHTML = "";
             let filtered = filter === 'destaque' ? products.filter(p => p.featuredOrder && p.featuredOrder !== "normal").sort((a, b) => parseInt(a.featuredOrder) - parseInt(b.featuredOrder)) : products.filter(p => p.category === filter);
+
+            // NOVA LÓGICA: Coloca os produtos esgotados no final da fila, mantendo os disponíveis na frente
+            filtered.sort((a, b) => {
+                const aEsgotado = a.stock === 'esgotado' ? 1 : 0;
+                const bEsgotado = b.stock === 'esgotado' ? 1 : 0;
+                
+                if (aEsgotado !== bEsgotado) {
+                    return aEsgotado - bEsgotado; // Disponível (0) vem antes de Esgotado (1)
+                }
+                
+                // Se ambos tiverem o mesmo status de estoque e for a aba destaque, mantém a ordem numérica escolhida
+                if (filter === 'destaque') {
+                    return parseInt(a.featuredOrder) - parseInt(b.featuredOrder);
+                }
+                return 0;
+            });
 
             filtered.forEach(p => {
                 const isEsgotado = p.stock === 'esgotado';
@@ -1075,15 +1090,12 @@
             document.getElementById("cart-modal").style.display = "flex";
         }
 
-        /* ==================================== */
-        /* CÁLCULO E GESTÃO DAS TAXAS DE CARTÃO */
-        /* ==================================== */
         function updateCartTotalWithFees() {
             currentTaxValue = 0;
             let installmentText = "";
 
             if (selectedPaymentMethod === 'debito') {
-                currentTaxValue = subtotalProducts * 0.0199; // 1,99% Débito
+                currentTaxValue = subtotalProducts * 0.0199; 
             } 
             else if (selectedPaymentMethod === 'cartao') {
                 const instElement = document.getElementById("cc-installments");
@@ -1130,7 +1142,6 @@
                 select.appendChild(option);
             }
             
-            // Recupera a parcela se já houver salva
             if(localStorage.getItem("jc_cc_installments")) {
                 select.value = localStorage.getItem("jc_cc_installments");
             }
@@ -1192,7 +1203,6 @@
             if(!name) { alert("Digite seu nome!"); return; } 
             if(cart.length === 0) return;
             
-            // Guarda metadados no localStorage para persistência após abertura de abas externas
             localStorage.setItem("jc_customer_name", name);
             if(selectedPaymentMethod === 'cartao') {
                 localStorage.setItem("jc_cc_installments", document.getElementById("cc-installments").value);
@@ -1243,7 +1253,6 @@
             const method = document.getElementById("delivery-method").value;
             let nParcelas = selectedPaymentMethod === 'cartao' ? (localStorage.getItem("jc_cc_installments") || document.getElementById("cc-installments").value) : "1";
             
-            // Gerar data e hora atuais dinamicamente
             const agora = new Date();
             const dataFormatada = agora.toLocaleDateString('pt-BR');
             const horaFormatada = agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
