@@ -101,7 +101,7 @@
             max-width: 1200px;
             margin: 0 auto;
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 20px;
         }
 
@@ -686,6 +686,33 @@
             font-size: 14px;
             margin-top: auto;
         }
+        
+        /* ESTILO PARA AS NOVAS METRICAS DO PAINEL ADM */
+        .metrics-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+            border-top: 1px solid #cbd5e1;
+            padding-top: 15px;
+        }
+        .metric-box {
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .metric-box span {
+            display: block;
+            font-size: 11px;
+            color: #64748b;
+            font-weight: 600;
+        }
+        .metric-box strong {
+            font-size: 16px;
+            color: var(--primary-dark);
+        }
     </style>
 </head>
 <body>
@@ -750,6 +777,19 @@
                 </select>
                 <input type="text" id="new-img" placeholder="Link da Imagem">
                 <button class="dash-btn" style="background: var(--success);" onclick="addNewProduct()">Criar Produto</button>
+            </div>
+            
+            <!-- EXCLUSIVO: ABA DE MONITORAMENTO DE CLIENTES E VISITAS INTEGRADO NO SEU DASHBOARD -->
+            <div class="dash-card" style="grid-column: span 1;">
+                <h3>📊 Visitas & Métricas</h3>
+                <div class="metrics-bar" style="grid-template-columns: 1fr 1fr; margin-top:0; padding-top:0; border:none;">
+                    <div class="metric-box"><span>Visitas Gerais</span><strong id="dash-stat-visitas">0</strong></div>
+                    <div class="metric-box"><span>No Whats</span><strong id="dash-stat-whats">0</strong></div>
+                </div>
+                <h4 style="font-size: 13px; margin: 10px 0 5px 0; color: var(--primary-dark);">Rascunhos Recentes/Abandonados:</h4>
+                <div id="admin-saved-carts-list" style="max-height: 140px; overflow-y: auto; font-size: 11px; background:#fff; padding:5px; border-radius:6px; border:1px solid #cbd5e1;">
+                    Nenhum rascunho em cache.
+                </div>
             </div>
         </div>
     </div>
@@ -827,19 +867,19 @@
                 <span id="cart-total-value">R$ 0,00</span>
             </div>
             
-            <input type="text" id="customer-name" placeholder="Digite seu Nome para entrega">
+            <input type="text" id="customer-name" placeholder="Digite seu Nome para entrega" oninput="saveCartDraftToStorage()">
             
             <label style="font-size: 13px; font-weight: 700; color: var(--primary-dark); display: block; margin-bottom: 6px;">Método de Envio:</label>
-            <select id="delivery-method" onchange="handleDeliveryMethodChange()">
+            <select id="delivery-method" onchange="handleDeliveryMethodChange(); saveCartDraftToStorage();">
                 <option value="Entrega a Domicílio">Entrega a Domicílio</option>
                 <option value="Retirada no Local">Retirada no Local</option>
             </select>
 
             <label style="font-size: 13px; font-weight: 700; color: var(--primary-dark); display: block; margin-bottom: 8px;">Selecione a Forma de Pagamento:</label>
             
-            <!-- COLOQUEI CARDS VISUAIS LINDOS E RESPONSIVOS PARA AS FORMAS DE PAGAMENTO -->
+            <!-- CARDS VISUAIS PARA AS FORMAS DE PAGAMENTO -->
             <div class="payment-methods-grid">
-                <div class="payment-card selected" data-value="pix" onclick="selectPaymentCard('pix')">
+                <div class="payment-card selected" data-value="pix" onclick="selectPaymentCard('pix'); saveCartDraftToStorage();">
                     <div class="icon-circle">⚡</div>
                     <div class="details">
                         <span class="title">Pix Automático</span>
@@ -848,7 +888,7 @@
                     <div class="radio-dot"></div>
                 </div>
 
-                <div class="payment-card" data-value="cartao" onclick="selectPaymentCard('cartao')">
+                <div class="payment-card" data-value="cartao" onclick="selectPaymentCard('cartao'); saveCartDraftToStorage();">
                     <div class="icon-circle">💳</div>
                     <div class="details">
                         <span class="title">Cartão de Crédito</span>
@@ -857,7 +897,7 @@
                     <div class="radio-dot"></div>
                 </div>
 
-                <div class="payment-card" id="card-especie" data-value="especie" style="display:none;" onclick="selectPaymentCard('especie')">
+                <div class="payment-card" id="card-especie" data-value="especie" style="display:none;" onclick="selectPaymentCard('especie'); saveCartDraftToStorage();">
                     <div class="icon-circle">💵</div>
                     <div class="details">
                         <span class="title">Espécie (Dinheiro)</span>
@@ -908,6 +948,7 @@
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
         const productsRef = database.ref("produtos");
+        const statsRef = database.ref("metricas_loja"); // Nova referência para visitas e logs do painel
 
         const MP_PUBLIC_KEY = "APP_USR-e68e3b26-1267-45c0-903e-b4493dfa9e09";
         const MP_ACCESS_TOKEN = "APP_USR-1319596414441796-062312-76de006650bb82824f0b4c22c8f79d40-3169714868";
@@ -919,9 +960,12 @@
         let activeProductId = null;
         let currentFilter = 'destaque';
         let globalTotalValue = 0;
-        let selectedPaymentMethod = 'pix'; // Armazena a forma ativa dos cards novos
+        let selectedPaymentMethod = 'pix';
 
         document.addEventListener("DOMContentLoaded", () => {
+            // Registrar visita assim que abrir a página
+            registerStoreVisit();
+
             productsRef.on("value", (snapshot) => {
                 products = [];
                 const data = snapshot.val();
@@ -931,11 +975,101 @@
                     Object.keys(data).forEach(key => {
                         products.push({ id: key, ...data[key] });
                     });
+                    
+                    // CRUCIAL: Se o cliente voltou do Pix/Cartão, reidrata o carrinho atualizando os preços com base no Firebase
+                    loadCartDraftFromStorage();
+
                     renderStoreProducts(currentFilter);
                     populateAdminDropdowns();
                 }
             });
+
+            // Ouvinte para atualizar métricas em tempo real no painel do administrador
+            statsRef.on("value", (snapshot) => {
+                const data = snapshot.val() || { visitas: 0, cliquesWhats: 0, rascunhos: {} };
+                document.getElementById("dash-stat-visitas").innerText = data.visitas || 0;
+                document.getElementById("dash-stat-whats").innerText = data.cliquesWhats || 0;
+                
+                const listContainer = document.getElementById("admin-saved-carts-list");
+                if (data.rascunhos) {
+                    listContainer.innerHTML = "";
+                    Object.keys(data.rascunhos).forEach(k => {
+                        const r = data.rascunhos[k];
+                        listContainer.innerHTML += `<div style="border-bottom:1px solid #f1f5f9; padding:3px 0;"><strong>${r.nome || 'Anônimo'}:</strong> R$ ${r.total} (${r.pagamento})</div>`;
+                    });
+                }
+            });
         });
+
+        // FUNÇÃO DE PERSISTÊNCIA LOCAL: Salva o estado do carrinho, nome e métodos no celular
+        function saveCartDraftToStorage() {
+            if (cart.length === 0) {
+                localStorage.removeItem("jc_cart_draft");
+                return;
+            }
+            const draft = {
+                items: cart.map(i => ({ id: i.product.id, quantity: i.quantity })),
+                customerName: document.getElementById("customer-name").value,
+                deliveryMethod: document.getElementById("delivery-method").value,
+                paymentMethod: selectedPaymentMethod
+            };
+            localStorage.setItem("jc_cart_draft", JSON.stringify(draft));
+
+            // Salva também uma cópia limpa no Firebase para monitoramento na aba de controle do Admin
+            if (draft.customerName.trim().length > 2) {
+                statsRef.child("rascunhos").child(draft.customerName.replace(/[.#$[\]]/g, "")).set({
+                    nome: draft.customerName,
+                    total: globalTotalValue.toFixed(2),
+                    pagamento: selectedPaymentMethod.toUpperCase(),
+                    timestamp: Date.now()
+                });
+            }
+        }
+
+        // FUNÇÃO DE RECUPERAÇÃO AUTOMÁTICA: Lê o cache e atualiza tudo cruzando dados com o banco
+        function loadCartDraftFromStorage() {
+            const raw = localStorage.getItem("jc_cart_draft");
+            if (!raw) return;
+            try {
+                const draft = JSON.parse(raw);
+                if (draft && draft.items) {
+                    const freshCart = [];
+                    draft.items.forEach(cachedItem => {
+                        // Busca o produto correspondente direto da lista atualizada do Firebase
+                        const realProduct = products.find(p => p.id === cachedItem.id);
+                        // Só recoloca se o produto ainda existir e não estiver marcado como esgotado no painel
+                        if (realProduct && realProduct.stock !== "esgotado") {
+                            freshCart.push({
+                                product: realProduct, // Preço, foto e meta atualizados agora!
+                                quantity: cachedItem.quantity
+                            });
+                        }
+                    });
+                    cart = freshCart;
+                    updateCartBadge();
+
+                    // Preenche novamente os campos salvos para poupar digitação do cliente
+                    if(draft.customerName) document.getElementById("customer-name").value = draft.customerName;
+                    if(draft.deliveryMethod) {
+                        document.getElementById("delivery-method").value = draft.deliveryMethod;
+                        handleDeliveryMethodChange();
+                    }
+                    if(draft.paymentMethod) {
+                        selectPaymentCard(draft.paymentMethod);
+                    }
+                }
+            } catch (e) {
+                console.error("Erro ao recuperar rascunho do carrinho:", e);
+            }
+        }
+
+        function registerStoreVisit() {
+            statsRef.child("visitas").transaction((current) => (current || 0) + 1);
+        }
+
+        function countWhatsAppClick() {
+            statsRef.child("cliquesWhats").transaction((current) => (current || 0) + 1);
+        }
 
         function initializeDefaultProducts() {
             const defaultList = [
@@ -948,6 +1082,7 @@
         }
 
         function redirectToWhatsAppGeneral() {
+            countWhatsAppClick();
             const message = encodeURIComponent("Olá, gostaria de fazer um pedido.");
             const url = `https://wa.me/5586994494783?text=${message}`;
             window.open(url, '_blank');
@@ -993,7 +1128,7 @@
                 let actionButtonHtml = "";
                 if (p.category === "outros") {
                     actionButtonHtml = `
-                        <a href="${linkWhats}" target="_blank" class="whats-btn">
+                        <a href="${linkWhats}" target="_blank" class="whats-btn" onclick="countWhatsAppClick()">
                             <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24" style="display:inline-block; vertical-align:middle;">
                                 <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.713-1.457L0 24zm6.59-4.846c1.6.95 3.188 1.449 4.825 1.451 5.436 0 9.86-4.37 9.864-9.799.002-2.63-1.023-5.101-2.885-6.963C16.428 2.016 13.96 1.01 11.999 1.01c-5.441 0-9.866 4.372-9.87 9.802 0 1.698.459 3.355 1.328 4.866l-.993 3.626 3.722-.989zm12.315-4.48c-.33-.165-1.951-.963-2.251-1.074-.3-.11-.518-.165-.736.165-.218.33-.844 1.074-1.036 1.293-.192.218-.384.246-.714.081-1.047-.524-1.786-.968-2.512-2.213-.192-.33.192-.307.549-1.02.055-.112.028-.21-.014-.293-.042-.083-.385-.93-.528-1.274-.14-.336-.282-.291-.385-.296-.099-.005-.213-.006-.328-.006-.115 0-.303.043-.46.213-.158.17-.604.59-.604 1.44 0 .85.617 1.67.704 1.79.087.12 1.214 1.854 2.941 2.6 1.424.614 1.956.513 2.651.408.5-.075 1.626-.665 1.855-1.309.227-.644.227-1.197.16-1.309-.067-.112-.246-.178-.576-.343z"/>
                             </svg>
@@ -1241,7 +1376,10 @@
                 const existing = cart.find(item => item.product.id === prod.id);
                 if(existing) existing.quantity += qty;
                 else cart.push({ product: prod, quantity: qty });
+                
                 updateCartBadge();
+                saveCartDraftToStorage(); // Salva rascunho com o novo item adicionado
+                
                 document.getElementById("purchase-modal").style.display = "none";
                 document.getElementById("next-step-modal").style.display = "flex";
             }
@@ -1288,10 +1426,14 @@
             document.getElementById("cart-total-value").innerText = `R$ ${globalTotalValue.toFixed(2)}`;
             handleDeliveryMethodChange(); 
             document.getElementById("cart-modal").style.display = "flex";
+            saveCartDraftToStorage(); // Atualiza os totais salvos localmente
         }
 
         function removeCartItem(index) {
-            cart.splice(index, 1); updateCartBadge(); openCartModal();
+            cart.splice(index, 1); 
+            updateCartBadge(); 
+            openCartModal();
+            saveCartDraftToStorage();
         }
 
         /* GERENCIA A SELEÇÃO DOS NOVOS CARDS DE PAGAMENTO */
@@ -1336,6 +1478,9 @@
             if(!name) { alert("Por favor, digite seu nome primeiro!"); return; }
             if(cart.length === 0) { alert("Carrinho vazio!"); return; }
 
+            // Salva o último estado crítico antes de instanciar o gateway externo
+            saveCartDraftToStorage();
+
             if(selectedPaymentMethod === "especie") {
                 sendOrderToWhatsApp("A combinar / Dinheiro na Retirada");
                 return;
@@ -1351,7 +1496,7 @@
                 unit_price: isProductSoldByWeight(item.product) ? parseFloat(item.product.price * item.quantity) : parseFloat(item.product.price)
             }));
 
-            /* REDIRECIONAMENTO CORRETO: VOLTAR PARA A MESMA PÁGINA NA MESMA ABA DO CLIENTE */
+            /* REDIRECIONAMENTO EXECUTADO NA MESMA TELA DO DISPOSITIVO CELULAR */
             const preferenceData = {
                 items: itemsMapped,
                 payer: { name: name },
@@ -1417,7 +1562,7 @@
                 .then(data => {
                     if(data.init_point) {
                         payButton.innerText = "💳 Redirecionando...";
-                        /* ALTERADO PARA_SELF PARA EXECUTAR NA MESMA TELA SEM SUMIR */
+                        // Abre na mesma aba para evitar perda total do contexto operacional no celular
                         window.open(data.init_point, "_self");
                         
                         setTimeout(() => { 
@@ -1443,8 +1588,19 @@
             sendOrderToWhatsApp("CONCLUÍDO VIA PIX (COMPROVANTE EM ANEXO)");
         }
 
-        /* TEXTO DO PEDIDO OTIMIZADO PARA SOLICITAR O COMPROVANTE JUNTO NO WHATSAPP */
+        function clearCartAndCache() {
+            const name = document.getElementById("customer-name").value;
+            if(name) {
+                statsRef.child("rascunhos").child(name.replace(/[.#$[\]]/g, "")).remove();
+            }
+            cart = [];
+            localStorage.removeItem("jc_cart_draft");
+            updateCartBadge();
+            document.getElementById("customer-name").value = "";
+        }
+
         function sendOrderToWhatsApp(paymentStatus = "Pendente") {
+            countWhatsAppClick();
             const name = document.getElementById("customer-name").value;
             const method = document.getElementById("delivery-method").value;
 
@@ -1465,6 +1621,9 @@
             });
 
             text += `\n*TOTAL FINAL: R$ ${total.toFixed(2)}*`;
+
+            // Limpa o cache do carrinho local do cliente já que ele concluiu o envio para o WhatsApp
+            clearCartAndCache();
 
             const encoded = encodeURIComponent(text);
             const url = `https://wa.me/5586994494783?text=${encoded}`;
