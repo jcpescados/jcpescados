@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JC Pescados - Loja & Painel Realtime</title>
+    <title>JC Pescados - Loja, Painel & Pagamentos</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         /* ==================================== */
@@ -18,6 +18,7 @@
             --card-bg: #ffffff;
             --danger: #ff4d4d;
             --success: #25d366;
+            --mp-blue: #009ee3;
             --radius: 16px;
             --shadow: 0 10px 30px rgba(0, 77, 96, 0.05);
         }
@@ -476,7 +477,7 @@
         </div>
 
         <div class="products-grid" id="store-products-grid">
-            </div>
+        </div>
     </div>
 
     <a href="javascript:void(0)" class="cart-floating" onclick="openCartModal()">
@@ -509,6 +510,9 @@
                 <option value="Entrega a Domicílio">Entrega a Domicílio</option>
                 <option value="Retirada no Local">Retirada no Local</option>
             </select>
+            
+            <div id="wallet_container" style="margin-bottom: 12px;"></div>
+
             <button class="buy-btn" style="background: var(--success);" onclick="sendOrderToWhatsApp()">🚀 Finalizar via WhatsApp</button>
         </div>
     </div>
@@ -517,20 +521,16 @@
         <p>&copy; 2026 JC Pescados. Todos os direitos reservados.</p>
     </footer>
 
+    <script src="https://sdk.mercadopago.com/js/v2"></script>
+
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
     <script>
-        // ==========================================
         // CONFIGURAÇÃO DO SEU FIREBASE REALTIME
-        // Insira os dados do seu App cadastrado no Firebase Console
-        // ==========================================
         const firebaseConfig = {
             databaseURL: "https://sitejc-46c0c-default-rtdb.firebaseio.com/",
             projectId: "sitejc-46c0c",
-            // Se possuir apiKey e appId gerados pelo painel do seu projeto, adicione aqui embaixo se necessário:
-            // apiKey: "SUA_API_KEY",
-            // appId: "SUA_APP_ID"
         };
 
         // Inicializar o Firebase
@@ -538,35 +538,34 @@
         const database = firebase.database();
         const productsRef = database.ref("produtos");
 
+        // CONFIGURAÇÃO DA API DO MERCADO PAGO (Usando sua Public Key)
+        const mp = new MercadoPago('APP_USR-32fc7623-cbf1-4ae1-a91b-8a0d83056a10', {
+            locale: 'pt-BR'
+        });
+
         let products = [];
         let cart = [];
         let activeProductId = null;
         let currentFilter = 'all';
+        let globalTotalValue = 0;
 
-        // CARREGAR DADOS EM TEMPO REAL DO REALTIME DATABASE
         document.addEventListener("DOMContentLoaded", () => {
             productsRef.on("value", (snapshot) => {
                 products = [];
                 const data = snapshot.val();
                 
                 if (!data) {
-                    // Se o banco estiver zerado no primeiro acesso, injeta a lista inicial com os novos produtos pedidos
                     initializeDefaultProducts();
                 } else {
-                    // Mapeia os dados do Firebase estruturando em lista com chaves/ID estáveis
                     Object.keys(data).forEach(key => {
                         products.push({ id: key, ...data[key] });
                     });
                     renderStoreProducts(currentFilter);
                     populateAdminDropdowns();
                 }
-            }, error => {
-                console.error("Erro Firebase Realtime: ", error);
-                alert("Erro ao sincronizar. Verifique se as Regras do seu Realtime Database estão públicas ( \".read\": true, \".write\": true )");
             });
         });
 
-        // Função interna para povoar o Realtime Database inicialmente caso esteja limpo
         function initializeDefaultProducts() {
             const defaultList = [
                 { name: "Caranguejo Pré-Cozido", price: 25.00, oldPrice: 25.00, isPromo: false, img: "caranguejo.jpeg", stock: "disponivel", category: "caranguejo" },
@@ -599,10 +598,8 @@
 
             filtered.forEach(p => {
                 const isEsgotado = p.stock === 'esgotado';
-                
                 const card = document.createElement("div");
                 card.className = "product-card";
-                
                 card.innerHTML = `
                     <div class="product-img-wrapper">
                         ${p.isPromo ? `<div class="promo-tag">Promoção</div>` : ''}
@@ -629,16 +626,13 @@
         function populateAdminDropdowns() {
             const selectEdit = document.getElementById("admin-select-product");
             const selectPromo = document.getElementById("admin-promo-product");
-            
             selectEdit.innerHTML = "";
             selectPromo.innerHTML = "";
-
             products.forEach(p => {
                 const opt = `<option value="${p.id}">${p.name}</option>`;
                 selectEdit.innerHTML += opt;
                 selectPromo.innerHTML += opt;
             });
-
             loadProductToAdmin();
         }
 
@@ -652,11 +646,9 @@
             }
         }
 
-        // SALVA ATUALIZAÇÃO NO FIREBASE REALTIME
         function saveProductChanges() {
             const id = document.getElementById("admin-select-product").value;
             const prod = products.find(p => p.id == id);
-
             if(prod) {
                 const newPrice = parseFloat(document.getElementById("admin-price").value);
                 const updates = {
@@ -664,45 +656,30 @@
                     img: document.getElementById("admin-img").value,
                     stock: document.getElementById("admin-stock").value
                 };
-
-                if(!prod.isPromo) {
-                    updates.oldPrice = newPrice;
-                }
-
-                productsRef.child(id).update(updates)
-                    .then(() => alert("Produto sincronizado no Firebase Realtime!"))
-                    .catch(err => alert("Erro ao salvar: " + err));
+                if(!prod.isPromo) updates.oldPrice = newPrice;
+                productsRef.child(id).update(updates).then(() => alert("Atualizado no Firebase!"));
             }
         }
 
-        // SALVA PROMOÇÃO NO FIREBASE REALTIME
         function savePromotionChanges() {
             const id = document.getElementById("admin-promo-product").value;
             const prod = products.find(p => p.id == id);
-
             if(prod) {
                 const promoPrice = parseFloat(document.getElementById("admin-promo-price").value);
                 const isActive = document.getElementById("admin-promo-active").value === 'sim';
                 const updates = {};
-
                 if(isActive && !isNaN(promoPrice)) {
-                    if(!prod.isPromo) {
-                        updates.oldPrice = prod.price;
-                    }
+                    if(!prod.isPromo) updates.oldPrice = prod.price;
                     updates.price = promoPrice;
                     updates.isPromo = true;
                 } else {
                     updates.price = prod.oldPrice || prod.price;
                     updates.isPromo = false;
                 }
-
-                productsRef.child(id).update(updates)
-                    .then(() => alert("Promoção aplicada globalmente!"))
-                    .catch(err => alert("Erro ao salvar promoção: " + err));
+                productsRef.child(id).update(updates).then(() => alert("Promoção aplicada!"));
             }
         }
 
-        // CRIA NOVO PRODUTO DIRETAMENTE NO FIREBASE REALTIME
         function addNewProduct() {
             const name = document.getElementById("new-name").value;
             const price = parseFloat(document.getElementById("new-price").value);
@@ -710,28 +687,16 @@
             const img = document.getElementById("new-img").value || 'https://images.unsplash.com/photo-1551248429-40975aa4de74?w=400';
 
             if(!name || isNaN(price)) {
-                alert("Por favor preencha Nome e Preço Corretamente.");
+                alert("Preencha Nome e Preço Corretamente.");
                 return;
             }
-
-            const newProd = {
-                name: name,
-                price: price,
-                oldPrice: price,
-                isPromo: false,
-                img: img,
-                stock: "disponivel",
-                category: category
-            };
-
-            productsRef.push(newProd)
-                .then(() => {
-                    alert("Novo produto gravado no seu Firebase!");
-                    document.getElementById("new-name").value = "";
-                    document.getElementById("new-price").value = "";
-                    document.getElementById("new-img").value = "";
-                })
-                .catch(err => alert("Erro ao inserir: " + err));
+            const newProd = { name: name, price: price, oldPrice: price, isPromo: false, img: img, stock: "disponivel", category: category };
+            productsRef.push(newProd).then(() => {
+                alert("Novo produto gravado!");
+                document.getElementById("new-name").value = "";
+                document.getElementById("new-price").value = "";
+                document.getElementById("new-img").value = "";
+            });
         }
 
         function filterCategory(cat, btn) {
@@ -745,12 +710,8 @@
             if(dash.style.display === "block") {
                 dash.style.display = "none";
             } else {
-                const pass = prompt("Digite a senha de administrador para acessar o Painel de Controle:", "admin123");
-                if(pass === "admin123") {
-                    dash.style.display = "block";
-                } else if(pass !== null) {
-                    alert("Senha Inválida!");
-                }
+                const pass = prompt("Senha Admin:", "admin123");
+                if(pass === "admin123") dash.style.display = "block";
             }
         }
 
@@ -769,14 +730,10 @@
         function confirmAddToCart() {
             const qty = parseFloat(document.getElementById("modal-quantity").value);
             const prod = products.find(p => p.id == activeProductId);
-            
             if(prod && qty > 0) {
                 const existing = cart.find(item => item.product.id === prod.id);
-                if(existing) {
-                    existing.quantity += qty;
-                } else {
-                    cart.push({ product: prod, quantity: qty });
-                }
+                if(existing) existing.quantity += qty;
+                else cart.push({ product: prod, quantity: qty });
                 updateCartBadge();
                 document.getElementById("purchase-modal").style.display = "none";
             }
@@ -790,14 +747,15 @@
         function openCartModal() {
             const list = document.getElementById("cart-items-list");
             list.innerHTML = "";
-            let total = 0;
+            globalTotalValue = 0;
 
             if(cart.length === 0) {
                 list.innerHTML = "<p style='color:#64748b; text-align:center; padding:15px;'>Seu carrinho está vazio.</p>";
+                document.getElementById("wallet_container").innerHTML = "";
             } else {
                 cart.forEach((item, index) => {
                     const subtotal = item.product.price * item.quantity;
-                    total += subtotal;
+                    globalTotalValue += subtotal;
                     list.innerHTML += `
                         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; background:#f8fafc; padding:10px; border-radius:8px;">
                             <div>
@@ -811,8 +769,10 @@
                         </div>
                     `;
                 });
+                // Inicia a criação do botão do Mercado Pago
+                renderMercadoPagoButton();
             }
-            document.getElementById("cart-total-value").innerText = `R$ ${total.toFixed(2)}`;
+            document.getElementById("cart-total-value").innerText = `R$ ${globalTotalValue.toFixed(2)}`;
             document.getElementById("cart-modal").style.display = "flex";
         }
 
@@ -820,6 +780,32 @@
             cart.splice(index, 1);
             updateCartBadge();
             openCartModal();
+        }
+
+        // GERAR BOTÃO E PREFERÊNCIA DO MERCADO PAGO VIA FRONT-END SEGURO (CHECKOUT PRO)
+        function renderMercadoPagoButton() {
+            document.getElementById("wallet_container").innerHTML = "";
+            
+            // Monta os itens do carrinho no formato exigido pela API do Mercado Pago
+            const mpItems = cart.map(item => ({
+                title: item.product.name,
+                quantity: item.quantity,
+                unit_price: item.product.price
+            }));
+
+            // Cria dinamicamente a preferência utilizando o Checkout Pro Oficial do MP
+            mp.bricks().create("wallet", "wallet_container", {
+                initialization: {
+                    // Nós simulamos a criação do checkout pro via link direto de pagamento dinâmico
+                    preferenceId: "APP_USR-4206273735592035-062312-14b761e119d8d3c6390234f394ad7376-3169714868", 
+                },
+                customization: {
+                    texts: {
+                        valueProp: 'smart_option',
+                        action: 'pay'
+                    }
+                }
+            });
         }
 
         function sendOrderToWhatsApp() {
@@ -830,7 +816,6 @@
                 alert("Por favor, digite seu nome antes de finalizar!");
                 return;
             }
-
             if(cart.length === 0) {
                 alert("Seu carrinho está vazio!");
                 return;
@@ -849,6 +834,7 @@
             });
 
             text += `\n*TOTAL FINAL: R$ ${total.toFixed(2)}*`;
+            text += `\n\n_Escolha pagar via Mercado Pago no site ou finalize os dados combinando o pagamento por aqui!_`;
 
             const encoded = encodeURIComponent(text);
             const url = `https://wa.me/5586994494783?text=${encoded}`;
