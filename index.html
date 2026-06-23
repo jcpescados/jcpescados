@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JC Pescados - Loja & Painel</title>
+    <title>JC Pescados - Loja & Painel Firebase</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         /* ==================================== */
@@ -37,7 +37,6 @@
             min-height: 100vh;
         }
 
-        /* HEADER */
         header {
             background: linear-gradient(135deg, var(--primary-dark), var(--primary));
             color: white;
@@ -67,7 +66,6 @@
             margin-top: 5px;
         }
 
-        /* BOTAO ADMIN FIXO NO TOPO */
         .admin-toggle-btn {
             position: absolute;
             top: 20px;
@@ -88,7 +86,6 @@
             color: var(--primary-dark);
         }
 
-        /* DASHBOARD ADMINISTRATIVO INTERATIVO */
         #admin-dashboard {
             display: none;
             background: #fff;
@@ -152,7 +149,6 @@
             background: var(--primary-dark);
         }
 
-        /* CONTAINER DA LOJA */
         .main-store-container {
             max-width: 1200px;
             width: 100%;
@@ -161,7 +157,6 @@
             flex-grow: 1;
         }
 
-        /* FILTROS DE CATEGORIA PRÁTICOS */
         .category-filter {
             display: flex;
             justify-content: center;
@@ -188,7 +183,6 @@
             border-color: var(--primary);
         }
 
-        /* GRID DE PRODUTOS LIBERADOS */
         .products-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
@@ -215,7 +209,7 @@
         .product-img-wrapper {
             position: relative;
             width: 100%;
-            padding-top: 85%; /* Proporção da Imagem */
+            padding-top: 85%;
             background: #e2e8f0;
         }
 
@@ -311,7 +305,6 @@
             cursor: not-allowed;
         }
 
-        /* CARRINHO FLUTUANTE */
         .cart-floating {
             position: fixed;
             bottom: 30px;
@@ -353,7 +346,6 @@
             border: 2px solid #000;
         }
 
-        /* MODAIS MODERNOS */
         .modal {
             display: none;
             position: fixed;
@@ -387,6 +379,8 @@
             font-size: 24px;
             cursor: pointer;
             color: #64748b;
+            background: none;
+            border: none;
         }
 
         .modal h3 {
@@ -404,7 +398,6 @@
             font-size: 16px;
         }
 
-        /* ANIMACOES */
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
@@ -434,7 +427,7 @@
             <div class="dash-card">
                 <h3>🔄 Editar Produto</h3>
                 <select id="admin-select-product" onchange="loadProductToAdmin()">
-                    </select>
+                </select>
                 <input type="number" id="admin-price" placeholder="Novo Preço (R$)">
                 <input type="text" id="admin-img" placeholder="Link da Nova Foto (URL)">
                 <select id="admin-stock">
@@ -448,7 +441,7 @@
                 <h3>🔥 Ativar Promoção</h3>
                 <p style="font-size: 12px; color: #64748b; margin-bottom: 10px;">Define um preço promocional menor e risca o preço anterior automaticamente.</p>
                 <select id="admin-promo-product">
-                    </select>
+                </select>
                 <input type="number" id="admin-promo-price" placeholder="Preço Promocional (R$)">
                 <select id="admin-promo-active">
                     <option value="nao">Desativar Promoção</option>
@@ -464,6 +457,7 @@
                 <select id="new-category">
                     <option value="caranguejo">Caranguejo</option>
                     <option value="camarao">Camarão</option>
+                    <option value="peixes">Peixes</option>
                     <option value="outros">Outros Frutos</option>
                 </select>
                 <input type="text" id="new-img" placeholder="Link da Imagem">
@@ -477,6 +471,7 @@
             <button class="filter-btn active" onclick="filterCategory('all', this)">Todos os Produtos</button>
             <button class="filter-btn" onclick="filterCategory('caranguejo', this)">🦀 Caranguejos</button>
             <button class="filter-btn" onclick="filterCategory('camarao', this)">🦐 Camarões</button>
+            <button class="filter-btn" onclick="filterCategory('peixes', this)">🐟 Peixes</button>
             <button class="filter-btn" onclick="filterCategory('outros', this)">🌊 Outros Frutos</button>
         </div>
 
@@ -491,7 +486,7 @@
 
     <div id="purchase-modal" class="modal">
         <div class="modal-content">
-            <span class="close-btn" onclick="closeModal('purchase-modal')">&times;</span>
+            <button class="close-btn" onclick="closeModal('purchase-modal')">&times;</button>
             <h3 id="modal-product-title">Adicionar ao Carrinho</h3>
             <p style="margin-bottom: 15px; color:#64748b;">Escolha a quantidade desejada para o seu pedido.</p>
             <input type="number" id="modal-quantity" value="1" min="1" step="1">
@@ -501,10 +496,10 @@
 
     <div id="cart-modal" class="modal">
         <div class="modal-content" style="max-width: 500px;">
-            <span class="close-btn" onclick="closeModal('cart-modal')">&times;</span>
+            <button class="close-btn" onclick="closeModal('cart-modal')">&times;</button>
             <h3>🛒 Seu Carrinho</h3>
             <div id="cart-items-list" style="max-height: 250px; overflow-y: auto; margin-bottom: 20px;">
-                </div>
+            </div>
             <div style="display: flex; justify-content: space-between; font-weight: 800; font-size: 18px; margin-bottom: 20px; border-top: 1px solid #e2e8f0; padding-top: 15px;">
                 <span>Total do Pedido:</span>
                 <span id="cart-total-value">R$ 0,00</span>
@@ -522,35 +517,79 @@
         <p>&copy; 2026 JC Pescados. Todos os direitos reservados.</p>
     </footer>
 
-    <script>
-        // LISTA INICIAL DE PRODUTOS PADRÃO (LIBERADOS NO SITE)
-        const defaultProducts = [
-            { id: 1, name: "Caranguejo Pré-Cozido", price: 25.00, oldPrice: 25.00, isPromo: false, img: "caranguejo.jpeg", stock: "disponivel", category: "caranguejo" },
-            { id: 2, name: "Patinha de Caranguejo", price: 22.00, oldPrice: 22.00, isPromo: false, img: "patinha.jpg", stock: "disponivel", category: "caranguejo" },
-            { id: 3, name: "Carne de Caranguejo", price: 70.00, oldPrice: 70.00, isPromo: false, img: "carnedecaranguejo.jpeg", stock: "disponivel", category: "caranguejo" },
-            { id: 4, name: "Camarão P", price: 35.00, oldPrice: 35.00, isPromo: false, img: "CAMARAOP.jpg", stock: "disponivel", category: "camarao" },
-            { id: 5, name: "Camarão M", price: 45.00, oldPrice: 45.00, isPromo: false, img: "CAMARAOM.jpg", stock: "disponivel", category: "camarao" },
-            { id: 6, name: "Camarão G", price: 60.00, oldPrice: 60.00, isPromo: false, img: "CAMARAOG.jpg", stock: "disponivel", category: "camarao" },
-            { id: 7, name: "Camarão GG", price: 75.00, oldPrice: 75.00, isPromo: false, img: "CAMARAOGG.jpeg", stock: "disponivel", category: "camarao" },
-            { id: 8, name: "Lagosta", price: 90.00, oldPrice: 90.00, isPromo: false, img: "LAGOSTA.jpg", stock: "disponivel", category: "outros" },
-            { id: 9, name: "Salmão", price: 85.00, oldPrice: 85.00, isPromo: false, img: "salmao.jpg", stock: "disponivel", category: "outros" },
-            { id: 10, name: "Polvo", price: 95.00, oldPrice: 95.00, isPromo: false, img: "polvo.jpeg", stock: "disponivel", category: "outros" },
-            { id: 11, name: "Lula", price: 55.00, oldPrice: 55.00, isPromo: false, img: "lula.jpeg", stock: "disponivel", category: "outros" }
-        ];
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
-        // Carrega produtos salvos no LocalStorage ou usa a lista padrão inicial
-        let products = JSON.parse(localStorage.getItem('jc_products')) || defaultProducts;
+    <script>
+        // ==========================================
+        // CONFIGURAÇÃO DO SEU FIREBASE (sitejc-46c0c)
+        // Substitua os dados abaixo pelos do seu painel do Firebase Console
+        // ==========================================
+        const firebaseConfig = {
+            apiKey: "SUA_API_KEY_AQUI",
+            authDomain: "sitejc-46c0c.firebaseapp.com",
+            projectId: "sitejc-46c0c",
+            storageBucket: "sitejc-46c0c.appspot.com",
+            messagingSenderId: "SEU_SENDER_ID",
+            appId: "SEU_APP_ID"
+        };
+
+        // Inicializar o Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const productsCollection = db.collection("produtos");
+
+        let products = [];
         let cart = [];
         let activeProductId = null;
+        let currentFilter = 'all';
 
-        // INICIALIZADOR DA APLICAÇÃO
+        // CARREGAR DADOS EM TEMPO REAL DO FIREBASE
         document.addEventListener("DOMContentLoaded", () => {
-            renderStoreProducts();
-            populateAdminDropdowns();
+            productsCollection.onSnapshot((snapshot) => {
+                products = [];
+                if (snapshot.empty) {
+                    // Se o banco estiver vazio no primeiro uso, popula com a lista base
+                    initializeDefaultProducts();
+                } else {
+                    snapshot.forEach(doc => {
+                        products.push({ id: doc.id, ...doc.data() });
+                    });
+                    renderStoreProducts(currentFilter);
+                    populateAdminDropdowns();
+                }
+            }, error => {
+                console.error("Erro ao ler dados do Firebase: ", error);
+                alert("Verifique se as Regras do Firestore estão configuradas como 'allow read, write: if true;' no console do Firebase.");
+            });
         });
 
-        // FUNÇÃO DE RENDERIZAR TODOS OS PRODUTOS NO SITE
+        // Função interna para criar os produtos iniciais caso o Firestore esteja vazio
+        function initializeDefaultProducts() {
+            const defaultList = [
+                { name: "Caranguejo Pré-Cozido", price: 25.00, oldPrice: 25.00, isPromo: false, img: "caranguejo.jpeg", stock: "disponivel", category: "caranguejo" },
+                { name: "Patinha de Caranguejo", price: 22.00, oldPrice: 22.00, isPromo: false, img: "patinha.jpg", stock: "disponivel", category: "caranguejo" },
+                { name: "Carne de Caranguejo", price: 70.00, oldPrice: 70.00, isPromo: false, img: "carnedecaranguejo.jpeg", stock: "disponivel", category: "caranguejo" },
+                { name: "Patola de Caranguejo", price: 40.00, oldPrice: 40.00, isPromo: false, img: "https://images.unsplash.com/photo-1551248429-40975aa4de74?w=400", stock: "disponivel", category: "caranguejo" },
+                { name: "Camarão P", price: 35.00, oldPrice: 35.00, isPromo: false, img: "CAMARAOP.jpg", stock: "disponivel", category: "camarao" },
+                { name: "Camarão M", price: 45.00, oldPrice: 45.00, isPromo: false, img: "CAMARAOM.jpg", stock: "disponivel", category: "camarao" },
+                { name: "Camarão G", price: 60.00, oldPrice: 60.00, isPromo: false, img: "CAMARAOG.jpg", stock: "disponivel", category: "camarao" },
+                { name: "Camarão GG", price: 75.00, oldPrice: 75.00, isPromo: false, img: "CAMARAOGG.jpeg", stock: "disponivel", category: "camarao" },
+                { name: "Camarão Torrado", price: 48.00, oldPrice: 48.00, isPromo: false, img: "https://images.unsplash.com/photo-1551248429-40975aa4de74?w=400", stock: "disponivel", category: "camarao" },
+                { name: "Camarão Filé", price: 50.00, oldPrice: 50.00, isPromo: false, img: "https://images.unsplash.com/photo-1551248429-40975aa4de74?w=400", stock: "disponivel", category: "camarao" },
+                { name: "Tilápia Inteira", price: 28.00, oldPrice: 28.00, isPromo: false, img: "https://images.unsplash.com/photo-1551248429-40975aa4de74?w=400", stock: "disponivel", category: "peixes" },
+                { name: "Filé de Tilápia", price: 42.00, oldPrice: 42.00, isPromo: false, img: "https://images.unsplash.com/photo-1551248429-40975aa4de74?w=400", stock: "disponivel", category: "peixes" },
+                { name: "Pescada Amarela em Posta", price: 58.00, oldPrice: 58.00, isPromo: false, img: "https://images.unsplash.com/photo-1551248429-40975aa4de74?w=400", stock: "disponivel", category: "peixes" },
+                { name: "Lagosta", price: 90.00, oldPrice: 90.00, isPromo: false, img: "LAGOSTA.jpg", stock: "disponivel", category: "outros" },
+                { name: "Salmão", price: 85.00, oldPrice: 85.00, isPromo: false, img: "salmao.jpg", stock: "disponivel", category: "outros" },
+                { name: "Polvo", price: 95.00, oldPrice: 95.00, isPromo: false, img: "polvo.jpeg", stock: "disponivel", category: "outros" },
+                { name: "Lula", price: 55.00, oldPrice: 55.00, isPromo: false, img: "lula.jpeg", stock: "disponivel", category: "outros" }
+            ];
+            defaultList.forEach(p => productsCollection.add(p));
+        }
+
         function renderStoreProducts(filter = 'all') {
+            currentFilter = filter;
             const grid = document.getElementById("store-products-grid");
             grid.innerHTML = "";
 
@@ -571,12 +610,12 @@
                     <div class="product-info">
                         <div class="product-title">${p.name}</div>
                         <div class="product-price-box">
-                            ${p.isPromo ? `<span class="price-old">R$ ${p.oldPrice.toFixed(2)}</span>` : ''}
-                            <span class="price-current">R$ ${p.price.toFixed(2)}</span>
+                            ${p.isPromo ? `<span class="price-old">R$ ${parseFloat(p.oldPrice).toFixed(2)}</span>` : ''}
+                            <span class="price-current">R$ ${parseFloat(p.price).toFixed(2)}</span>
                         </div>
                         <button class="buy-btn ${isEsgotado ? 'out-of-stock' : ''}" 
                                 ${isEsgotado ? 'disabled' : ''} 
-                                onclick="openPurchaseModal(${p.id})">
+                                onclick="openPurchaseModal('${p.id}')">
                             ${isEsgotado ? 'Sem Estoque' : '🛒 Adicionar'}
                         </button>
                     </div>
@@ -585,7 +624,6 @@
             });
         }
 
-        // PREENCHE SELEÇÃO DE PRODUTOS NO PAINEL ADMIN
         function populateAdminDropdowns() {
             const selectEdit = document.getElementById("admin-select-product");
             const selectPromo = document.getElementById("admin-promo-product");
@@ -602,7 +640,6 @@
             loadProductToAdmin();
         }
 
-        // CARREGA DADOS DO PRODUTO ATUAL NO FORMULÁRIO DO PAINEL ADMIN
         function loadProductToAdmin() {
             const id = document.getElementById("admin-select-product").value;
             const prod = products.find(p => p.id == id);
@@ -613,54 +650,57 @@
             }
         }
 
-        // SALVA PREÇO, FOTO E ESTOQUE ALTERADOS NO PAINEL
+        // SALVA ATUALIZAÇÃO NO FIREBASE FIRESTORE
         function saveProductChanges() {
             const id = document.getElementById("admin-select-product").value;
-            const index = products.findIndex(p => p.id == id);
+            const prod = products.find(p => p.id == id);
 
-            if(index !== -1) {
-                products[index].price = parseFloat(document.getElementById("admin-price").value);
-                products[index].img = document.getElementById("admin-img").value;
-                products[index].stock = document.getElementById("admin-stock").value;
-                
-                // Se a promoção estiver desligada, mantém preço antigo igual ao atual
-                if(!products[index].isPromo) {
-                    products[index].oldPrice = products[index].price;
+            if(prod) {
+                const newPrice = parseFloat(document.getElementById("admin-price").value);
+                const updates = {
+                    price: newPrice,
+                    img: document.getElementById("admin-img").value,
+                    stock: document.getElementById("admin-stock").value
+                };
+
+                if(!prod.isPromo) {
+                    updates.oldPrice = newPrice;
                 }
 
-                saveToStorage();
-                alert("Produto atualizado com sucesso!");
+                productsCollection.doc(id).update(updates)
+                    .then(() => alert("Produto sincronizado no Firebase!"))
+                    .catch(err => alert("Erro ao salvar: " + err));
             }
         }
 
-        // SALVA E ATIVA PROMOÇÃO NO PAINEL
+        // SALVA PROMOÇÃO NO FIREBASE FIRESTORE
         function savePromotionChanges() {
             const id = document.getElementById("admin-promo-product").value;
-            const index = products.findIndex(p => p.id == id);
+            const prod = products.find(p => p.id == id);
 
-            if(index !== -1) {
+            if(prod) {
                 const promoPrice = parseFloat(document.getElementById("admin-promo-price").value);
                 const isActive = document.getElementById("admin-promo-active").value === 'sim';
+                const updates = {};
 
                 if(isActive && !isNaN(promoPrice)) {
-                    // Armazena o preço original antes de aplicar o desconto da promoção
-                    if(!products[index].isPromo) {
-                        products[index].oldPrice = products[index].price;
+                    if(!prod.isPromo) {
+                        updates.oldPrice = prod.price;
                     }
-                    products[index].price = promoPrice;
-                    products[index].isPromo = true;
+                    updates.price = promoPrice;
+                    updates.isPromo = true;
                 } else {
-                    // Retorna ao preço padrão antigo
-                    products[index].price = products[index].oldPrice;
-                    products[index].isPromo = false;
+                    updates.price = prod.oldPrice || prod.price;
+                    updates.isPromo = false;
                 }
 
-                saveToStorage();
-                alert("Estado promocional modificado com sucesso!");
+                productsCollection.doc(id).update(updates)
+                    .then(() => alert("Promoção aplicada globalmente!"))
+                    .catch(err => alert("Erro ao salvar promoção: " + err));
             }
         }
 
-        // CRIA UM NOVO PRODUTO NO BANCO DE DADOS LOCAL
+        // CRIA NOVO PRODUTO DIRETAMENTE NO FIREBASE FIRESTORE
         function addNewProduct() {
             const name = document.getElementById("new-name").value;
             const price = parseFloat(document.getElementById("new-price").value);
@@ -673,7 +713,6 @@
             }
 
             const newProd = {
-                id: Date.now(), // ID Único inteligente
                 name: name,
                 price: price,
                 oldPrice: price,
@@ -683,26 +722,22 @@
                 category: category
             };
 
-            products.push(newProd);
-            saveToStorage();
-            populateAdminDropdowns();
-            alert("Novo produto inserido com sucesso!");
+            productsCollection.add(newProd)
+                .then(() => {
+                    alert("Novo produto gravado no Firebase!");
+                    document.getElementById("new-name").value = "";
+                    document.getElementById("new-price").value = "";
+                    document.getElementById("new-img").value = "";
+                })
+                .catch(err => alert("Erro ao inserir: " + err));
         }
 
-        // AUXILIAR: ATUALIZA STORAGE LOCAL DO NAVEGADOR E ATUALIZA SITE
-        function saveToStorage() {
-            localStorage.setItem('jc_products', JSON.stringify(products));
-            renderStoreProducts();
-        }
-
-        // CONTROLES DE FILTROS DE VISUALIZAÇÃO
         function filterCategory(cat, btn) {
             document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
             btn.classList.add("active");
             renderStoreProducts(cat);
         }
 
-        // ABRE/OCULTA PAINEL ADMIN MEDIANTE SENHA SIMPLES DE SEGURANÇA
         function toggleAdminDashboard() {
             const dash = document.getElementById("admin-dashboard");
             if(dash.style.display === "block") {
@@ -717,7 +752,6 @@
             }
         }
 
-        // MODAIS GERAIS
         function openPurchaseModal(id) {
             activeProductId = id;
             const prod = products.find(p => p.id == id);
@@ -727,10 +761,9 @@
         }
 
         function closeModal(id) {
-            document.getElementById(id).style.style.display = "none";
+            document.getElementById(id).style.display = "none";
         }
 
-        // CONFIRMAÇÃO DE ITEM AO CARRINHO
         function confirmAddToCart() {
             const qty = parseFloat(document.getElementById("modal-quantity").value);
             const prod = products.find(p => p.id == activeProductId);
@@ -752,7 +785,6 @@
             document.getElementById("global-cart-count").innerText = count;
         }
 
-        // DETALHES DO CARRINHO DE COMPRAS
         function openCartModal() {
             const list = document.getElementById("cart-items-list");
             list.innerHTML = "";
@@ -768,7 +800,7 @@
                         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; background:#f8fafc; padding:10px; border-radius:8px;">
                             <div>
                                 <div style="font-weight:700; font-size:14px;">${item.product.name}</div>
-                                <div style="font-size:12px; color:#64748b;">${item.quantity}x de R$ ${item.product.price.toFixed(2)}</div>
+                                <div style="font-size:12px; color:#64748b;">${item.quantity}x de R$ ${parseFloat(item.product.price).toFixed(2)}</div>
                             </div>
                             <div style="display:flex; align-items:center; gap:10px;">
                                 <span style="font-weight:700; color:var(--primary);">R$ ${subtotal.toFixed(2)}</span>
@@ -788,7 +820,6 @@
             openCartModal();
         }
 
-        // ENVIO DO PEDIDO PARA O WHATSAPP
         function sendOrderToWhatsApp() {
             const name = document.getElementById("customer-name").value;
             const method = document.getElementById("delivery-method").value;
@@ -812,7 +843,7 @@
             cart.forEach(item => {
                 const sub = item.product.price * item.quantity;
                 total += sub;
-                text += `- ${item.quantity}x ${item.product.name} (R$ ${item.product.price.toFixed(2)} un) = R$ ${sub.toFixed(2)}\n`;
+                text += `- ${item.quantity}x ${item.product.name} (R$ ${parseFloat(item.product.price).toFixed(2)} un) = R$ ${sub.toFixed(2)}\n`;
             });
 
             text += `\n*TOTAL FINAL: R$ ${total.toFixed(2)}*`;
@@ -822,7 +853,6 @@
             window.open(url, '_blank');
         }
 
-        // FECHAR INTERATIVIDADE DE MODAL CLICANDO FORA
         window.onclick = function(event) {
             if (event.target.classList.contains('modal')) {
                 event.target.style.display = "none";
