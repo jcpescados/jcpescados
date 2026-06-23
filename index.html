@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JC Pescados - Loja, Painel & Mercado Pago</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         /* ==================================== */
         /* DESIGN MODERNO E CLEAN - JCPESCADOS  */
@@ -399,6 +399,61 @@
             font-size: 16px;
         }
 
+        /* ESTILOS ADICIONADOS PARA AS DICAS DO CHEF E ALERTAS DO MODAL */
+        .kg-alert-box {
+            background-color: #fff3cd;
+            color: #856404;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 13px;
+            margin-bottom: 15px;
+            border-left: 4px solid #ffc107;
+        }
+
+        .chef-recipe-box {
+            background-color: #f0fdfa;
+            border: 1px solid #ccfbf1;
+            border-left: 4px solid var(--primary);
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #115e59;
+            margin-bottom: 15px;
+            line-height: 1.5;
+            max-height: 180px;
+            overflow-y: auto;
+        }
+
+        .chef-recipe-box.crab-theme {
+            background-color: #fff5f5;
+            border-color: #ffe3e3;
+            border-left-color: var(--danger);
+            color: #c53030;
+        }
+
+        .shortcut-container {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .shortcut-btn {
+            background: #e2e8f0;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .shortcut-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+
         .flex-buttons {
             display: flex;
             gap: 10px;
@@ -483,6 +538,10 @@
                     <option value="caranguejo">Caranguejo</option>
                     <option value="camarao">Camarão</option>
                     <option value="peixes">Peixes</option>
+                    <option value="polvo">Polvo</option>
+                    <option value="salmao">Salmão</option>
+                    <option value="lagosta">Lagosta</option>
+                    <option value="lula">Lula</option>
                     <option value="outros">Outros Frutos</option>
                 </select>
                 <input type="text" id="new-img" placeholder="Link da Imagem">
@@ -493,10 +552,14 @@
 
     <div class="main-store-container">
         <div class="category-filter">
-            <button class="filter-btn active" onclick="filterCategory('all', this)">Todos os Produtos</button>
+            <button class="filter-btn active" onclick="filterCategory('destaque', this)">⭐ Destaques</button>
             <button class="filter-btn" onclick="filterCategory('caranguejo', this)">🦀 Caranguejos</button>
             <button class="filter-btn" onclick="filterCategory('camarao', this)">🦐 Camarões</button>
             <button class="filter-btn" onclick="filterCategory('peixes', this)">🐟 Peixes</button>
+            <button class="filter-btn" onclick="filterCategory('polvo', this)">🐙 Polvo</button>
+            <button class="filter-btn" onclick="filterCategory('salmao', this)">🥩 Salmão</button>
+            <button class="filter-btn" onclick="filterCategory('lagosta', this)">🦞 Lagosta</button>
+            <button class="filter-btn" onclick="filterCategory('lula', this)">🦑 Lula</button>
             <button class="filter-btn" onclick="filterCategory('outros', this)">🌊 Outros Frutos</button>
         </div>
 
@@ -512,7 +575,22 @@
         <div class="modal-content">
             <button class="close-btn" onclick="closeModal('purchase-modal')">&times;</button>
             <h3 id="modal-product-title">Adicionar ao Carrinho</h3>
-            <p style="margin-bottom: 15px; color:#64748b;">Escolha a quantidade desejada para o seu pedido.</p>
+            
+            <div id="kg-alert-helper" class="kg-alert-box" style="display:none;">
+                ⚠️ <strong>Atenção:</strong> Este produto é vendido por peso fracionado (Kg).
+            </div>
+
+            <div id="chef-recipe-helper" class="chef-recipe-box" style="display:none;"></div>
+
+            <p id="modal-qty-label" style="margin-bottom: 10px; font-weight: 600; color: var(--text);">Escolha a quantidade desejada:</p>
+            
+            <div id="kg-shortcuts" class="shortcut-container" style="display:none;">
+                <button class="shortcut-btn" onclick="setModalQuantity('0.500')">500g</button>
+                <button class="shortcut-btn" onclick="setModalQuantity('1.000')">1 Kg</button>
+                <button class="shortcut-btn" onclick="setModalQuantity('1.500')">1.5 Kg</button>
+                <button class="shortcut-btn" onclick="setModalQuantity('2.000')">2 Kg</button>
+            </div>
+
             <input type="number" id="modal-quantity" value="1" min="1" step="1">
             <button class="buy-btn" style="background: var(--primary);" onclick="confirmAddToCart()">Confirmar e Adicionar</button>
         </div>
@@ -596,7 +674,6 @@
         const database = firebase.database();
         const productsRef = database.ref("produtos");
 
-        // CREDENCIAIS DA API ATUALIZADAS DO SEU MERCADO PAGO
         const MP_PUBLIC_KEY = "APP_USR-e68e3b26-1267-45c0-903e-b4493dfa9e09";
         const MP_ACCESS_TOKEN = "APP_USR-1319596414441796-062312-76de006650bb82824f0b4c22c8f79d40-3169714868";
 
@@ -605,7 +682,7 @@
         let products = [];
         let cart = [];
         let activeProductId = null;
-        let currentFilter = 'all';
+        let currentFilter = 'destaque';
         let globalTotalValue = 0;
 
         document.addEventListener("DOMContentLoaded", () => {
@@ -627,20 +704,32 @@
         function initializeDefaultProducts() {
             const defaultList = [
                 { name: "Caranguejo Pré-Cozido", price: 25.00, oldPrice: 25.00, isPromo: false, img: "caranguejo.jpeg", stock: "disponivel", category: "caranguejo" },
-                { name: "Patinha de Caranguejo", price: 22.00, oldPrice: 22.00, isPromo: false, img: "patinha.jpg", stock: "disponivel", category: "caranguejo" },
-                { name: "Carne de Caranguejo", price: 70.00, oldPrice: 70.00, isPromo: false, img: "carnedecaranguejo.jpeg", stock: "disponivel", category: "caranguejo" },
-                { name: "Camarão P", price: 35.00, oldPrice: 35.00, isPromo: false, img: "CAMARAOP.jpg", stock: "disponivel", category: "camarao" },
-                { name: "Camarão M", price: 45.00, oldPrice: 45.00, isPromo: false, img: "CAMARAOM.jpg", stock: "disponivel", category: "camarao" },
-                { name: "Camarão G", price: 60.00, oldPrice: 60.00, isPromo: false, img: "CAMARAOG.jpg", stock: "disponivel", category: "camarao" }
+                { name: "File de Tilapia", price: 38.00, oldPrice: 38.00, isPromo: false, img: "tilapia.jpeg", stock: "disponivel", category: "peixes" },
+                { name: "Lagosta Inteira", price: 90.00, oldPrice: 90.00, isPromo: false, img: "lagosta.jpeg", stock: "disponivel", category: "lagosta" },
+                { name: "Camarao Torrado", price: 45.00, oldPrice: 45.00, isPromo: false, img: "camarao_torrado.jpeg", stock: "disponivel", category: "camarao" }
             ];
             defaultList.forEach(p => productsRef.push(p));
         }
 
-        function renderStoreProducts(filter = 'all') {
+        function renderStoreProducts(filter = 'destaque') {
             currentFilter = filter;
             const grid = document.getElementById("store-products-grid");
             grid.innerHTML = "";
-            const filtered = filter === 'all' ? products : products.filter(p => p.category === filter);
+            
+            let filtered = [];
+            if (filter === 'destaque') {
+                filtered = products.filter(p => {
+                    const nameLower = p.name.toLowerCase();
+                    return nameLower.includes("caranguejo") || 
+                           nameLower.includes("file de tilapia") || 
+                           nameLower.includes("filé de tilápia") || 
+                           nameLower.includes("lagosta") || 
+                           nameLower.includes("camarao torrado") || 
+                           nameLower.includes("camarão torrado");
+                });
+            } else {
+                filtered = products.filter(p => p.category === filter);
+            }
 
             filtered.forEach(p => {
                 const isEsgotado = p.stock === 'esgotado';
@@ -742,11 +831,128 @@
             else { const pass = prompt("Senha Admin:", "admin123"); if(pass === "admin123") dash.style.display = "block"; }
         }
 
+        /* FUNÇÃO AUXILIAR PARA VERIFICAR SE O PRODUTO É VENDIDO POR PESO (KG) */
+        function isProductSoldByWeight(prod) {
+            const cat = prod.category ? prod.category.toLowerCase() : "";
+            return ["camarao", "peixes", "salmao", "lagosta", "polvo", "lula", "outros"].includes(cat);
+        }
+
+        /* FUNÇÃO DE ATALHO PARA SELECIONAR PESO */
+        function setModalQuantity(value) {
+            document.getElementById("modal-quantity").value = value;
+        }
+
+        /* FUNÇÃO OPENPURCHASEMODAL TOTALMENTE CORRIGIDA E ADAPTADA */
         function openPurchaseModal(id) {
             activeProductId = id;
             const prod = products.find(p => p.id == id);
             document.getElementById("modal-product-title").innerText = prod.name;
-            document.getElementById("modal-quantity").value = 1;
+            
+            const isWeight = isProductSoldByWeight(prod);
+            const helper = document.getElementById("kg-alert-helper");
+            const recipeHelper = document.getElementById("chef-recipe-helper");
+            const shortcuts = document.getElementById("kg-shortcuts");
+            const qtyLabel = document.getElementById("modal-qty-label");
+            const inputQty = document.getElementById("modal-quantity");
+
+            helper.style.display = "none";
+            recipeHelper.style.display = "none";
+            shortcuts.style.display = "none";
+            recipeHelper.className = "chef-recipe-box"; // reset css class
+
+            const nameLower = prod.name.toLowerCase();
+            const catLower = prod.category ? prod.category.toLowerCase() : "";
+
+            if (isWeight) {
+                helper.style.display = "block";
+                shortcuts.style.display = "flex";
+                recipeHelper.style.display = "block";
+                qtyLabel.innerText = "Escolha o Peso Desejado (em Kg):";
+                inputQty.value = "1.000";
+                inputQty.min = "0.050";
+                inputQty.step = "0.001";
+
+                if (catLower === "camarao") {
+                    recipeHelper.innerHTML = `
+                        <strong>🦐 Camarão Premium (Venda por Peso):</strong> Fresco, carnudo e com alto padrão de frescura. Perfeito para entradas elegantes ou pratos principais inesquecíveis.
+                        <br><br>
+                        <strong>🍳 Dica do Chef:</strong> Prepare um clássico <i>Camarão Alho e Óleo com Toque de Coentro</i>! Sele os camarões em lume alto com azeite e bastante alho laminado durante apenas 3 minutos. Finalize com sumo de limão fresco e coentro picado.
+                    `;
+                } else if (catLower === "peixes") {
+                    recipeHelper.innerHTML = `
+                        <strong>🐟 Peixe Fresco Selecionado (Venda por Peso):</strong> Filés ou postas rigorosamente limpos, com carne firme, sabor suave e textura impecável para a sua mesa.
+                        <br><br>
+                        <strong>🍳 Dica do Chef:</strong> Faça um magnífico <i>Peixe ao Forno Culinário</i>. Tempere com sal, limão e azeite. Coloque numa travessa sobre uma cama de rodelas de batatas, cebolas e pimentos. Cubra com papel de alumínio, leve ao forno a 180°C por 20 minutos, depois retire o papel para dourar levemente.
+                    `;
+                } else if (catLower === "salmao") {
+                    recipeHelper.innerHTML = `
+                        <strong>🥩 Salmão Nobre (Venda por Peso):</strong> Rico em Omega-3, com cor vibrante e cortes perfeitos. O favorito das melhores receitas internacionais na sua cozinha.
+                        <br><br>
+                        <strong>🍳 Dica do Chef:</strong> Experimente o <i>Salmão Grelhado com Crosta de Ervas</i>. Doure o filé primeiro com a pele voltada para baixo numa frigideira antiaderente bem quente. Pincele uma colher de mel e mostarda por cima e polvilhe ervas finas. Fica incrivelmente suculento por dentro!
+                    `;
+                } else if (catLower === "lagosta") {
+                    recipeHelper.innerHTML = `
+                        <strong>🦞 Lagosta de Alto Padrão (Venda por Peso):</strong> O verdadeiro luxo dos mares. Carne nobre, extremamente adocicada e com textura incomparável.
+                        <br><br>
+                        <strong>🍳 Dica do Chef:</strong> Faça uma surpreendente <i>Lagosta na Manteiga de Ervas e Alho</i>. Corte a cauda ao meio, pincele generosamente com uma mistura de manteiga derretida, alho picado e raspas de limão. Grelhe na chapa ou leve ao forno até a carne ficar branca e opaca. Sirva imediatamente!
+                    `;
+                } else if (catLower === "polvo") {
+                    recipeHelper.innerHTML = `
+                        <strong>🐙 Polvo Macio e Limpo (Venda por Peso):</strong> Totalmente limpo e selecionado. Ideal para quem procura uma experiência gastronómica sofisticada.
+                        <br><br>
+                        <strong>🍳 Dica do Chef:</strong> Para um <i>Polvo à Lagareiro de Cinema</i>: Coza o polvo na panela de pressão com uma cebola inteira (sem água!) por 15 minutos. Depois, leve os tentáculos ao forno bem quente regados com bastante azeite, alho esmagado e batatas a murro até dourar.
+                    `;
+                } else if (catLower === "lula") {
+                    recipeHelper.innerHTML = `
+                        <strong>🦑 Lula Especial (Venda por Peso):</strong> Textura perfeitamente macia quando preparada corretamente. Ideal para anéis crocantes ou risotos cheios de sabor.
+                        <br><br>
+                        <strong>🍳 Dica do Chef:</strong> Prepare deliciosos <i>Anéis de Lula Crocantes</i>. Corte em anéis, tempere com sal e limão. Passe por amido de milho (segredo para ficar bem sequinha!) e frite em óleo quente por no máximo 2 minutos.
+                    `;
+                } else {
+                    recipeHelper.innerHTML = `
+                        <strong>🌊 Frutos do Mar Especiais (Venda por Peso):</strong> Qualidade garantida e máxima frescura direto para a sua receita.
+                    `;
+                }
+
+            } else {
+                recipeHelper.style.display = "block";
+                recipeHelper.classList.add("crab-theme");
+                inputQty.min = "1";
+                inputQty.step = "1";
+
+                if (nameLower.includes("pré-cozido") || nameLower.includes("precozido")) {
+                    recipeHelper.innerHTML = `
+                        <strong>🦀 Kit Caranguejo (Contém 4 Unidades):</strong> Nossos caranguejos são selecionados, 100% limpos e pré-cozidos no capricho. Estão no ponto perfeito para irem direto ao fogo com os seus temperos preferidos!
+                        <br><br>
+                        <strong>🍳 Dica de Receita Rápida:</strong> Refogue cebola, alho, pimento e tomate com um fio de azeite. Adicione o kit de caranguejos, cubra com leite de coco e uma pitada de coentro. Deixe ferver por 12 minutos e sirva com um pirão quentinho!
+                    `;
+                    qtyLabel.innerText = "Escolha a quantidade de Kits (Cada Kit vem com 4 caranguejos):";
+                    inputQty.value = "1";
+                } else if (nameLower.includes("patola")) {
+                    recipeHelper.innerHTML = `
+                        <strong>🦀 Dúzia de Patolas (Contém 12 Unidades):</strong> A carne da patola de caranguejo é extremamente macia, saborosa e já vai super limpa, pronta para um petisco de alto padrão.
+                        <br><br>
+                        <strong>🍳 Dica de Receita Rápida (Patola à Milanesa):</strong> Tempere as 12 patolas com limão e sal. Passe-as na farinha de trigo, depois nos ovos batidos e por fim na farinha panko. Frite em óleo quente até dourar e sirva com molho tártaro!
+                    `;
+                    qtyLabel.innerText = "Escolha a quantidade de Dúzias (Cada unidade adiciona 12 patolas):";
+                    inputQty.value = "1";
+                } else if (nameLower.includes("patinha")) {
+                    recipeHelper.innerHTML = `
+                        <strong>🦀 Dúzia de Patinhas de Caranguejo (Contém 12 Unidades):</strong> Limpas, carnudas e padronizadas. É o petisco perfeito para acompanhar uma bebida bem fria ou abrir um jantar especial.
+                        <br><br>
+                        <strong>🍳 Dica de Receita Rápida (Patinhas ao Vinagrete Gourmet):</strong> Faça um vinagrete bem picado com tomate, cebola roxa, pimento amarelo, bastante azeite extra virgem e vinagre de maçã. Adicione as patinhas prontas, envolva delicadamente e deixe apurar no frigorífico por 30 minutos antes de servir!
+                    `;
+                    qtyLabel.innerText = "Escolha a quantidade de Dúzias (Cada unidade adiciona 12 patinhas):";
+                    inputQty.value = "1";
+                } else {
+                    recipeHelper.innerHTML = `
+                        <strong>📦 Produto Premium Selecionado:</strong> Alta qualidade e praticidade direto para a sua mesa.
+                    `;
+                    qtyLabel.innerText = "Escolha a quantidade desejada:";
+                    inputQty.value = "1";
+                }
+            }
+
             document.getElementById("purchase-modal").style.display = "flex";
         }
 
@@ -786,11 +992,16 @@
                 cart.forEach((item, index) => {
                     const subtotal = item.product.price * item.quantity;
                     globalTotalValue += subtotal;
+                    
+                    // Ajuste visual para exibir "Kg" ou "un" na listagem do carrinho conforme o produto
+                    const isWeight = isProductSoldByWeight(item.product);
+                    const unitLabel = isWeight ? "Kg" : "un";
+
                     list.innerHTML += `
                         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; background:#f8fafc; padding:10px; border-radius:8px;">
                             <div>
                                 <div style="font-weight:700; font-size:14px;">${item.product.name}</div>
-                                <div style="font-size:12px; color:#64748b;">${item.quantity}x de R$ ${parseFloat(item.product.price).toFixed(2)}</div>
+                                <div style="font-size:12px; color:#64748b;">${item.quantity} ${unitLabel} de R$ ${parseFloat(item.product.price).toFixed(2)}</div>
                             </div>
                             <div style="display:flex; align-items:center; gap:10px;">
                                 <span style="font-weight:700; color:var(--primary);">R$ ${subtotal.toFixed(2)}</span>
@@ -857,12 +1068,12 @@
 
             const itemsMapped = cart.map(item => ({
                 title: item.product.name,
-                quantity: parseInt(item.quantity),
+                // O Mercado Pago exige valor inteiro na propriedade quantity, mas o valor real por Kg vai calculado perfeitamente no unit_price / total
+                quantity: isProductSoldByWeight(item.product) ? 1 : parseInt(item.quantity),
                 currency_id: "BRL",
-                unit_price: parseFloat(item.product.price)
+                unit_price: isProductSoldByWeight(item.product) ? parseFloat(item.product.price * item.quantity) : parseFloat(item.product.price)
             }));
 
-            // CONSTRUÇÃO VIA PREFERENCES COMPATÍVEL COM AMBOS SEM ERRO DE CORS
             const preferenceData = {
                 items: itemsMapped,
                 payer: { name: name },
@@ -893,9 +1104,7 @@
                 .then(response => response.json())
                 .then(data => {
                     if(data.init_point) {
-                        // Alimenta o Iframe interno gerando o QR Code e o Copia e Cola nativo do MP sem erros na tela
                         document.getElementById("pix-mp-iframe").src = data.init_point;
-                        
                         closeModal('cart-modal');
                         document.getElementById("pix-payment-modal").style.display = "flex";
                     } else {
@@ -968,7 +1177,9 @@
             let total = 0;
             cart.forEach(item => {
                 const sub = item.product.price * item.quantity; total += sub;
-                text += `- ${item.quantity}x ${item.product.name} (R$ ${parseFloat(item.product.price).toFixed(2)} un) = R$ ${sub.toFixed(2)}\n`;
+                const isWeight = isProductSoldByWeight(item.product);
+                const unitLabel = isWeight ? "Kg" : "un";
+                text += `- ${item.quantity}${unitLabel} x ${item.product.name} (R$ ${parseFloat(item.product.price).toFixed(2)} /${unitLabel}) = R$ ${sub.toFixed(2)}\n`;
             });
 
             text += `\n*TOTAL FINAL: R$ ${total.toFixed(2)}*`;
