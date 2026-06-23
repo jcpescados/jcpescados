@@ -571,9 +571,6 @@
             border: none;
         }
 
-        /* ========================================= */
-        /* NOVO DESIGN ATRAENTE PARA FORMAS DE PAGAMENTO */
-        /* ========================================= */
         .payment-methods-grid {
             display: grid;
             grid-template-columns: 1fr;
@@ -879,7 +876,7 @@
                     <div class="icon-circle">⚡</div>
                     <div class="details">
                         <span class="title">Pix Automático</span>
-                        <span class="subtitle">Liberação rápida via QR Code / Copia e Cola</span>
+                        <span class="subtitle">Abre Mercado Pago + WhatsApp juntos instantaneamente</span>
                     </div>
                     <div class="radio-dot"></div>
                 </div>
@@ -888,7 +885,7 @@
                     <div class="icon-circle">💳</div>
                     <div class="details">
                         <span class="title">Cartão de Crédito</span>
-                        <span class="subtitle">Parcele em ambiente seguro Mercado Pago</span>
+                        <span class="subtitle">Abre o checkout do cartão + WhatsApp juntos instantaneamente</span>
                     </div>
                     <div class="radio-dot"></div>
                 </div>
@@ -896,7 +893,7 @@
                 <div class="payment-card" id="card-especie" data-value="especie" style="display:none;" onclick="selectPaymentCard('especie'); saveCartDraftToStorage();">
                     <div class="icon-circle">💵</div>
                     <div class="details">
-                        <span class="title">Espèce (Dinheiro)</span>
+                        <span class="title">Espécie (Dinheiro)</span>
                         <span class="subtitle">Efetue o pagamento em mãos na retirada</span>
                     </div>
                     <div class="radio-dot"></div>
@@ -904,47 +901,8 @@
             </div>
             
             <button class="buy-btn" style="background: var(--mp-blue); margin-top: 10px;" id="mp-pay-button" onclick="processOrderCheckout()">
-                ⚡ Gerar Tela Pix Completa
+                🚀 Finalizar e Enviar Pedido Completo
             </button>
-        </div>
-    </div>
-
-    <div id="pix-payment-modal" class="modal">
-        <div class="modal-content" style="max-width: 480px; text-align: center;">
-            <button class="close-btn" onclick="closeModal('pix-payment-modal')">&times;</button>
-            <h3>Finalize seu pagamento com Pix ⚡</h3>
-            <p style="color: #64748b; font-size: 13px; margin-bottom: 15px;">Pague usando o QR Code ou a opção Copia e Cola fornecida pelo Mercado Pago abaixo:</p>
-            
-            <div id="pix-qrcode-container">
-                <div class="iframe-pix-wrapper">
-                    <iframe id="pix-mp-iframe" src=""></iframe>
-                </div>
-            </div>
-
-            <button class="buy-btn" style="background: var(--success); width: 100%;" onclick="confirmPixAndNotifyWhatsApp()">
-                ✅ Enviar Pedido + Anexar Comprovante no WhatsApp
-            </button>
-        </div>
-    </div>
-
-    <!-- MODAL DE INTERAÇÃO APÓS RETORNO DO MERCADO PAGO -->
-    <div id="payment-check-modal" class="modal" style="z-index: 1100;">
-        <div class="modal-content" style="text-align: center; max-width: 460px;">
-            <h3 style="font-size: 20px;">Você já concluiu seu pagamento? 🤔</h3>
-            <p style="margin-bottom: 25px; color:#64748b; font-size: 14px; line-height: 1.5;">
-                Se você já pagou na tela do Mercado Pago, confirme abaixo para nos mandar os detalhes do pedido e anexar o seu comprovante. Se preferir, fale direto com a nossa equipe.
-            </p>
-            <div style="display: flex; flex-direction: column; gap: 12px;">
-                <button class="buy-btn" style="background: var(--success);" onclick="handleCheckPaymentResponse('sim')">
-                    ✅ Sim, já concluí o pagamento!
-                </button>
-                <button class="buy-btn" style="background: #128c7e;" onclick="handleCheckPaymentResponse('whats')">
-                    💬 Prefiro pagar via Whats com colaborador
-                </button>
-                <button class="buy-btn" style="background: #64748b; font-size: 14px;" onclick="handleCheckPaymentResponse('continuar')">
-                    🛒 Continuar Comprando
-                </button>
-            </div>
         </div>
     </div>
 
@@ -1135,9 +1093,6 @@
                 if (p.category === "outros") {
                     actionButtonHtml = `
                         <a href="${linkWhats}" target="_blank" class="whats-btn" onclick="countWhatsAppClick()">
-                            <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24" style="display:inline-block; vertical-align:middle;">
-                                <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.713-1.457L0 24zm6.59-4.846c1.6.95 3.188 1.449 4.825 1.451 5.436 0 9.86-4.37 9.864-9.799.002-2.63-1.023-5.101-2.885-6.963C16.428 2.016 13.96 1.01 11.999 1.01c-5.441 0-9.866 4.372-9.87 9.802 0 1.698.459 3.355 1.328 4.866l-.993 3.626 3.722-.989zm12.315-4.48c-.33-.165-1.951-.963-2.251-1.074-.3-.11-.518-.165-.736.165-.218.33-.844 1.074-1.036 1.293-.192.218-.384.246-.714.081-1.047-.524-1.786-.968-2.512-2.213-.192-.33.192-.307.549-1.02.055-.112.028-.21-.014-.293-.042-.083-.385-.93-.528-1.274-.14-.336-.282-.291-.385-.296-.099-.005-.213-.006-.328-.006-.115 0-.303.043-.46.213-.158.17-.604.59-.604 1.44 0 .85.617 1.67.704 1.79.087.12 1.214 1.854 2.941 2.6 1.424.614 1.956.513 2.651.408.5-.075 1.626-.665 1.855-1.309.227-.644.227-1.197.16-1.309-.067-.112-.246-.178-.576-.343z"/>
-                            </svg>
                             Comprar via Whats
                         </a>
                     `;
@@ -1289,45 +1244,15 @@
                 inputQty.step = "0.001";
 
                 if (catLower === "camarao") {
-                    recipeHelper.innerHTML = `
-                        <strong>🦐 Camarão Premium (Venda por Peso):</strong> Fresco, carnudo e com alto padrão de frescura. Perfeito para entradas elegantes ou pratos principais inesquecíveis.
-                        <br><br>
-                        <strong>🍳 Dica do Chef:</strong> Prepare um clássico <i>Camarão Alho e Óleo com Toque de Coentro</i>! Sele os camarões em lume alto com azeite e bastante alho laminado durante apenas 3 minutos. Finalize com sumo de limão fresco e coentro picado.
-                    `;
+                    recipeHelper.innerHTML = `<strong>🦐 Camarão Premium:</strong> Fresco e selecionado.<br><strong>🍳 Dica:</strong> Sele em fogo alto com azeite e alho por 3 minutos.`;
                 } else if (catLower === "peixes") {
-                    recipeHelper.innerHTML = `
-                        <strong>🐟 Peixe Fresco Selecionado (Venda por Peso):</strong> Filés ou postas rigorosamente limpos, com carne firme, sabor suave e textura impecável para a sua mesa.
-                        <br><br>
-                        <strong>🍳 Dica do Chef:</strong> Faça um magnífico <i>Peixe ao Forno Culinário</i>. Tempere com sal, limão e azeite. Coloque numa travessa sobre uma cama de rodelas de batatas, cebolas e pimentos. Cubra com papel de alumínio, leve ao forno a 180°C por 20 minutos, depois retire o papel para dourar levemente.
-                    `;
+                    recipeHelper.innerHTML = `<strong>🐟 Peixe Fresco:</strong> Filés limpos.<br><strong>🍳 Dica:</strong> Asse sobre uma cama de batatas e cebolas a 180°C por 20 minutos.`;
                 } else if (catLower === "salmao") {
-                    recipeHelper.innerHTML = `
-                        <strong>🥩 Salmão Nobre (Venda por Peso):</strong> Rico em Omega-3, com cor vibrante e cortes perfeitos. O favorito das melhores receitas internacionais na sua cozinha.
-                        <br><br>
-                        <strong>🍳 Dica do Chef:</strong> Experimente o <i>Salmão Grelhado com Crosta de Ervas</i>. Doure o filé primeiro com a pele voltada para baixo numa frigideira antiaderente bem quente. Pincele uma colher de mel e mostarda por cima e polvilhe ervas finas. Fica incrivelmente suculento por dentro!
-                    `;
+                    recipeHelper.innerHTML = `<strong>🥩 Salmão Nobre:</strong> Rico em Ômega-3.<br><strong>🍳 Dica:</strong> Grelhe primeiro com a pele para baixo em frigideira quente.`;
                 } else if (catLower === "lagosta") {
-                    recipeHelper.innerHTML = `
-                        <strong>🦞 Lagosta de Alto Padrão (Venda por Peso):</strong> O verdadeiro luxo dos mares. Carne nobre, extremamente adocicada e com textura incomparável.
-                        <br><br>
-                        <strong>🍳 Dica do Chef:</strong> Faça uma surpreendente <i>Lagosta na Manteiga de Ervas e Alho</i>. Corte a cauda ao meio, pincele generosamente com uma mistura de manteiga derretida, alho picado e raspas de limão. Grelhe na chapa ou leve ao forno até a carne ficar branca e opaca. Sirva imediatamente!
-                    `;
-                } else if (catLower === "polvo") {
-                    recipeHelper.innerHTML = `
-                        <strong>🐙 Polvo Macio e Limpo (Venda por Peso):</strong> Totalmente limpo e selecionado. Ideal para quem procura uma experiência gastronomická sofisticada.
-                        <br><br>
-                        <strong>🍳 Dica do Chef:</strong> Para um <i>Polvo à Lagareiro de Cinema</i>: Coza o polvo na panela de pressão com uma cebola inteira (sem água!) por 15 minutos. Depois, leve os tentáculos ao forno bem quente regados com bastante azeite, alho esmagado e batatas a murro até dourar.
-                    `;
-                } else if (catLower === "lula") {
-                    recipeHelper.innerHTML = `
-                        <strong>🦑 Lula Especial (Venda por Peso):</strong> Textura perfeitamente macia quando preparada corretamente. Ideal para anéis crocantes ou risotos cheios de sabor.
-                        <br><br>
-                        <strong>🍳 Dica do Chef:</strong> Prepare deliciosos <i>Anéis de Lula Crocantes</i>. Corte em anéis, tempere com sal e limão. Passe por amido de milho (segredo para ficar bem sequinha!) e frite em óleo quente por no máximo 2 minutos.
-                    `;
+                    recipeHelper.innerHTML = `<strong>🦞 Lagosta Especial:</strong> Carne nobre e adocicada.<br><strong>🍳 Dica:</strong> Grelhe na manteiga com raspas de limão até ficar opaca.`;
                 } else {
-                    recipeHelper.innerHTML = `
-                        <strong>🌊 Frutos do Mar Especiais (Venda por Peso):</strong> Qualidade garantida e máxima frescura direto para a sua receita.
-                    `;
+                    recipeHelper.innerHTML = `<strong>🌊 Frutos do Mar Nobres:</strong> Máxima frescura garantida para sua receita.`;
                 }
 
             } else {
@@ -1337,33 +1262,11 @@
                 inputQty.step = "1";
 
                 if (nameLower.includes("pré-cozido") || nameLower.includes("precozido")) {
-                    recipeHelper.innerHTML = `
-                        <strong>🦀 Kit Caranguejo (Contém 4 Unidades):</strong> Nossos caranguejos são selecionados, 100% limpos e pré-cozidos no capricho. Estão no ponto perfeito para irem direto ao fogo com os seus temperos preferidos!
-                        <br><br>
-                        <strong>🍳 Dica de Receita Rápida:</strong> Refogue cebola, alho, pimento e tomate com um fio de azeite. Adicione o kit de caranguejos, cubra com leite de coco e uma pitada de coentro. Deixe ferver por 12 minutos e sirva com um pirão quentinho!
-                    `;
-                    qtyLabel.innerText = "Escolha a quantidade de Kits (Cada Kit vem com 4 caranguejos):";
-                    inputQty.value = "1";
-                } else if (nameLower.includes("patola")) {
-                    recipeHelper.innerHTML = `
-                        <strong>🦀 Dúzia de Patolas (Contém 12 Unidades):</strong> A carne da patola de caranguejo é extremamente macia, saborosa e já vai super limpa, pronta para um petisco de alto padrão.
-                        <br><br>
-                        <strong>🍳 Dica de Receita Rápida (Patola à Milanesa):</strong> Tempere as 12 patolas com limão e sal. Passe-as na farinha de trigo, depois nos ovos batidos e por fim na farinha panko. Frite em óleo quente até dourar e sirva com molho tártaro!
-                    `;
-                    qtyLabel.innerText = "Escolha a quantidade de Dúzias (Cada unidade adiciona 12 patolas):";
-                    inputQty.value = "1";
-                } else if (nameLower.includes("patinha")) {
-                    recipeHelper.innerHTML = `
-                        <strong>🦀 Dúzia de Patinhas de Caranguejo (Contém 12 Unidades):</strong> Limpas, carnudas e padronizadas. É o petisco perfeito para acompanhar uma bebida bem fria ou abrir um jantar especial.
-                        <br><br>
-                        <strong>🍳 Dica de Receita Rápida (Patinhas ao Vinagrete Gourmet):</strong> Faça um vinagrete bem picado com tomate, cebola roxa, pimento amarelo, bastante azeite extra virgem e vinagre de maçã. Adicione as patinhas prontas, envolva delicadamente e deixe apurar no frigorífico por 30 minutos antes de servir!
-                    `;
-                    qtyLabel.innerText = "Escolha a quantidade de Dúzias (Cada unidade adiciona 12 patinhas):";
+                    recipeHelper.innerHTML = `<strong>🦀 Kit Caranguejo (Contém 4 Unidades):</strong> Selecionados e pré-cozidos.<br><strong>🍳 Dica:</strong> Cozinhe com leite de coco, tomate, cebola e coentro por 12 minutos!`;
+                    qtyLabel.innerText = "Escolha a quantidade de Kits:";
                     inputQty.value = "1";
                 } else {
-                    recipeHelper.innerHTML = `
-                        <strong>📦 Produto Premium Selecionado:</strong> Alta qualidade e praticidade direto para a sua mesa.
-                    `;
+                    recipeHelper.innerHTML = `<strong>📦 Produto Premium:</strong> Pronto e padronizado para o seu petisco.`;
                     qtyLabel.innerText = "Escolha a quantidade desejada:";
                     inputQty.value = "1";
                 }
@@ -1454,12 +1357,9 @@
             if(value === "especie") {
                 payButton.innerText = "🚀 Finalizar Pedido (Pagar na Retirada)";
                 payButton.style.background = "var(--success)";
-            } else if (value === "pix") {
-                payButton.innerText = "⚡ Gerar Tela Pix Completa";
-                payButton.style.background = "var(--mp-blue)";
             } else {
-                payButton.innerText = "💳 Finalizar e Pagar no Cartão";
-                payButton.style.background = "var(--primary-dark)";
+                payButton.innerText = "🚀 Enviar Pedido ao WhatsApp + Abrir Pagamento";
+                payButton.style.background = "var(--mp-blue)";
             }
         }
 
@@ -1478,7 +1378,7 @@
         }
 
         /* ========================================================================= */
-        /* FLUXO DE REDIRECIONAMENTO NA MESMA ABA COM GATILHO DE VOLTA (POPSTATE)    */
+        /* FLUXO DE REDIRECIONAMENTO DUPLO - ENVIADO NO MOMENTO DO CLIQUE            */
         /* ========================================================================= */
         function processOrderCheckout() {
             const name = document.getElementById("customer-name").value;
@@ -1488,13 +1388,16 @@
 
             saveCartDraftToStorage();
 
+            // Se for em Espécie, apenas manda para o WhatsApp direto
             if(selectedPaymentMethod === "especie") {
                 sendOrderToWhatsApp("A combinar / Dinheiro na Retirada", true);
+                closeModal('cart-modal');
                 return;
             }
 
             const payButton = document.getElementById("mp-pay-button");
             payButton.disabled = true;
+            payButton.innerText = "⏳ Gerando links de integração...";
 
             const itemsMapped = cart.map(item => ({
                 title: item.product.name,
@@ -1515,110 +1418,49 @@
             };
 
             if(selectedPaymentMethod === "pix") {
-                payButton.innerText = "⏳ Preparando QR Code Pix...";
-                
                 preferenceData.payment_methods = {
                     included_payment_types: [{ id: "bank_transfer" }],
                     default_payment_method_id: "pix"
                 };
-
-                fetch("https://api.mercadopago.com/checkout/preferences", {
-                    method: "POST",
-                    headers: {
-                        "Authorization": `Bearer ${MP_ACCESS_TOKEN}`,
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify(preferenceData)
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if(data.init_point) {
-                        closeModal('cart-modal');
-                        history.pushState({ checkoutAtivo: true }, "Pagamento", window.location.href);
-
-                        window.onpopstate = function (event) {
-                            document.getElementById("payment-check-modal").style.display = "flex";
-                            window.onpopstate = null;
-                        };
-
-                        window.location.href = data.init_point;
-                    } else {
-                        throw new Error("Erro ao estruturar preferência de Pix.");
-                    }
-                })
-                .catch(error => {
-                    console.error(error);
-                    alert("Erro ao conectar ao checkout Pix.");
-                })
-                .finally(() => {
-                    payButton.innerText = "⚡ Gerar Tela Pix Completa";
-                    payButton.disabled = false;
-                });
-
-            } else if(selectedPaymentMethod === "cartao") {
-                payButton.innerText = "⏳ Gerando Checkout Seguro...";
-
+            } else {
                 preferenceData.payment_methods = {
                     included_payment_types: [{ id: "credit_card" }]
                 };
-
-                fetch("https://api.mercadopago.com/checkout/preferences", {
-                    method: "POST",
-                    headers: {
-                        "Authorization": `Bearer ${MP_ACCESS_TOKEN}`,
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify(preferenceData)
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if(data.init_point) {
-                        closeModal('cart-modal');
-                        history.pushState({ checkoutAtivo: true }, "Pagamento", window.location.href);
-
-                        window.onpopstate = function (event) {
-                            document.getElementById("payment-check-modal").style.display = "flex";
-                            window.onpopstate = null;
-                        };
-
-                        window.location.href = data.init_point;
-                    } else {
-                        throw new Error("Erro na API.");
-                    }
-                })
-                .catch(error => {
-                    console.error(error);
-                    alert("Erro ao conectar ao checkout do Cartão.");
-                })
-                .finally(() => {
-                    payButton.innerText = "💳 Finalizar e Pagar no Cartão";
-                    payButton.disabled = false;
-                });
             }
-        }
 
-        /* ========================================================================= */
-        /* NOVO GERENCIADOR DE RESPOSTAS: SÓ LIMPA O CARRINHO SE ENVIAR PRO WHATSAPP */
-        /* ========================================================================= */
-        function handleCheckPaymentResponse(responseType) {
-            window.onpopstate = null; 
-            closeModal('payment-check-modal');
-            
-            if (responseType === 'sim') {
-                // Envia o pedido completo com o status pago e limpa o carrinho
-                sendOrderToWhatsApp(`CONCLUÍDO VIA ${selectedPaymentMethod.toUpperCase()} (COMPROVANTE EM ANEXO)`, true);
-            } else if (responseType === 'whats') {
-                // Envia o pedido completo avisando que quer combinar e limpa o carrinho
-                sendOrderToWhatsApp(`DESEJA PAGAR VIA WHATSAPP COM COLABORADOR`, true);
-            } else if (responseType === 'continuar') {
-                // NÃO limpa o carrinho. Apenas fecha o modal para o cliente continuar no site
-                console.log("Cliente optou por continuar comprando. Mantendo carrinho.");
-            }
-        }
+            fetch("https://api.mercadopago.com/checkout/preferences", {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${MP_ACCESS_TOKEN}`,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(preferenceData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if(data.init_point) {
+                    // 1. Dispara o WhatsApp abrindo em uma NOVA ABA com o status
+                    const statusTexto = `AGUARDANDO PAGAMENTO VIA ${selectedPaymentMethod.toUpperCase()} (ABRINDO TELA DE PAGAMENTO NO SITE)`;
+                    sendOrderToWhatsApp(statusTexto, false); 
 
-        function confirmPixAndNotifyWhatsApp() {
-            closeModal('pix-payment-modal');
-            sendOrderToWhatsApp("CONCLUÍDO VIA PIX (COMPROVANTE EM ANEXO)", true);
+                    // 2. Redireciona a ABA ATUAL da loja direto para a tela do Mercado Pago
+                    window.location.href = data.init_point;
+
+                    // 3. Limpa o carrinho localmente já que os dois fluxos foram disparados com sucesso
+                    clearCartAndCache();
+                    closeModal('cart-modal');
+                } else {
+                    throw new Error("Erro ao estruturar preferência no Mercado Pago.");
+                }
+            })
+            .catch(error => {
+                console.error(error);
+                alert("Erro ao conectar ao Mercado Pago. Tente novamente.");
+            })
+            .finally(() => {
+                payButton.disabled = false;
+                selectPaymentCard(selectedPaymentMethod);
+            });
         }
 
         function clearCartAndCache() {
@@ -1637,12 +1479,12 @@
             const name = document.getElementById("customer-name").value;
             const method = document.getElementById("delivery-method").value;
 
-            let text = `📸 *[POR FAVOR, ANEXE O SEU COMPROVANTE JUNTO A ESTA MENSAGEM]* 📸\n\n`;
+            let text = `📸 *[POR FAVOR, ANEXE O SEU COMPROVANTE NESTA CONVERSA ASSIM QUE CONCLUIR]* 📸\n\n`;
             text += `*NOVO PEDIDO - JC PESCADOS*\n\n`;
             text += `*Cliente:* ${name}\n`;
             text += `*Método de Envio:* ${method}\n`;
             text += `*Forma de Pagamento:* _${selectedPaymentMethod.toUpperCase()}_\n`;
-            text += `*Status Informado:* _${paymentStatus}_\n\n`;
+            text += `*Status do Pedido:* _${paymentStatus}_\n\n`;
             text += `*PRODUTOS PEDIDOS:*\n`;
 
             let total = 0;
