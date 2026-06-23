@@ -927,21 +927,22 @@
         </div>
     </div>
 
+    <!-- MODAL DE INTERAÇÃO APÓS RETORNO DO MERCADO PAGO -->
     <div id="payment-check-modal" class="modal" style="z-index: 1100;">
         <div class="modal-content" style="text-align: center; max-width: 460px;">
             <h3 style="font-size: 20px;">Você já concluiu seu pagamento? 🤔</h3>
             <p style="margin-bottom: 25px; color:#64748b; font-size: 14px; line-height: 1.5;">
-                Caso tenha finalizado a transação na aba do Mercado Pago, confirme abaixo para nos enviar os detalhes. Se preferir, você pode pagar diretamente com o suporte.
+                Se você já pagou na tela do Mercado Pago, confirme abaixo para nos mandar os detalhes do pedido e anexar o seu comprovante. Se preferir, fale direto com a nossa equipe.
             </p>
             <div style="display: flex; flex-direction: column; gap: 12px;">
                 <button class="buy-btn" style="background: var(--success);" onclick="handleCheckPaymentResponse('sim')">
                     ✅ Sim, já concluí o pagamento!
                 </button>
                 <button class="buy-btn" style="background: #128c7e;" onclick="handleCheckPaymentResponse('whats')">
-                    💬 Desejo pagar via Whats com colaborador
+                    💬 Prefiro pagar via Whats com colaborador
                 </button>
-                <button class="buy-btn" style="background: #64748b; font-size: 13px; padding: 8px;" onclick="handleCheckPaymentResponse('cancelar')">
-                    Voltar para o Carrinho
+                <button class="buy-btn" style="background: #64748b; font-size: 14px;" onclick="handleCheckPaymentResponse('continuar')">
+                    🛒 Continuar Comprando
                 </button>
             </div>
         </div>
@@ -1477,7 +1478,7 @@
         }
 
         /* ========================================================================= */
-        /* FLUXO CORRIGIDO: REDIRECIONA NA MESMA ABA -> PERGUNTA DO MODAL SÓ NO POPSTATE */
+        /* FLUXO DE REDIRECIONAMENTO NA MESMA ABA COM GATILHO DE VOLTA (POPSTATE)    */
         /* ========================================================================= */
         function processOrderCheckout() {
             const name = document.getElementById("customer-name").value;
@@ -1488,7 +1489,7 @@
             saveCartDraftToStorage();
 
             if(selectedPaymentMethod === "especie") {
-                sendOrderToWhatsApp("A combinar / Dinheiro na Retirada");
+                sendOrderToWhatsApp("A combinar / Dinheiro na Retirada", true);
                 return;
             }
 
@@ -1532,19 +1533,14 @@
                 .then(response => response.json())
                 .then(data => {
                     if(data.init_point) {
-                        // Fecha os modais atuais da tela para limpar o visual
                         closeModal('cart-modal');
-
-                        // 1. Injeta o estado falso no histórico para capturar o "Voltar" futuro
                         history.pushState({ checkoutAtivo: true }, "Pagamento", window.location.href);
 
-                        // 2. Cria a escuta que SÓ vai disparar quando o usuário retornar ao site
                         window.onpopstate = function (event) {
                             document.getElementById("payment-check-modal").style.display = "flex";
-                            window.onpopstate = null; // Desliga para não prender o botão voltar nativo
+                            window.onpopstate = null;
                         };
 
-                        // 3. Redireciona na MESMA aba para evitar bloqueio de popups e permitir a volta
                         window.location.href = data.init_point;
                     } else {
                         throw new Error("Erro ao estruturar preferência de Pix.");
@@ -1577,19 +1573,14 @@
                 .then(response => response.json())
                 .then(data => {
                     if(data.init_point) {
-                        // Fecha os modais atuais da tela
                         closeModal('cart-modal');
-
-                        // 1. Injeta o estado falso no histórico para capturar o "Voltar" futuro
                         history.pushState({ checkoutAtivo: true }, "Pagamento", window.location.href);
 
-                        // 2. Cria a escuta que SÓ vai disparar quando o usuário retornar ao site
                         window.onpopstate = function (event) {
                             document.getElementById("payment-check-modal").style.display = "flex";
                             window.onpopstate = null;
                         };
 
-                        // 3. Redireciona na MESMA aba para evitar bloqueio de popups
                         window.location.href = data.init_point;
                     } else {
                         throw new Error("Erro na API.");
@@ -1606,24 +1597,28 @@
             }
         }
 
-        // CONTROLADOR DE RESPOSTAS DO MODAL NA VOLTA DO CLIENTE
+        /* ========================================================================= */
+        /* NOVO GERENCIADOR DE RESPOSTAS: SÓ LIMPA O CARRINHO SE ENVIAR PRO WHATSAPP */
+        /* ========================================================================= */
         function handleCheckPaymentResponse(responseType) {
-            window.onpopstate = null; // Garante a liberação do histórico
+            window.onpopstate = null; 
             closeModal('payment-check-modal');
             
             if (responseType === 'sim') {
-                sendOrderToWhatsApp(`CONCLUÍDO VIA ${selectedPaymentMethod.toUpperCase()} (COMPROVANTE EM ANEXO)`);
+                // Envia o pedido completo com o status pago e limpa o carrinho
+                sendOrderToWhatsApp(`CONCLUÍDO VIA ${selectedPaymentMethod.toUpperCase()} (COMPROVANTE EM ANEXO)`, true);
             } else if (responseType === 'whats') {
-                sendOrderToWhatsApp(`DESEJA PAGAR VIA WHATSAPP COM COLABORADOR`);
-            } else if (responseType === 'cancelar') {
-                // Abre o carrinho de volta se ele clicar em cancelar a checagem
-                document.getElementById("cart-modal").style.display = "flex";
+                // Envia o pedido completo avisando que quer combinar e limpa o carrinho
+                sendOrderToWhatsApp(`DESEJA PAGAR VIA WHATSAPP COM COLABORADOR`, true);
+            } else if (responseType === 'continuar') {
+                // NÃO limpa o carrinho. Apenas fecha o modal para o cliente continuar no site
+                console.log("Cliente optou por continuar comprando. Mantendo carrinho.");
             }
         }
 
         function confirmPixAndNotifyWhatsApp() {
             closeModal('pix-payment-modal');
-            sendOrderToWhatsApp("CONCLUÍDO VIA PIX (COMPROVANTE EM ANEXO)");
+            sendOrderToWhatsApp("CONCLUÍDO VIA PIX (COMPROVANTE EM ANEXO)", true);
         }
 
         function clearCartAndCache() {
@@ -1637,7 +1632,7 @@
             document.getElementById("customer-name").value = "";
         }
 
-        function sendOrderToWhatsApp(paymentStatus = "Pendente") {
+        function sendOrderToWhatsApp(paymentStatus = "Pendente", clearAfterSend = true) {
             countWhatsAppClick();
             const name = document.getElementById("customer-name").value;
             const method = document.getElementById("delivery-method").value;
@@ -1660,7 +1655,9 @@
 
             text += `\n*TOTAL FINAL: R$ ${total.toFixed(2)}*`;
 
-            clearCartAndCache();
+            if (clearAfterSend) {
+                clearCartAndCache();
+            }
 
             const encoded = encodeURIComponent(text);
             const url = `https://wa.me/5586994494783?text=${encoded}`;
