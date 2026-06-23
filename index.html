@@ -807,7 +807,6 @@
         🛒 <div class="cart-badge" id="global-cart-count">0</div>
     </a>
 
-    <!-- MODAIS -->
     <div id="purchase-modal" class="modal">
         <div class="modal-content">
             <button class="close-btn" onclick="closeModal('purchase-modal')">&times;</button>
@@ -877,7 +876,6 @@
                     </div>
                 </div>
 
-                <!-- Campo de Parcelas (Apenas para Crédito) -->
                 <div id="cc-installments-wrapper" style="display: none; margin-bottom: 15px;">
                     <label style="font-size: 13px; font-weight: 700; color: var(--primary-dark); display: block; margin-bottom: 6px;">Escolha o Parcelamento:</label>
                     <select id="cc-installments" onchange="updateCartTotalWithFees()"></select>
@@ -895,7 +893,6 @@
         </div>
     </div>
 
-    <!-- RODAPÉ -->
     <footer>
         <div class="footer-container">
             <p>&copy; 2026 JC Pescados. Todos os direitos reservados.</p>
@@ -1240,57 +1237,57 @@
         }
         
         function sendOrderToWhatsApp(status = "Pendente", clear = true) {
-            countWhatsAppClick();[cite: 1]
+            countWhatsAppClick();
             
-            const name = localStorage.getItem("jc_customer_name") || document.getElementById("customer-name").value;[cite: 1]
-            const method = document.getElementById("delivery-method").value;[cite: 1]
-            let nParcelas = selectedPaymentMethod === 'cartao' ? (localStorage.getItem("jc_cc_installments") || document.getElementById("cc-installments").value) : "1";[cite: 1]
+            const name = localStorage.getItem("jc_customer_name") || document.getElementById("customer-name").value;
+            const method = document.getElementById("delivery-method").value;
+            let nParcelas = selectedPaymentMethod === 'cartao' ? (localStorage.getItem("jc_cc_installments") || document.getElementById("cc-installments").value) : "1";
             
             // Gerar data e hora atuais dinamicamente
             const agora = new Date();
             const dataFormatada = agora.toLocaleDateString('pt-BR');
             const horaFormatada = agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
 
-            let t = `*🟢 NOVO PEDIDO - JC PESCADOS*\n`;[cite: 1]
+            let t = `*🟢 NOVO PEDIDO - JC PESCADOS*\n`;
             t += `------------------------------------------\n\n`;
             
             t += `👤 *DADOS DO CLIENTE*\n`;
-            t += `*Nome:* ${name}\n`;[cite: 1]
+            t += `*Nome:* ${name}\n`;
             t += `*Data:* ${dataFormatada}\n`;
             t += `*Horário:* ${horaFormatada}h\n\n`;
             
             t += `🚚 *LOGÍSTICA E ENTREGA*\n`;
-            t += `*Forma de Envio:* ${method}\n\n`;[cite: 1]
+            t += `*Forma de Envio:* ${method}\n\n`;
             
             t += `💳 *PAGAMENTO*\n`;
-            t += `*Meio de Pagamento:* ${selectedPaymentMethod.toUpperCase()}\n`;[cite: 1]
+            t += `*Meio de Pagamento:* ${selectedPaymentMethod.toUpperCase()}\n`;
             if(selectedPaymentMethod === 'cartao') {
-                t += `*Parcelamento:* ${nParcelas}\n`;[cite: 1]
+                t += `*Parcelamento:* ${nParcelas}\n`;
             }
-            t += `*Status do Pagamento:* ${status}\n\n`;[cite: 1]
+            t += `*Status do Pagamento:* ${status}\n\n`;
             
             t += `------------------------------------------\n`;
             t += `📦 *DETALHES DO PRODUTO*\n`;
             
-            cart.forEach(i => {[cite: 1]
-                const sub = i.product.price * i.quantity;[cite: 1]
-                t += `• ${i.quantity}x _${i.product.name}_\n`;[cite: 1]
-                t += `  Ref: R$ ${i.product.price.toFixed(2)} | *Subtotal:* R$ ${sub.toFixed(2)}\n\n`;[cite: 1]
+            cart.forEach(i => {
+                const sub = i.product.price * i.quantity;
+                t += `• ${i.quantity}x _${i.product.name}_\n`;
+                t += `  Ref: R$ ${i.product.price.toFixed(2)} | *Subtotal:* R$ ${sub.toFixed(2)}\n\n`;
             });
             
             t += `------------------------------------------\n`;
             t += `💰 *RESUMO DE VALORES*\n`;
-            t += `*Subtotal Produtos:* R$ ${subtotalProducts.toFixed(2)}\n`;[cite: 1]
-            t += `*Taxas Administ.:* R$ ${currentTaxValue.toFixed(2)}\n`;[cite: 1]
-            t += `*TOTAL GERAL: R$ ${globalTotalValue.toFixed(2)}*\n\n`;[cite: 1]
+            t += `*Subtotal Produtos:* R$ ${subtotalProducts.toFixed(2)}\n`;
+            t += `*Taxas Administ.:* R$ ${currentTaxValue.toFixed(2)}\n`;
+            t += `*TOTAL GERAL: R$ ${globalTotalValue.toFixed(2)}*\n\n`;
             t += `------------------------------------------`;
             
             if(clear) { 
-                cart = [];[cite: 1]
-                localStorage.removeItem("jc_cart_backup");[cite: 1]
-                updateCartBadge();[cite: 1]
+                cart = [];
+                localStorage.removeItem("jc_cart_backup");
+                updateCartBadge();
             }
-            window.open(`https://wa.me/5586994494783?text=${encodeURIComponent(t)}`, '_blank');[cite: 1]
+            window.open(`https://wa.me/5586994494783?text=${encodeURIComponent(t)}`, '_blank');
         }
 
         /* FUNÇÕES ADMIN ADICIONAIS */
