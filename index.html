@@ -941,7 +941,7 @@
                 <button class="buy-btn" style="background: #128c7e;" onclick="handleCheckPaymentResponse('whats')">
                     💬 Desejo pagar via Whats com colaborador
                 </button>
-                <button class="buy-btn" style="background: #64748b; font-size: 13px; padding: 8px;" onclick="closeModal('payment-check-modal')">
+                <button class="buy-btn" style="background: #64748b; font-size: 13px; padding: 8px;" onclick="handleCheckPaymentResponse('cancelar')">
                     Voltar para o Carrinho
                 </button>
             </div>
@@ -1478,6 +1478,9 @@
             }
         }
 
+        /* ========================================================================= */
+        /* CORREÇÃO DO FLUXO: CAPTURA DO BOTÃO VOLTAR DO MERCADO PAGO OU NAVEGADOR */
+        /* ========================================================================= */
         function processOrderCheckout() {
             const name = document.getElementById("customer-name").value;
 
@@ -1490,6 +1493,20 @@
                 sendOrderToWhatsApp("A combinar / Dinheiro na Retirada");
                 return;
             }
+
+            // Injeta um estado artificial no histórico do navegador
+            history.pushState({ checkoutAtivo: true }, "Pagamento", window.location.href);
+
+            // Escuta imediatamente o gatilho de retorno do cliente (Botão Voltar)
+            window.onpopstate = function (event) {
+                // Força o fechamento das telas do checkout e abre o painel de verificação
+                closeModal('pix-payment-modal');
+                closeModal('cart-modal');
+                document.getElementById("payment-check-modal").style.display = "flex";
+                
+                // Desliga o evento temporariamente para que o cliente use o "voltar" normalmente depois
+                window.onpopstate = null;
+            };
 
             const payButton = document.getElementById("mp-pay-button");
             payButton.disabled = true;
@@ -1531,9 +1548,9 @@
                 .then(response => response.json())
                 .then(data => {
                     if(data.init_point) {
-                        // Abre o Mercado Pago em uma nova aba para o cliente pagar
+                        // Abre o ambiente seguro do Mercado Pago
                         window.open(data.init_point, "_blank");
-                        // MANTÉM o carrinho aberto e joga por cima o modal da pergunta
+                        // Caso ele não feche a aba mas clique na principal, o modal já fica engatilhado por baixo
                         document.getElementById("payment-check-modal").style.display = "flex";
                     } else {
                         throw new Error("Erro ao estruturar preferência de Pix.");
@@ -1566,9 +1583,7 @@
                 .then(response => response.json())
                 .then(data => {
                     if(data.init_point) {
-                        // Abre o checkout do cartão em uma nova aba
                         window.open(data.init_point, "_blank");
-                        // MANTÉM o carrinho aberto e joga por cima o modal da pergunta
                         document.getElementById("payment-check-modal").style.display = "flex";
                     } else {
                         throw new Error("Erro na API.");
@@ -1587,13 +1602,19 @@
 
         // FUNÇÃO QUE CAPTURA A RESPOSTA DO NOVO MODAL E ENVIA DETALHADO PRO WHATSAPP
         function handleCheckPaymentResponse(responseType) {
+            // Limpa o interceptador nativo caso o usuário tome uma ação manual nos botões do modal
+            window.onpopstate = null;
             closeModal('payment-check-modal');
-            closeModal('cart-modal');
             
             if (responseType === 'sim') {
+                closeModal('cart-modal');
                 sendOrderToWhatsApp(`CONCLUÍDO VIA ${selectedPaymentMethod.toUpperCase()} (COMPROVANTE EM ANEXO)`);
             } else if (responseType === 'whats') {
+                closeModal('cart-modal');
                 sendOrderToWhatsApp(`DESEJA PAGAR VIA WHATSAPP COM COLABORADOR`);
+            } else if (responseType === 'cancelar') {
+                // Se ele apenas cancelou a checagem, devolve ele para o modal do carrinho
+                document.getElementById("cart-modal").style.display = "flex";
             }
         }
 
