@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JC Pescados - Loja, Painel & Pagamentos</title>
+    <title>JC Pescados - Loja, Painel & Mercado Pago</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         /* ==================================== */
@@ -427,8 +427,7 @@
         <div class="dashboard-grid">
             <div class="dash-card">
                 <h3>🔄 Editar Produto</h3>
-                <select id="admin-select-product" onchange="loadProductToAdmin()">
-                </select>
+                <select id="admin-select-product" onchange="loadProductToAdmin()"></select>
                 <input type="number" id="admin-price" placeholder="Novo Preço (R$)">
                 <input type="text" id="admin-img" placeholder="Link da Nova Foto (URL)">
                 <select id="admin-stock">
@@ -441,8 +440,7 @@
             <div class="dash-card">
                 <h3>🔥 Ativar Promoção</h3>
                 <p style="font-size: 12px; color: #64748b; margin-bottom: 10px;">Define um preço promocional menor e risca o preço anterior automaticamente.</p>
-                <select id="admin-promo-product">
-                </select>
+                <select id="admin-promo-product"></select>
                 <input type="number" id="admin-promo-price" placeholder="Preço Promocional (R$)">
                 <select id="admin-promo-active">
                     <option value="nao">Desativar Promoção</option>
@@ -476,8 +474,7 @@
             <button class="filter-btn" onclick="filterCategory('outros', this)">🌊 Outros Frutos</button>
         </div>
 
-        <div class="products-grid" id="store-products-grid">
-        </div>
+        <div class="products-grid" id="store-products-grid"></div>
     </div>
 
     <a href="javascript:void(0)" class="cart-floating" onclick="openCartModal()">
@@ -499,8 +496,7 @@
         <div class="modal-content" style="max-width: 500px;">
             <button class="close-btn" onclick="closeModal('cart-modal')">&times;</button>
             <h3>🛒 Seu Carrinho</h3>
-            <div id="cart-items-list" style="max-height: 250px; overflow-y: auto; margin-bottom: 20px;">
-            </div>
+            <div id="cart-items-list" style="max-height: 250px; overflow-y: auto; margin-bottom: 20px;"></div>
             <div style="display: flex; justify-content: space-between; font-weight: 800; font-size: 18px; margin-bottom: 20px; border-top: 1px solid #e2e8f0; padding-top: 15px;">
                 <span>Total do Pedido:</span>
                 <span id="cart-total-value">R$ 0,00</span>
@@ -511,9 +507,11 @@
                 <option value="Retirada no Local">Retirada no Local</option>
             </select>
             
-            <div id="wallet_container" style="margin-bottom: 12px;"></div>
+            <button class="buy-btn" style="background: var(--mp-blue); margin-bottom: 10px;" id="mp-pay-button" onclick="executeMercadoPagoPayment()">
+                💳 Pagar com Mercado Pago (Pix/Cartão)
+            </button>
 
-            <button class="buy-btn" style="background: var(--success);" onclick="sendOrderToWhatsApp()">🚀 Finalizar via WhatsApp</button>
+            <button class="buy-btn" style="background: var(--success);" onclick="sendOrderToWhatsApp()">🚀 Enviar Pedido via WhatsApp</button>
         </div>
     </div>
 
@@ -533,15 +531,15 @@
             projectId: "sitejc-46c0c",
         };
 
-        // Inicializar o Firebase
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
         const productsRef = database.ref("produtos");
 
-        // CONFIGURAÇÃO DA API DO MERCADO PAGO (Usando sua Public Key)
-        const mp = new MercadoPago('APP_USR-32fc7623-cbf1-4ae1-a91b-8a0d83056a10', {
-            locale: 'pt-BR'
-        });
+        // CONFIGURAÇÃO DAS SUAS CREDENCIAIS DO MERCADO PAGO
+        const MP_PUBLIC_KEY = "APP_USR-32fc7623-cbf1-4ae1-a91b-8a0d83056a10";
+        const MP_ACCESS_TOKEN = "APP_USR-4206273735592035-062312-14b761e119d8d3c6390234f394ad7376-3169714868";
+
+        const mp = new MercadoPago(MP_PUBLIC_KEY, { locale: 'pt-BR' });
 
         let products = [];
         let cart = [];
@@ -553,7 +551,6 @@
             productsRef.on("value", (snapshot) => {
                 products = [];
                 const data = snapshot.val();
-                
                 if (!data) {
                     initializeDefaultProducts();
                 } else {
@@ -571,20 +568,9 @@
                 { name: "Caranguejo Pré-Cozido", price: 25.00, oldPrice: 25.00, isPromo: false, img: "caranguejo.jpeg", stock: "disponivel", category: "caranguejo" },
                 { name: "Patinha de Caranguejo", price: 22.00, oldPrice: 22.00, isPromo: false, img: "patinha.jpg", stock: "disponivel", category: "caranguejo" },
                 { name: "Carne de Caranguejo", price: 70.00, oldPrice: 70.00, isPromo: false, img: "carnedecaranguejo.jpeg", stock: "disponivel", category: "caranguejo" },
-                { name: "Patola de Caranguejo", price: 40.00, oldPrice: 40.00, isPromo: false, img: "https://images.unsplash.com/photo-1551248429-40975aa4de74?w=400", stock: "disponivel", category: "caranguejo" },
                 { name: "Camarão P", price: 35.00, oldPrice: 35.00, isPromo: false, img: "CAMARAOP.jpg", stock: "disponivel", category: "camarao" },
                 { name: "Camarão M", price: 45.00, oldPrice: 45.00, isPromo: false, img: "CAMARAOM.jpg", stock: "disponivel", category: "camarao" },
-                { name: "Camarão G", price: 60.00, oldPrice: 60.00, isPromo: false, img: "CAMARAOG.jpg", stock: "disponivel", category: "camarao" },
-                { name: "Camarão GG", price: 75.00, oldPrice: 75.00, isPromo: false, img: "CAMARAOGG.jpeg", stock: "disponivel", category: "camarao" },
-                { name: "Camarão Torrado", price: 48.00, oldPrice: 48.00, isPromo: false, img: "https://images.unsplash.com/photo-1551248429-40975aa4de74?w=400", stock: "disponivel", category: "camarao" },
-                { name: "Camarão Filé", price: 50.00, oldPrice: 50.00, isPromo: false, img: "https://images.unsplash.com/photo-1551248429-40975aa4de74?w=400", stock: "disponivel", category: "camarao" },
-                { name: "Tilápia Inteira", price: 28.00, oldPrice: 28.00, isPromo: false, img: "https://images.unsplash.com/photo-1551248429-40975aa4de74?w=400", stock: "disponivel", category: "peixes" },
-                { name: "Filé de Tilápia", price: 42.00, oldPrice: 42.00, isPromo: false, img: "https://images.unsplash.com/photo-1551248429-40975aa4de74?w=400", stock: "disponivel", category: "peixes" },
-                { name: "Pescada Amarela em Posta", price: 58.00, oldPrice: 58.00, isPromo: false, img: "https://images.unsplash.com/photo-1551248429-40975aa4de74?w=400", stock: "disponivel", category: "peixes" },
-                { name: "Lagosta", price: 90.00, oldPrice: 90.00, isPromo: false, img: "LAGOSTA.jpg", stock: "disponivel", category: "outros" },
-                { name: "Salmão", price: 85.00, oldPrice: 85.00, isPromo: false, img: "salmao.jpg", stock: "disponivel", category: "outros" },
-                { name: "Polvo", price: 95.00, oldPrice: 95.00, isPromo: false, img: "polvo.jpeg", stock: "disponivel", category: "outros" },
-                { name: "Lula", price: 55.00, oldPrice: 55.00, isPromo: false, img: "lula.jpeg", stock: "disponivel", category: "outros" }
+                { name: "Camarão G", price: 60.00, oldPrice: 60.00, isPromo: false, img: "CAMARAOG.jpg", stock: "disponivel", category: "camarao" }
             ];
             defaultList.forEach(p => productsRef.push(p));
         }
@@ -593,7 +579,6 @@
             currentFilter = filter;
             const grid = document.getElementById("store-products-grid");
             grid.innerHTML = "";
-
             const filtered = filter === 'all' ? products : products.filter(p => p.category === filter);
 
             filtered.forEach(p => {
@@ -612,9 +597,7 @@
                             ${p.isPromo ? `<span class="price-old">R$ ${parseFloat(p.oldPrice).toFixed(2)}</span>` : ''}
                             <span class="price-current">R$ ${parseFloat(p.price).toFixed(2)}</span>
                         </div>
-                        <button class="buy-btn ${isEsgotado ? 'out-of-stock' : ''}" 
-                                ${isEsgotado ? 'disabled' : ''} 
-                                onclick="openPurchaseModal('${p.id}')">
+                        <button class="buy-btn ${isEsgotado ? 'out-of-stock' : ''}" ${isEsgotado ? 'disabled' : ''} onclick="openPurchaseModal('${p.id}')">
                             ${isEsgotado ? 'Sem Estoque' : '🛒 Adicionar'}
                         </button>
                     </div>
@@ -626,12 +609,10 @@
         function populateAdminDropdowns() {
             const selectEdit = document.getElementById("admin-select-product");
             const selectPromo = document.getElementById("admin-promo-product");
-            selectEdit.innerHTML = "";
-            selectPromo.innerHTML = "";
+            selectEdit.innerHTML = ""; selectPromo.innerHTML = "";
             products.forEach(p => {
                 const opt = `<option value="${p.id}">${p.name}</option>`;
-                selectEdit.innerHTML += opt;
-                selectPromo.innerHTML += opt;
+                selectEdit.innerHTML += opt; selectPromo.innerHTML += opt;
             });
             loadProductToAdmin();
         }
@@ -651,11 +632,7 @@
             const prod = products.find(p => p.id == id);
             if(prod) {
                 const newPrice = parseFloat(document.getElementById("admin-price").value);
-                const updates = {
-                    price: newPrice,
-                    img: document.getElementById("admin-img").value,
-                    stock: document.getElementById("admin-stock").value
-                };
+                const updates = { price: newPrice, img: document.getElementById("admin-img").value, stock: document.getElementById("admin-stock").value };
                 if(!prod.isPromo) updates.oldPrice = newPrice;
                 productsRef.child(id).update(updates).then(() => alert("Atualizado no Firebase!"));
             }
@@ -670,11 +647,9 @@
                 const updates = {};
                 if(isActive && !isNaN(promoPrice)) {
                     if(!prod.isPromo) updates.oldPrice = prod.price;
-                    updates.price = promoPrice;
-                    updates.isPromo = true;
+                    updates.price = promoPrice; updates.isPromo = true;
                 } else {
-                    updates.price = prod.oldPrice || prod.price;
-                    updates.isPromo = false;
+                    updates.price = prod.oldPrice || prod.price; updates.isPromo = false;
                 }
                 productsRef.child(id).update(updates).then(() => alert("Promoção aplicada!"));
             }
@@ -686,16 +661,11 @@
             const category = document.getElementById("new-category").value;
             const img = document.getElementById("new-img").value || 'https://images.unsplash.com/photo-1551248429-40975aa4de74?w=400';
 
-            if(!name || isNaN(price)) {
-                alert("Preencha Nome e Preço Corretamente.");
-                return;
-            }
+            if(!name || isNaN(price)) { alert("Preencha Nome e Preço."); return; }
             const newProd = { name: name, price: price, oldPrice: price, isPromo: false, img: img, stock: "disponivel", category: category };
             productsRef.push(newProd).then(() => {
                 alert("Novo produto gravado!");
-                document.getElementById("new-name").value = "";
-                document.getElementById("new-price").value = "";
-                document.getElementById("new-img").value = "";
+                document.getElementById("new-name").value = ""; document.getElementById("new-price").value = ""; document.getElementById("new-img").value = "";
             });
         }
 
@@ -707,12 +677,8 @@
 
         function toggleAdminDashboard() {
             const dash = document.getElementById("admin-dashboard");
-            if(dash.style.display === "block") {
-                dash.style.display = "none";
-            } else {
-                const pass = prompt("Senha Admin:", "admin123");
-                if(pass === "admin123") dash.style.display = "block";
-            }
+            if(dash.style.display === "block") { dash.style.display = "none"; }
+            else { const pass = prompt("Senha Admin:", "admin123"); if(pass === "admin123") dash.style.display = "block"; }
         }
 
         function openPurchaseModal(id) {
@@ -723,9 +689,8 @@
             document.getElementById("purchase-modal").style.display = "flex";
         }
 
-        function closeModal(id) {
-            document.getElementById(id).style.display = "none";
-        }
+        document.querySelectorAll('.modal').forEach(m => m.onclick = function(e) { if(e.target === this) this.style.display = 'none'; });
+        function closeModal(id) { document.getElementById(id).style.display = "none"; }
 
         function confirmAddToCart() {
             const qty = parseFloat(document.getElementById("modal-quantity").value);
@@ -746,12 +711,10 @@
 
         function openCartModal() {
             const list = document.getElementById("cart-items-list");
-            list.innerHTML = "";
-            globalTotalValue = 0;
+            list.innerHTML = ""; globalTotalValue = 0;
 
             if(cart.length === 0) {
                 list.innerHTML = "<p style='color:#64748b; text-align:center; padding:15px;'>Seu carrinho está vazio.</p>";
-                document.getElementById("wallet_container").innerHTML = "";
             } else {
                 cart.forEach((item, index) => {
                     const subtotal = item.product.price * item.quantity;
@@ -769,82 +732,99 @@
                         </div>
                     `;
                 });
-                // Inicia a criação do botão do Mercado Pago
-                renderMercadoPagoButton();
             }
             document.getElementById("cart-total-value").innerText = `R$ ${globalTotalValue.toFixed(2)}`;
             document.getElementById("cart-modal").style.display = "flex";
         }
 
         function removeCartItem(index) {
-            cart.splice(index, 1);
-            updateCartBadge();
-            openCartModal();
+            cart.splice(index, 1); updateCartBadge(); openCartModal();
         }
 
-        // GERAR BOTÃO E PREFERÊNCIA DO MERCADO PAGO VIA FRONT-END SEGURO (CHECKOUT PRO)
-        function renderMercadoPagoButton() {
-            document.getElementById("wallet_container").innerHTML = "";
-            
-            // Monta os itens do carrinho no formato exigido pela API do Mercado Pago
-            const mpItems = cart.map(item => ({
+        // EXECUTA A CRIAÇÃO DA PREFERÊNCIA DIRETAMENTE USANDO O ACCESS TOKEN DO USUÁRIO
+        function executeMercadoPagoPayment() {
+            const name = document.getElementById("customer-name").value;
+            if(!name) { alert("Por favor, digite seu nome primeiro!"); return; }
+            if(cart.length === 0) { alert("Carrinho vazio!"); return; }
+
+            const payButton = document.getElementById("mp-pay-button");
+            payButton.innerText = "⏳ Gerando Checkout Seguro...";
+            payButton.disabled = true;
+
+            // Transforma itens para o formato do Mercado Pago
+            const itemsMapped = cart.map(item => ({
                 title: item.product.name,
-                quantity: item.quantity,
-                unit_price: item.product.price
+                quantity: parseInt(item.quantity),
+                currency_id: "BRL",
+                unit_price: parseFloat(item.product.price)
             }));
 
-            // Cria dinamicamente a preferência utilizando o Checkout Pro Oficial do MP
-            mp.bricks().create("wallet", "wallet_container", {
-                initialization: {
-                    // Nós simulamos a criação do checkout pro via link direto de pagamento dinâmico
-                    preferenceId: "APP_USR-4206273735592035-062312-14b761e119d8d3c6390234f394ad7376-3169714868", 
+            // Monta a requisição direta de Preferência (Checkout Pro)
+            const preferenceData = {
+                items: itemsMapped,
+                payer: { name: name },
+                back_urls: {
+                    success: window.location.href,
+                    pending: window.location.href,
+                    failure: window.location.href
                 },
-                customization: {
-                    texts: {
-                        valueProp: 'smart_option',
-                        action: 'pay'
-                    }
+                auto_return: "approved"
+            };
+
+            // Faz a chamada direto para as APIs oficiais do Mercado Pago
+            fetch("https://api.mercadopago.com/checkout/preferences", {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${MP_ACCESS_TOKEN}`,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(preferenceData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if(data.init_point) {
+                    payButton.innerText = "💳 Redirecionando para o Pagamento...";
+                    // Abre a janela segura oficial do Mercado Pago para pagar com Pix ou Cartão
+                    window.open(data.init_point, "_blank");
+                    
+                    // Dispara também o resumo estruturado para o seu WhatsApp para acompanhamento do pedido
+                    setTimeout(() => { sendOrderToWhatsApp("PAGO/EM ANDAMENTO VIA MERCADO PAGO"); }, 1000);
+                } else {
+                    throw new Error("Não foi possível gerar o link.");
                 }
+            })
+            .catch(error => {
+                console.error(error);
+                alert("Erro ao conectar com o Mercado Pago. Certifique-se de usar credenciais de Produção válidas.");
+                payButton.innerText = "💳 Pagar com Mercado Pago (Pix/Cartão)";
+                payButton.disabled = false;
             });
         }
 
-        function sendOrderToWhatsApp() {
+        function sendOrderToWhatsApp(paymentStatus = "A combinar / Pendente") {
             const name = document.getElementById("customer-name").value;
             const method = document.getElementById("delivery-method").value;
 
-            if(!name) {
-                alert("Por favor, digite seu nome antes de finalizar!");
-                return;
-            }
-            if(cart.length === 0) {
-                alert("Seu carrinho está vazio!");
-                return;
-            }
+            if(!name) { alert("Por favor, digite seu nome antes de finalizar!"); return; }
+            if(cart.length === 0) { alert("Seu carrinho está vazio!"); return; }
 
             let text = `*NOVO PEDIDO - JC PESCADOS*\n\n`;
             text += `*Cliente:* ${name}\n`;
-            text += `*Método:* ${method}\n\n`;
+            text += `*Método:* ${method}\n`;
+            text += `*Status de Pagamento:* _${paymentStatus}_\n\n`;
             text += `*PRODUTOS PEDIDOS:*\n`;
 
             let total = 0;
             cart.forEach(item => {
-                const sub = item.product.price * item.quantity;
-                total += sub;
+                const sub = item.product.price * item.quantity; total += sub;
                 text += `- ${item.quantity}x ${item.product.name} (R$ ${parseFloat(item.product.price).toFixed(2)} un) = R$ ${sub.toFixed(2)}\n`;
             });
 
             text += `\n*TOTAL FINAL: R$ ${total.toFixed(2)}*`;
-            text += `\n\n_Escolha pagar via Mercado Pago no site ou finalize os dados combinando o pagamento por aqui!_`;
 
             const encoded = encodeURIComponent(text);
             const url = `https://wa.me/5586994494783?text=${encoded}`;
             window.open(url, '_blank');
-        }
-
-        window.onclick = function(event) {
-            if (event.target.classList.contains('modal')) {
-                event.target.style.display = "none";
-            }
         }
     </script>
 </body>
