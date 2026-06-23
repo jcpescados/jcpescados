@@ -555,22 +555,6 @@
             margin: 15px 0;
         }
 
-        .iframe-pix-wrapper {
-            width: 100%;
-            height: 380px;
-            border: 1px solid #e2e8f0;
-            border-radius: 12px;
-            overflow: hidden;
-            background: #fff;
-            margin-bottom: 15px;
-        }
-
-        .iframe-pix-wrapper iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-
         .payment-methods-grid {
             display: grid;
             grid-template-columns: 1fr;
@@ -664,6 +648,18 @@
         .payment-card[data-value="pix"].selected .radio-dot::after { background: var(--mp-blue); }
         .payment-card[data-value="cartao"].selected .radio-dot::after { background: var(--primary); }
         .payment-card[data-value="especie"].selected .radio-dot::after { background: var(--success); }
+
+        /* Estado Pós-Clique de Pagamento */
+        .post-pay-container {
+            display: none;
+            background: #f0fdf4;
+            border: 2px dashed var(--success);
+            border-radius: 12px;
+            padding: 15px;
+            margin: 15px 0;
+            text-align: center;
+            animation: fadeIn 0.4s ease;
+        }
 
         @keyframes selectPulse {
             0% { transform: scale(1); }
@@ -861,43 +857,52 @@
                 <span id="cart-total-value">R$ 0,00</span>
             </div>
             
-            <input type="text" id="customer-name" placeholder="Digite seu Nome para entrega" oninput="saveCartDraftToStorage()">
-            
-            <label style="font-size: 13px; font-weight: 700; color: var(--primary-dark); display: block; margin-bottom: 6px;">Método de Envio:</label>
-            <select id="delivery-method" onchange="handleDeliveryMethodChange(); saveCartDraftToStorage();">
-                <option value="Entrega a Domicílio">Entrega a Domicílio</option>
-                <option value="Retirada no Local">Retirada no Local</option>
-            </select>
+            <div id="cart-inputs-wrapper">
+                <input type="text" id="customer-name" placeholder="Digite seu Nome para entrega" oninput="saveCartDraftToStorage()">
+                
+                <label style="font-size: 13px; font-weight: 700; color: var(--primary-dark); display: block; margin-bottom: 6px;">Método de Envio:</label>
+                <select id="delivery-method" onchange="handleDeliveryMethodChange(); saveCartDraftToStorage();">
+                    <option value="Entrega a Domicílio">Entrega a Domicílio</option>
+                    <option value="Retirada no Local">Retirada no Local</option>
+                </select>
 
-            <label style="font-size: 13px; font-weight: 700; color: var(--primary-dark); display: block; margin-bottom: 8px;">Selecione a Forma de Pagamento:</label>
-            
-            <div class="payment-methods-grid">
-                <div class="payment-card selected" data-value="pix" onclick="selectPaymentCard('pix'); saveCartDraftToStorage();">
-                    <div class="icon-circle">⚡</div>
-                    <div class="details">
-                        <span class="title">Pix Automático</span>
-                        <span class="subtitle">Abre Mercado Pago + WhatsApp juntos instantaneamente</span>
+                <label style="font-size: 13px; font-weight: 700; color: var(--primary-dark); display: block; margin-bottom: 8px;">Selecione a Forma de Pagamento:</label>
+                
+                <div class="payment-methods-grid">
+                    <div class="payment-card selected" data-value="pix" onclick="selectPaymentCard('pix'); saveCartDraftToStorage();">
+                        <div class="icon-circle">⚡</div>
+                        <div class="details">
+                            <span class="title">Pix Automático</span>
+                            <span class="subtitle">Gera link do Mercado Pago sem fechar a loja</span>
+                        </div>
+                        <div class="radio-dot"></div>
                     </div>
-                    <div class="radio-dot"></div>
-                </div>
 
-                <div class="payment-card" data-value="cartao" onclick="selectPaymentCard('cartao'); saveCartDraftToStorage();">
-                    <div class="icon-circle">💳</div>
-                    <div class="details">
-                        <span class="title">Cartão de Crédito</span>
-                        <span class="subtitle">Abre o checkout do cartão + WhatsApp juntos instantaneamente</span>
+                    <div class="payment-card" data-value="cartao" onclick="selectPaymentCard('cartao'); saveCartDraftToStorage();">
+                        <div class="icon-circle">💳</div>
+                        <div class="details">
+                            <span class="title">Cartão de Crédito</span>
+                            <span class="subtitle">Gera link do Cartão sem fechar a loja</span>
+                        </div>
+                        <div class="radio-dot"></div>
                     </div>
-                    <div class="radio-dot"></div>
-                </div>
 
-                <div class="payment-card" id="card-especie" data-value="especie" style="display:none;" onclick="selectPaymentCard('especie'); saveCartDraftToStorage();">
-                    <div class="icon-circle">💵</div>
-                    <div class="details">
-                        <span class="title">Espécie (Dinheiro)</span>
-                        <span class="subtitle">Efetue o pagamento em mãos na retirada</span>
+                    <div class="payment-card" id="card-especie" data-value="especie" style="display:none;" onclick="selectPaymentCard('especie'); saveCartDraftToStorage();">
+                        <div class="icon-circle">💵</div>
+                        <div class="details">
+                            <span class="title">Espécie (Dinheiro)</span>
+                            <span class="subtitle">Efetue o pagamento em mãos na retirada</span>
+                        </div>
+                        <div class="radio-dot"></div>
                     </div>
-                    <div class="radio-dot"></div>
                 </div>
+            </div>
+
+            <!-- Box Informativo Dinâmico Pós Disparo -->
+            <div id="post-pay-alert" class="post-pay-container">
+                <span style="font-size: 24px;">ℹ️</span>
+                <p style="font-weight: 700; margin: 5px 0; color: var(--primary-dark);">Aba de Pagamento Aberta!</p>
+                <p style="font-size: 12px; color: #475569; margin-bottom: 10px;">Efetue o pagamento na outra aba. Quando terminar, use o botão abaixo para anexar o comprovante.</p>
             </div>
             
             <button class="buy-btn" style="background: var(--mp-blue); margin-top: 10px;" id="mp-pay-button" onclick="processOrderCheckout()">
@@ -936,6 +941,7 @@
         let currentFilter = 'destaque';
         let globalTotalValue = 0;
         let selectedPaymentMethod = 'pix';
+        let isWaitingPaymentConfirm = false; // Controla se o fluxo já abriu a aba
 
         document.addEventListener("DOMContentLoaded", () => {
             registerStoreVisit();
@@ -981,7 +987,8 @@
                 items: cart.map(i => ({ id: i.product.id, quantity: i.quantity })),
                 customerName: document.getElementById("customer-name").value,
                 deliveryMethod: document.getElementById("delivery-method").value,
-                paymentMethod: selectedPaymentMethod
+                paymentMethod: selectedPaymentMethod,
+                isWaitingPaymentConfirm: isWaitingPaymentConfirm
             };
             localStorage.setItem("jc_cart_draft", JSON.stringify(draft));
 
@@ -1021,6 +1028,10 @@
                     }
                     if(draft.paymentMethod) {
                         selectPaymentCard(draft.paymentMethod);
+                    }
+                    if(draft.isWaitingPaymentConfirm) {
+                        isWaitingPaymentConfirm = true;
+                        changeModalToPostPaymentState();
                     }
                 }
             } catch (e) {
@@ -1326,7 +1337,7 @@
                             </div>
                             <div style="display:flex; align-items:center; gap:10px;">
                                 <span style="font-weight:700; color:var(--primary);">R$ ${subtotal.toFixed(2)}</span>
-                                <button style="background:none; border:none; color:var(--danger); cursor:pointer; font-weight:bold;" onclick="removeCartItem(${index})">❌</button>
+                                ${!isWaitingPaymentConfirm ? `<button style="background:none; border:none; color:var(--danger); cursor:pointer; font-weight:bold;" onclick="removeCartItem(${index})">❌</button>` : ''}
                             </div>
                         </div>
                     `;
@@ -1334,6 +1345,14 @@
             }
             document.getElementById("cart-total-value").innerText = `R$ ${globalTotalValue.toFixed(2)}`;
             handleDeliveryMethodChange(); 
+
+            // Mantém ou reconstrói o estado visual baseado no LocalStorage
+            if (isWaitingPaymentConfirm) {
+                changeModalToPostPaymentState();
+            } else {
+                resetModalToInitialState();
+            }
+
             document.getElementById("cart-modal").style.display = "flex";
             saveCartDraftToStorage();
         }
@@ -1346,6 +1365,7 @@
         }
 
         function selectPaymentCard(value) {
+            if (isWaitingPaymentConfirm) return; // Trava interações se já disparou link
             selectedPaymentMethod = value;
             document.querySelectorAll(".payment-card").forEach(card => {
                 card.classList.remove("selected");
@@ -1358,7 +1378,7 @@
                 payButton.innerText = "🚀 Finalizar Pedido (Pagar na Retirada)";
                 payButton.style.background = "var(--success)";
             } else {
-                payButton.innerText = "🚀 Enviar Pedido ao WhatsApp + Abrir Pagamento";
+                payButton.innerText = "🚀 Gerar Links (Mercado Pago + WhatsApp)";
                 payButton.style.background = "var(--mp-blue)";
             }
         }
@@ -1377,8 +1397,35 @@
             }
         }
 
+        /* Modificações visuais do estado do modal */
+        function changeModalToPostPaymentState() {
+            document.getElementById("cart-inputs-wrapper").style.display = "none";
+            document.getElementById("post-pay-alert").style.display = "block";
+            
+            const payButton = document.getElementById("mp-pay-button");
+            payButton.disabled = false;
+            payButton.style.background = "var(--success)";
+            payButton.innerText = "✅ Já paguei! Enviar Comprovante no WhatsApp";
+            // Altera a função executada ao clicar no botão principal do modal
+            payButton.onclick = function() {
+                sendFinalWhatsAppNotification();
+            };
+        }
+
+        function resetModalToInitialState() {
+            document.getElementById("cart-inputs-wrapper").style.display = "block";
+            document.getElementById("post-pay-alert").style.display = "none";
+            isWaitingPaymentConfirm = false;
+            
+            const payButton = document.getElementById("mp-pay-button");
+            payButton.onclick = function() {
+                processOrderCheckout();
+            };
+            selectPaymentCard(selectedPaymentMethod);
+        }
+
         /* ========================================================================= */
-        /* FLUXO DE REDIRECIONAMENTO DUPLO - ENVIADO NO MOMENTO DO CLIQUE            */
+        /* NOVO FLUXO SEM DESTRUIÇÃO DE PÁGINA (ABERTURA EM ABAS PARALELAS)         */
         /* ========================================================================= */
         function processOrderCheckout() {
             const name = document.getElementById("customer-name").value;
@@ -1386,9 +1433,7 @@
             if(!name) { alert("Por favor, digite seu nome primeiro!"); return; }
             if(cart.length === 0) { alert("Carrinho vazio!"); return; }
 
-            saveCartDraftToStorage();
-
-            // Se for em Espécie, apenas manda para o WhatsApp direto
+            // Se for em Espécie, manda direto para o WhatsApp normal e encerra
             if(selectedPaymentMethod === "especie") {
                 sendOrderToWhatsApp("A combinar / Dinheiro na Retirada", true);
                 closeModal('cart-modal');
@@ -1397,7 +1442,7 @@
 
             const payButton = document.getElementById("mp-pay-button");
             payButton.disabled = true;
-            payButton.innerText = "⏳ Gerando links de integração...";
+            payButton.innerText = "⏳ Gerando conexões com os servidores...";
 
             const itemsMapped = cart.map(item => ({
                 title: item.product.name,
@@ -1439,28 +1484,37 @@
             .then(response => response.json())
             .then(data => {
                 if(data.init_point) {
-                    // 1. Dispara o WhatsApp abrindo em uma NOVA ABA com o status
-                    const statusTexto = `AGUARDANDO PAGAMENTO VIA ${selectedPaymentMethod.toUpperCase()} (ABRINDO TELA DE PAGAMENTO NO SITE)`;
+                    isWaitingPaymentConfirm = true;
+                    saveCartDraftToStorage(); // Salva estado no cache celular
+
+                    // 1. Abre o Mercado Pago em uma NOVA aba (Preserva a Loja aberta!)
+                    window.open(data.init_point, '_blank');
+
+                    // 2. Abre o WhatsApp em OUTRA aba informando o rascunho em análise
+                    const statusTexto = `AGUARDANDO PAGAMENTO VIA ${selectedPaymentMethod.toUpperCase()} (TELA DE PAGAMENTO MINIMIZADA NO NAVEGADOR)`;
                     sendOrderToWhatsApp(statusTexto, false); 
 
-                    // 2. Redireciona a ABA ATUAL da loja direto para a tela do Mercado Pago
-                    window.location.href = data.init_point;
-
-                    // 3. Limpa o carrinho localmente já que os dois fluxos foram disparados com sucesso
-                    clearCartAndCache();
-                    closeModal('cart-modal');
+                    // 3. Modifica visualmente o modal que ficou aberto na loja atual
+                    changeModalToPostPaymentState();
                 } else {
-                    throw new Error("Erro ao estruturar preferência no Mercado Pago.");
+                    throw new Error("Falha ao gerar gateway.");
                 }
             })
             .catch(error => {
                 console.error(error);
                 alert("Erro ao conectar ao Mercado Pago. Tente novamente.");
-            })
-            .finally(() => {
                 payButton.disabled = false;
                 selectPaymentCard(selectedPaymentMethod);
             });
+        }
+
+        // Função executada quando o cliente clica em "Já paguei!"
+        function sendFinalWhatsAppNotification() {
+            sendOrderToWhatsApp(`PAGO E FINALIZADO PELO CLIENTE VIA ${selectedPaymentMethod.toUpperCase()} (ANEXANDO COMPROVANTE)`, true);
+            isWaitingPaymentConfirm = false;
+            resetModalToInitialState();
+            closeModal('cart-modal');
+            alert("Pedido finalizado com sucesso! Envie o comprovante na conversa do WhatsApp.");
         }
 
         function clearCartAndCache() {
@@ -1471,7 +1525,7 @@
             cart = [];
             localStorage.removeItem("jc_cart_draft");
             updateCartBadge();
-            document.getElementById("customer-name").value = "";
+            if(document.getElementById("customer-name")) document.getElementById("customer-name").value = "";
         }
 
         function sendOrderToWhatsApp(paymentStatus = "Pendente", clearAfterSend = true) {
