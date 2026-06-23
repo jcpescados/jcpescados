@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JC Pescados - Loja & Painel Firebase</title>
+    <title>JC Pescados - Loja & Painel Realtime</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         /* ==================================== */
@@ -518,53 +518,55 @@
     </footer>
 
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
     <script>
         // ==========================================
-        // CONFIGURAÇÃO DO SEU FIREBASE (sitejc-46c0c)
-        // Substitua os dados abaixo pelos do seu painel do Firebase Console
+        // CONFIGURAÇÃO DO SEU FIREBASE REALTIME
+        // Insira os dados do seu App cadastrado no Firebase Console
         // ==========================================
         const firebaseConfig = {
-            apiKey: "SUA_API_KEY_AQUI",
-            authDomain: "sitejc-46c0c.firebaseapp.com",
+            databaseURL: "https://sitejc-46c0c-default-rtdb.firebaseio.com/",
             projectId: "sitejc-46c0c",
-            storageBucket: "sitejc-46c0c.appspot.com",
-            messagingSenderId: "SEU_SENDER_ID",
-            appId: "SEU_APP_ID"
+            // Se possuir apiKey e appId gerados pelo painel do seu projeto, adicione aqui embaixo se necessário:
+            // apiKey: "SUA_API_KEY",
+            // appId: "SUA_APP_ID"
         };
 
         // Inicializar o Firebase
         firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-        const productsCollection = db.collection("produtos");
+        const database = firebase.database();
+        const productsRef = database.ref("produtos");
 
         let products = [];
         let cart = [];
         let activeProductId = null;
         let currentFilter = 'all';
 
-        // CARREGAR DADOS EM TEMPO REAL DO FIREBASE
+        // CARREGAR DADOS EM TEMPO REAL DO REALTIME DATABASE
         document.addEventListener("DOMContentLoaded", () => {
-            productsCollection.onSnapshot((snapshot) => {
+            productsRef.on("value", (snapshot) => {
                 products = [];
-                if (snapshot.empty) {
-                    // Se o banco estiver vazio no primeiro uso, popula com a lista base
+                const data = snapshot.val();
+                
+                if (!data) {
+                    // Se o banco estiver zerado no primeiro acesso, injeta a lista inicial com os novos produtos pedidos
                     initializeDefaultProducts();
                 } else {
-                    snapshot.forEach(doc => {
-                        products.push({ id: doc.id, ...doc.data() });
+                    // Mapeia os dados do Firebase estruturando em lista com chaves/ID estáveis
+                    Object.keys(data).forEach(key => {
+                        products.push({ id: key, ...data[key] });
                     });
                     renderStoreProducts(currentFilter);
                     populateAdminDropdowns();
                 }
             }, error => {
-                console.error("Erro ao ler dados do Firebase: ", error);
-                alert("Verifique se as Regras do Firestore estão configuradas como 'allow read, write: if true;' no console do Firebase.");
+                console.error("Erro Firebase Realtime: ", error);
+                alert("Erro ao sincronizar. Verifique se as Regras do seu Realtime Database estão públicas ( \".read\": true, \".write\": true )");
             });
         });
 
-        // Função interna para criar os produtos iniciais caso o Firestore esteja vazio
+        // Função interna para povoar o Realtime Database inicialmente caso esteja limpo
         function initializeDefaultProducts() {
             const defaultList = [
                 { name: "Caranguejo Pré-Cozido", price: 25.00, oldPrice: 25.00, isPromo: false, img: "caranguejo.jpeg", stock: "disponivel", category: "caranguejo" },
@@ -585,7 +587,7 @@
                 { name: "Polvo", price: 95.00, oldPrice: 95.00, isPromo: false, img: "polvo.jpeg", stock: "disponivel", category: "outros" },
                 { name: "Lula", price: 55.00, oldPrice: 55.00, isPromo: false, img: "lula.jpeg", stock: "disponivel", category: "outros" }
             ];
-            defaultList.forEach(p => productsCollection.add(p));
+            defaultList.forEach(p => productsRef.push(p));
         }
 
         function renderStoreProducts(filter = 'all') {
@@ -650,7 +652,7 @@
             }
         }
 
-        // SALVA ATUALIZAÇÃO NO FIREBASE FIRESTORE
+        // SALVA ATUALIZAÇÃO NO FIREBASE REALTIME
         function saveProductChanges() {
             const id = document.getElementById("admin-select-product").value;
             const prod = products.find(p => p.id == id);
@@ -667,13 +669,13 @@
                     updates.oldPrice = newPrice;
                 }
 
-                productsCollection.doc(id).update(updates)
-                    .then(() => alert("Produto sincronizado no Firebase!"))
+                productsRef.child(id).update(updates)
+                    .then(() => alert("Produto sincronizado no Firebase Realtime!"))
                     .catch(err => alert("Erro ao salvar: " + err));
             }
         }
 
-        // SALVA PROMOÇÃO NO FIREBASE FIRESTORE
+        // SALVA PROMOÇÃO NO FIREBASE REALTIME
         function savePromotionChanges() {
             const id = document.getElementById("admin-promo-product").value;
             const prod = products.find(p => p.id == id);
@@ -694,13 +696,13 @@
                     updates.isPromo = false;
                 }
 
-                productsCollection.doc(id).update(updates)
+                productsRef.child(id).update(updates)
                     .then(() => alert("Promoção aplicada globalmente!"))
                     .catch(err => alert("Erro ao salvar promoção: " + err));
             }
         }
 
-        // CRIA NOVO PRODUTO DIRETAMENTE NO FIREBASE FIRESTORE
+        // CRIA NOVO PRODUTO DIRETAMENTE NO FIREBASE REALTIME
         function addNewProduct() {
             const name = document.getElementById("new-name").value;
             const price = parseFloat(document.getElementById("new-price").value);
@@ -722,9 +724,9 @@
                 category: category
             };
 
-            productsCollection.add(newProd)
+            productsRef.push(newProd)
                 .then(() => {
-                    alert("Novo produto gravado no Firebase!");
+                    alert("Novo produto gravado no seu Firebase!");
                     document.getElementById("new-name").value = "";
                     document.getElementById("new-price").value = "";
                     document.getElementById("new-img").value = "";
