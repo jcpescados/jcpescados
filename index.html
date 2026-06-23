@@ -153,7 +153,6 @@
             z-index: 200;
         }
 
-        /* O botão principal "Produtos" */
         .vtex-store-drawer-trigger {
             display: inline-flex;
             align-items: center;
@@ -169,11 +168,6 @@
             width: 100%;
         }
 
-        .vtex-store-drawer-trigger svg {
-            transition: transform 0.2s ease;
-        }
-
-        /* Pequena seta indicativa */
         .vtex-store-drawer-trigger::after {
             content: '▼';
             font-size: 10px;
@@ -182,12 +176,10 @@
             transition: transform 0.2s ease;
         }
 
-        /* Quando o menu estiver aberto, gira a seta e o ícone */
         .vtex-menu-wrapper.menu-open .vtex-store-drawer-trigger::after {
             transform: rotate(180deg);
         }
 
-        /* O contêiner das categorias (fica oculto por padrão) */
         .category-filter-container {
             display: none;
             margin-top: 15px;
@@ -196,7 +188,6 @@
             animation: slideDownMenu 0.25s ease forwards;
         }
 
-        /* Quando ativo, vira um flex layout organizado */
         .vtex-menu-wrapper.menu-open .category-filter-container {
             display: flex;
             flex-wrap: wrap;
@@ -234,7 +225,7 @@
             border-color: #25d366;
             color: #128c7e;
             background: #f0fdf4;
-            margin-left: auto; /* Alinha o botão do whats para a direita em telas grandes */
+            margin-left: auto;
         }
         
         .filter-btn.whats-filter-btn:hover {
@@ -244,11 +235,9 @@
 
         @media (max-width: 600px) {
             .filter-btn.whats-filter-btn {
-                margin-left: 0; /* Em telas pequenas se mistura dinamicamente */
+                margin-left: 0;
             }
         }
-
-        /* ==================================== */
 
         .products-grid {
             display: grid;
@@ -541,34 +530,6 @@
             margin-bottom: 12px;
             border-left: 4px solid #f44336;
             font-weight: 700;
-            animation: pulseAlert 2s infinite;
-        }
-
-        @keyframes pulseAlert {
-            0% { opacity: 0.9; }
-            50% { opacity: 1; transform: scale(1.01); }
-            100% { opacity: 0.9; }
-        }
-
-        .chef-recipe-box {
-            background-color: #f0fdfa;
-            border: 1px solid #ccfbf1;
-            border-left: 4px solid var(--primary);
-            padding: 12px;
-            border-radius: 8px;
-            font-size: 13px;
-            color: #115e59;
-            margin-bottom: 15px;
-            line-height: 1.5;
-            max-height: 180px;
-            overflow-y: auto;
-        }
-
-        .chef-recipe-box.crab-theme {
-            background-color: #fff5f5;
-            border-color: #ffe3e3;
-            border-left-color: var(--danger);
-            color: #c53030;
         }
 
         .shortcut-container {
@@ -603,7 +564,7 @@
             display: grid;
             grid-template-columns: 1fr;
             gap: 10px;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
         
         .payment-card {
@@ -626,12 +587,12 @@
 
         .payment-card.selected {
             background: #fff;
-            animation: selectPulse 0.3s ease-in-out;
         }
 
-        .payment-card[data-value="pix"].selected { border-color: var(--mp-blue); box-shadow: 0 0 12px rgba(0, 158, 227, 0.15); }
-        .payment-card[data-value="cartao"].selected { border-color: var(--primary); box-shadow: 0 0 12px rgba(0, 123, 138, 0.15); }
-        .payment-card[data-value="especie"].selected { border-color: var(--success); box-shadow: 0 0 12px rgba(37, 211, 102, 0.15); }
+        .payment-card[data-value="pix"].selected { border-color: var(--mp-blue); }
+        .payment-card[data-value="cartao"].selected { border-color: var(--primary); }
+        .payment-card[data-value="debito"].selected { border-color: var(--accent); }
+        .payment-card[data-value="especie"].selected { border-color: var(--success); }
 
         .payment-card .icon-circle {
             width: 36px;
@@ -642,11 +603,11 @@
             justify-content: center;
             font-size: 18px;
             background: #e2e8f0;
-            transition: all 0.2s;
         }
 
         .payment-card[data-value="pix"].selected .icon-circle { background: #e0f2fe; color: var(--mp-blue); }
         .payment-card[data-value="cartao"].selected .icon-circle { background: #e6f2f3; color: var(--primary); }
+        .payment-card[data-value="debito"].selected .icon-circle { background: #fffbeb; color: var(--accent); }
         .payment-card[data-value="especie"].selected .icon-circle { background: #dcfce7; color: var(--success); }
 
         .payment-card .details {
@@ -664,7 +625,6 @@
         .payment-card .details .subtitle {
             font-size: 11px;
             color: #64748b;
-            margin-top: 1px;
         }
 
         .payment-card .radio-dot {
@@ -676,9 +636,7 @@
             position: relative;
         }
 
-        .payment-card.selected .radio-dot {
-            border-color: currentColor;
-        }
+        .payment-card.selected .radio-dot { border-color: currentColor; }
 
         .payment-card.selected .radio-dot::after {
             content: "";
@@ -691,6 +649,7 @@
         }
         .payment-card[data-value="pix"].selected .radio-dot::after { background: var(--mp-blue); }
         .payment-card[data-value="cartao"].selected .radio-dot::after { background: var(--primary); }
+        .payment-card[data-value="debito"].selected .radio-dot::after { background: var(--accent); }
         .payment-card[data-value="especie"].selected .radio-dot::after { background: var(--success); }
 
         .post-pay-container {
@@ -701,17 +660,7 @@
             padding: 15px;
             margin: 15px 0;
             text-align: center;
-            animation: fadeIn 0.4s ease;
         }
-
-        @keyframes selectPulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.02); }
-            100% { transform: scale(1); }
-        }
-
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
         footer {
             background: var(--primary-dark);
@@ -740,12 +689,6 @@
             cursor: pointer;
             font-weight: 600;
             font-size: 12px;
-            transition: all 0.2s;
-        }
-        .admin-toggle-btn:hover {
-            background: var(--accent);
-            color: var(--primary-dark);
-            border-color: transparent;
         }
         
         .metrics-bar {
@@ -753,8 +696,6 @@
             grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
             gap: 10px;
             margin-top: 15px;
-            border-top: 1px solid #cbd5e1;
-            padding-top: 15px;
         }
         .metric-box {
             background: #fff;
@@ -762,16 +703,6 @@
             padding: 10px;
             border-radius: 8px;
             text-align: center;
-        }
-        .metric-box span {
-            display: block;
-            font-size: 11px;
-            color: #64748b;
-            font-weight: 600;
-        }
-        .metric-box strong {
-            font-size: 16px;
-            color: var(--primary-dark);
         }
     </style>
 </head>
@@ -798,25 +729,16 @@
                 </select>
                 <label style="font-size: 12px; font-weight: 700; color: var(--primary-dark); margin-top: 5px; display: block;">Ordem / Posição nos Destaques (Max 10):</label>
                 <select id="admin-featured-order">
-                    <option value="normal">Não destacar (Fora dos Destaques)</option>
-                    <option value="1">1º Lugar no Topo</option>
-                    <option value="2">2º Lugar</option>
-                    <option value="3">3º Lugar</option>
-                    <option value="4">4º Lugar</option>
-                    <option value="5">5º Lugar</option>
-                    <option value="6">6º Lugar</option>
-                    <option value="7">7º Lugar</option>
-                    <option value="8">8º Lugar</option>
-                    <option value="9">9º Lugar</option>
-                    <option value="10">10º Lugar</option>
+                    <option value="normal">Não destacar</option>
+                    <option value="1">1º Lugar</option><option value="2">2º Lugar</option>
+                    <option value="3">3º Lugar</option><option value="4">4º Lugar</option>
                 </select>
                 <button class="dash-btn" onclick="saveProductChanges()">Salvar Alterações</button>
-                <button class="dash-btn" style="background: var(--danger);" onclick="deleteSelectedProduct()">🗑️ Excluir Produto Permanentemente</button>
+                <button class="dash-btn" style="background: var(--danger);" onclick="deleteSelectedProduct()">🗑️ Excluir Produto</button>
             </div>
 
             <div class="dash-card">
                 <h3>🔥 Ativar Promoção</h3>
-                <p style="font-size: 12px; color: #64748b; margin-bottom: 10px;">Define um preço promocional menor e risca o preço anterior automaticamente.</p>
                 <select id="admin-promo-product"></select>
                 <input type="number" id="admin-promo-price" placeholder="Preço Promocional (R$)">
                 <select id="admin-promo-active">
@@ -828,40 +750,35 @@
 
             <div class="dash-card">
                 <h3>👑 Inserir Novo Produto</h3>
-                <div class="admin-alert-box">⚠️ NÃO ESQUEÇA DE ADICIONAR A UNIDADE NO NOME! (Ex: no kg, duzia, kit c/ 4 un)</div>
-                <input type="text" id="new-name" placeholder="Nome do Produto (Ex: Patola Duzia)">
+                <div class="admin-alert-box">⚠️ ADICIONE A UNIDADE NO NOME!</div>
+                <input type="text" id="new-name" placeholder="Nome do Produto">
                 <input type="number" id="new-price" placeholder="Preço Inicial (R$)">
                 <select id="new-category">
-                    <option value="caranguejo">Caranguejo / Patola / Patinha / Carne</option>
+                    <option value="caranguejo">Caranguejo / Carne</option>
                     <option value="camarao">Camarão</option>
                     <option value="peixes">Peixes</option>
                     <option value="polvo">Polvo</option>
                     <option value="salmao">Salmão</option>
                     <option value="lagosta">Lagosta</option>
                     <option value="lula">Lula</option>
-                    <option value="outros">Comprar via Whats (Outros)</option>
+                    <option value="outros">Outros</option>
                 </select>
                 <input type="text" id="new-img" placeholder="Link da Imagem">
                 <button class="dash-btn" style="background: var(--success);" onclick="addNewProduct()">Criar Produto</button>
             </div>
             
-            <div class="dash-card" style="grid-column: span 1;">
+            <div class="dash-card">
                 <h3>📊 Visitas & Métricas</h3>
-                <div class="metrics-bar" style="grid-template-columns: 1fr 1fr; margin-top:0; padding-top:0; border:none;">
-                    <div class="metric-box"><span>Visitas Gerais</span><strong id="dash-stat-visitas">0</strong></div>
-                    <div class="metric-box"><span>No Whats</span><strong id="dash-stat-whats">0</strong></div>
+                <div class="metrics-bar" style="grid-template-columns: 1fr 1fr; margin-top:0;">
+                    <div class="metric-box"><span>Visitas</span><strong id="dash-stat-visitas">0</strong></div>
+                    <div class="metric-box"><span>Whats</span><strong id="dash-stat-whats">0</strong></div>
                 </div>
-                <button class="dash-btn" style="background: #475569; margin-top: 10px; font-size: 12px; padding: 8px;" onclick="clearAllMetrics()">🔄 Zerar Visitas e Métricas</button>
-                <h4 style="font-size: 13px; margin: 10px 0 5px 0; color: var(--primary-dark);">Rascunhos Abandonados:</h4>
-                <div id="admin-saved-carts-list" style="max-height: 100px; overflow-y: auto; font-size: 11px; background:#fff; padding:5px; border-radius:6px; border:1px solid #cbd5e1;">
-                    Nenhum rascunho em cache.
-                </div>
+                <button class="dash-btn" style="background: #475569; margin-top: 10px;" onclick="clearAllMetrics()">🔄 Zerar Métricas</button>
             </div>
         </div>
     </div>
 
     <div class="main-store-container">
-        <!-- MENU RETRÁTIL E EXPANSÍVEL ESTILO VTEX DROPDOWN -->
         <div class="vtex-menu-wrapper" id="vtexMenuWrapper">
             <div class="vtex-store-drawer-trigger" onclick="toggleVtexMenu()">
                 <svg fill="currentColor" width="18" height="18" viewBox="0 0 16 16" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle;">
@@ -870,9 +787,8 @@
                 <span>Produtos</span>
             </div>
 
-            <!-- As categorias organizadas aparecem aqui dentro ao clicar -->
             <div class="category-filter-container">
-                <button class="filter-btn active" onclick="filterCategory('destaque', this)">🔥 Produto mais vendido!</button>
+                <button class="filter-btn active" onclick="filterCategory('destaque', this)">🔥 Mais vendidos</button>
                 <button class="filter-btn" onclick="filterCategory('caranguejo', this)">🦀 Caranguejos & Cia</button>
                 <button class="filter-btn" onclick="filterCategory('camarao', this)">🦐 Camarões</button>
                 <button class="filter-btn" onclick="filterCategory('peixes', this)">🐟 Peixes</button>
@@ -880,13 +796,7 @@
                 <button class="filter-btn" onclick="filterCategory('salmao', this)">🥩 Salmão</button>
                 <button class="filter-btn" onclick="filterCategory('lagosta', this)">🦞 Lagosta</button>
                 <button class="filter-btn" onclick="filterCategory('lula', this)">🦑 Lula</button>
-                
-                <button class="filter-btn whats-filter-btn" onclick="redirectToWhatsAppGeneral()">
-                    <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24" style="display:inline-block; vertical-align:middle; margin-right: 4px;">
-                        <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.713-1.457L0 24zm6.59-4.846c1.6.95 3.188 1.449 4.825 1.451 5.436 0 9.86-4.37 9.864-9.799.002-2.63-1.023-5.101-2.885-6.963C16.428 2.016 13.96 1.01 11.999 1.01c-5.441 0-9.866 4.372-9.87 9.802 0 1.698.459 3.355 1.328 4.866l-.993 3.626 3.722-.989zm12.315-4.48c-.33-.165-1.951-.963-2.251-1.074-.3-.11-.518-.165-.736.165-.218.33-.844 1.074-1.036 1.293-.192.218-.384.246-.714.081-1.047-.524-1.786-.968-2.512-2.213-.192-.33.192-.307.549-1.02.055-.112.028-.21-.014-.293-.042-.083-.385-.93-.528-1.274-.14-.336-.282-.291-.385-.296-.099-.005-.213-.006-.328-.006-.115 0-.303.043-.46.213-.158.17-.604.59-.604 1.44 0 .85.617 1.67.704 1.79.087.12 1.214 1.854 2.941 2.6 1.424.614 1.956.513 2.651.408.5-.075 1.626-.665 1.855-1.309.227-.644.227-1.197.16-1.309-.067-.112-.246-.178-.576-.343z"/>
-                    </svg>
-                    Fale Conosco
-                </button>
+                <button class="filter-btn whats-filter-btn" onclick="redirectToWhatsAppGeneral()">Fale Conosco</button>
             </div>
         </div>
 
@@ -894,20 +804,15 @@
     </div>
 
     <a href="javascript:void(0)" class="cart-floating" onclick="openCartModal()">
-        🛒
-        <div class="cart-badge" id="global-cart-count">0</div>
+        🛒 <div class="cart-badge" id="global-cart-count">0</div>
     </a>
 
-    <!-- MODAIS DO SISTEMA -->
+    <!-- MODAIS -->
     <div id="purchase-modal" class="modal">
         <div class="modal-content">
             <button class="close-btn" onclick="closeModal('purchase-modal')">&times;</button>
             <h3 id="modal-product-title">Adicionar ao Carrinho</h3>
-            <div id="kg-alert-helper" class="kg-alert-box" style="display:none;">
-                ⚠️ <strong>Atenção:</strong> Venda controlada por Peso / Unidade Fracionada.
-            </div>
-            <div id="chef-recipe-helper" class="chef-recipe-box" style="display:none;"></div>
-            <p id="modal-qty-label" style="margin-bottom: 10px; font-weight: 600; color: var(--text);">Escolha a quantidade desejada:</p>
+            <div id="kg-alert-helper" class="kg-alert-box" style="display:none;">⚠️ Venda controlada por Peso / Unidade Fracionada.</div>
             <div id="kg-shortcuts" class="shortcut-container" style="display:none;">
                 <button class="shortcut-btn" onclick="setModalQuantity('0.500')">500g</button>
                 <button class="shortcut-btn" onclick="setModalQuantity('1.000')">1 Kg / Dúzia</button>
@@ -921,10 +826,9 @@
     <div id="next-step-modal" class="modal">
         <div class="modal-content" style="text-align: center;">
             <h3>Produto Adicionado! 🎉</h3>
-            <p style="margin-bottom: 20px; color:#64748b;">O que você deseja fazer agora?</p>
-            <div class="flex-buttons">
-                <button class="buy-btn" style="background: #64748b;" onclick="closeModal('next-step-modal')">Continuar Comprando</button>
-                <button class="buy-btn" style="background: var(--success);" onclick="goToCartFromModal()">Finalizar Compra</button>
+            <div class="flex-buttons" style="margin-top:15px;">
+                <button class="buy-btn" style="background: #64748b;" onclick="closeModal('next-step-modal')">Continuar</button>
+                <button class="buy-btn" style="background: var(--success);" onclick="goToCartFromModal()">Ver Carrinho</button>
             </div>
         </div>
     </div>
@@ -933,53 +837,56 @@
         <div class="modal-content" style="max-width: 500px;">
             <button class="close-btn" onclick="closeModal('cart-modal')">&times;</button>
             <h3>🛒 Seu Carrinho</h3>
-            <div id="cart-items-list" style="max-height: 200px; overflow-y: auto; margin-bottom: 20px;"></div>
-            <div style="display: flex; justify-content: space-between; font-weight: 800; font-size: 18px; margin-bottom: 20px; border-top: 1px solid #e2e8f0; padding-top: 15px;">
-                <span>Total do Pedido:</span>
-                <span id="cart-total-value">R$ 0,00</span>
+            <div id="cart-items-list" style="max-height: 180px; overflow-y: auto; margin-bottom: 15px;"></div>
+            
+            <div style="background: #f1f5f9; padding: 12px; border-radius: 8px; margin-bottom: 15px; font-size: 14px;">
+                <div style="display:flex; justify-content: space-between; margin-bottom: 4px;"><span>Subtotal Produtos:</span><span id="cart-subtotal-display">R$ 0,00</span></div>
+                <div style="display:flex; justify-content: space-between; margin-bottom: 4px; color: var(--destaque-color); font-weight:600;"><span>Taxas / Juros Cartão:</span><span id="cart-tax-display">R$ 0,00</span></div>
+                <div style="display:flex; justify-content: space-between; font-weight:800; font-size:16px; border-top:1px solid #cbd5e1; padding-top:6px; margin-top:6px; color: var(--primary-dark);"><span>Total Geral:</span><span id="cart-total-value">R$ 0,00</span></div>
             </div>
             
             <div id="cart-inputs-wrapper">
-                <input type="text" id="customer-name" placeholder="Digite seu Nome para entrega" oninput="syncCartDraftToFirebaseOnly()">
+                <input type="text" id="customer-name" placeholder="Digite seu Nome para entrega">
                 <label style="font-size: 13px; font-weight: 700; color: var(--primary-dark); display: block; margin-bottom: 6px;">Método de Envio:</label>
-                <select id="delivery-method" onchange="handleDeliveryMethodChange(); syncCartDraftToFirebaseOnly();">
+                <select id="delivery-method" onchange="handleDeliveryMethodChange(); updateCartTotalWithFees();">
                     <option value="Entrega a Domicílio">Entrega a Domicílio</option>
                     <option value="Retirada no Local">Retirada no Local</option>
                 </select>
 
-                <label style="font-size: 13px; font-weight: 700; color: var(--primary-dark); display: block; margin-bottom: 8px;">Selecione a Forma de Pagamento:</label>
+                <label style="font-size: 13px; font-weight: 700; color: var(--primary-dark); display: block; margin-bottom: 8px;">Forma de Pagamento:</label>
                 <div class="payment-methods-grid">
-                    <div class="payment-card selected" data-value="pix" onclick="selectPaymentCard('pix'); syncCartDraftToFirebaseOnly();">
+                    <div class="payment-card selected" data-value="pix" onclick="selectPaymentCard('pix')">
                         <div class="icon-circle">⚡</div>
-                        <div class="details">
-                            <span class="title">Pix Automático</span>
-                            <span class="subtitle">Gera link do Mercado Pago sem fechar a loja</span>
-                        </div>
+                        <div class="details"><span class="title">Pix Automático</span><span class="subtitle">Sem taxas adicionais</span></div>
                         <div class="radio-dot"></div>
                     </div>
-                    <div class="payment-card" data-value="cartao" onclick="selectPaymentCard('cartao'); syncCartDraftToFirebaseOnly();">
+                    <div class="payment-card" data-value="cartao" onclick="selectPaymentCard('cartao')">
                         <div class="icon-circle">💳</div>
-                        <div class="details">
-                            <span class="title">Cartão de Crédito</span>
-                            <span class="subtitle">Gera link do Cartão sem fechar a loja</span>
-                        </div>
+                        <div class="details"><span class="title">Cartão de Crédito</span><span class="subtitle">Taxas sob parcelamento</span></div>
                         <div class="radio-dot"></div>
                     </div>
-                    <div class="payment-card" id="card-especie" data-value="especie" style="display:none;" onclick="selectPaymentCard('especie'); syncCartDraftToFirebaseOnly();">
+                    <div class="payment-card" data-value="debito" onclick="selectPaymentCard('debito')">
+                        <div class="icon-circle">🪙</div>
+                        <div class="details"><span class="title">Cartão de Débito</span><span class="subtitle">Taxa fixa de 1,99%</span></div>
+                        <div class="radio-dot"></div>
+                    </div>
+                    <div class="payment-card" id="card-especie" data-value="especie" style="display:none;" onclick="selectPaymentCard('especie')">
                         <div class="icon-circle">💵</div>
-                        <div class="details">
-                            <span class="title">Espécie (Dinheiro)</span>
-                            <span class="subtitle">Efetue o pagamento em mãos na retirada</span>
-                        </div>
+                        <div class="details"><span class="title">Espécie (Dinheiro)</span><span class="subtitle">Pague na retirada</span></div>
                         <div class="radio-dot"></div>
                     </div>
+                </div>
+
+                <!-- Campo de Parcelas (Apenas para Crédito) -->
+                <div id="cc-installments-wrapper" style="display: none; margin-bottom: 15px;">
+                    <label style="font-size: 13px; font-weight: 700; color: var(--primary-dark); display: block; margin-bottom: 6px;">Escolha o Parcelamento:</label>
+                    <select id="cc-installments" onchange="updateCartTotalWithFees()"></select>
                 </div>
             </div>
 
             <div id="post-pay-alert" class="post-pay-container">
-                <span style="font-size: 24px;">ℹ️</span>
-                <p style="font-weight: 700; margin: 5px 0; color: var(--primary-dark);">Janela de Pagamento Aberta!</p>
-                <p style="font-size: 12px; color: #475569; margin-bottom: 10px;">Assim que concluir o pagamento no Mercado Pago, clique no botão abaixo para nos enviar o pedido.</p>
+                <p style="font-weight: 700; color: var(--primary-dark);">Janela de Pagamento Aberta!</p>
+                <p style="font-size: 12px; color: #475569; margin-bottom: 10px;">Assim que concluir no Mercado Pago, clique abaixo para enviar o pedido.</p>
             </div>
             
             <button class="buy-btn" style="background: var(--mp-blue); margin-top: 10px;" id="mp-pay-button" onclick="processOrderCheckout()">
@@ -1029,73 +936,40 @@
         let cart = [];
         let activeProductId = null;
         let currentFilter = 'destaque';
+        
+        let subtotalProducts = 0;
+        let currentTaxValue = 0;
         let globalTotalValue = 0;
+        
         let selectedPaymentMethod = 'pix';
         let isWaitingPaymentConfirm = false;
 
-        /* FUNÇÃO QUE CONTROLA A ABERTURA DO MENU PRODUTOS */
         function toggleVtexMenu() {
-            const menuWrapper = document.getElementById("vtexMenuWrapper");
-            menuWrapper.classList.toggle("menu-open");
+            document.getElementById("vtexMenuWrapper").classList.toggle("menu-open");
         }
 
         document.addEventListener("DOMContentLoaded", () => {
             registerStoreVisit();
-
             productsRef.on("value", (snapshot) => {
                 products = [];
                 const data = snapshot.val();
-                if (!data) {
-                    initializeDefaultProducts();
-                } else {
-                    Object.keys(data).forEach(key => {
-                        products.push({ id: key, ...data[key] });
-                    });
-                    checkPaymentStateFromStorage();
+                if (data) {
+                    Object.keys(data).forEach(key => { products.push({ id: key, ...data[key] }); });
+                    if (localStorage.getItem("jc_payment_waiting") === "true") { isWaitingPaymentConfirm = true; openCartModal(); }
                     renderStoreProducts(currentFilter);
                     populateAdminDropdowns();
                 }
             });
 
             statsRef.on("value", (snapshot) => {
-                const data = snapshot.val() || { visitas: 0, cliquesWhats: 0, rascunhos: {} };
+                const data = snapshot.val() || { visitas: 0, cliquesWhats: 0 };
                 document.getElementById("dash-stat-visitas").innerText = data.visitas || 0;
                 document.getElementById("dash-stat-whats").innerText = data.cliquesWhats || 0;
-                
-                const listContainer = document.getElementById("admin-saved-carts-list");
-                if (data.rascunhos) {
-                    listContainer.innerHTML = "";
-                    Object.keys(data.rascunhos).forEach(k => {
-                        const r = data.rascunhos[k];
-                        listContainer.innerHTML += `<div style="border-bottom:1px solid #f1f5f9; padding:3px 0;"><strong>${r.nome || 'Anônimo'}:</strong> R$ ${r.total}</div>`;
-                    });
-                } else {
-                    listContainer.innerHTML = "Nenhum rascunho em cache.";
-                }
             });
         });
 
-        function syncCartDraftToFirebaseOnly() {
-            const customerName = document.getElementById("customer-name").value;
-            if (cart.length === 0 || customerName.trim().length <= 2) return;
-            statsRef.child("rascunhos").child(customerName.replace(/[.#$[\]]/g, "")).set({
-                nome: customerName,
-                total: globalTotalValue.toFixed(2),
-                pagamento: selectedPaymentMethod.toUpperCase(),
-                timestamp: Date.now()
-            });
-        }
-
         function registerStoreVisit() { statsRef.child("visitas").transaction((current) => (current || 0) + 1); }
         function countWhatsAppClick() { statsRef.child("cliquesWhats").transaction((current) => (current || 0) + 1); }
-
-        function initializeDefaultProducts() {
-            const defaultList = [
-                { name: "Caranguejo Pré-Cozido (Kit 4 un)", price: 25.00, oldPrice: 25.00, isPromo: false, img: "caranguejo.jpeg", stock: "disponivel", category: "caranguejo", featuredOrder: "1" },
-                { name: "File de Tilapia (no kg)", price: 38.00, oldPrice: 38.00, isPromo: false, img: "tilapia.jpeg", stock: "disponivel", category: "peixes", featuredOrder: "2" }
-            ];
-            defaultList.forEach(p => productsRef.push(p));
-        }
 
         function redirectToWhatsAppGeneral() {
             countWhatsAppClick();
@@ -1105,14 +979,7 @@
         function renderStoreProducts(filter = 'destaque') {
             const grid = document.getElementById("store-products-grid");
             grid.innerHTML = "";
-            
-            let filtered = [];
-            if (filter === 'destaque') {
-                filtered = products.filter(p => p.featuredOrder && p.featuredOrder !== "normal");
-                filtered.sort((a, b) => parseInt(a.featuredOrder) - parseInt(b.featuredOrder));
-            } else {
-                filtered = products.filter(p => p.category === filter);
-            }
+            let filtered = filter === 'destaque' ? products.filter(p => p.featuredOrder && p.featuredOrder !== "normal").sort((a, b) => parseInt(a.featuredOrder) - parseInt(b.featuredOrder)) : products.filter(p => p.category === filter);
 
             filtered.forEach(p => {
                 const isEsgotado = p.stock === 'esgotado';
@@ -1125,8 +992,8 @@
 
                 card.innerHTML = `
                     <div class="product-img-wrapper">
-                        ${filter === 'destaque' ? `<div class="featured-product-tag">🔥 Mais Vendido ${p.featuredOrder}º</div>` : ''}
-                        ${p.isPromo ? `<div class="promo-tag" style="top:15px;">Promoção</div>` : ''}
+                        ${filter === 'destaque' ? `<div class="featured-product-tag">🔥 Destaque ${p.featuredOrder}º</div>` : ''}
+                        ${p.isPromo ? `<div class="promo-tag" style="top:15px;">Promo</div>` : ''}
                         ${isEsgotado ? `<div class="stock-tag">Esgotado</div>` : ''}
                         <img src="${p.img}" onerror="this.src='https://images.unsplash.com/photo-1551248429-40975aa4de74?w=400'">
                     </div>
@@ -1148,14 +1015,164 @@
             document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
             btn.classList.add("active");
             renderStoreProducts(cat);
-            
-            // Fecha o menu de forma inteligente após a seleção
             document.getElementById("vtexMenuWrapper").classList.remove("menu-open");
         }
 
-        /* OUTRAS FUNÇÕES AUXILIARES MANTIDAS INTEGRALMENTE */
-        function setPaymentStateInStorage(waiting) { if(waiting) localStorage.setItem("jc_payment_waiting", "true"); else localStorage.removeItem("jc_payment_waiting"); }
-        function checkPaymentStateFromStorage() { if (localStorage.getItem("jc_payment_waiting") === "true") { isWaitingPaymentConfirm = true; openCartModal(); } }
+        function openPurchaseModal(id) {
+            activeProductId = id; const prod = products.find(p => p.id == id); document.getElementById("modal-product-title").innerText = prod.name;
+            const isWeight = prod.name.toLowerCase().includes("kg") || prod.name.toLowerCase().includes("duzia") || ["camarao","peixes","salmao","lagosta","polvo","lula"].includes(prod.category);
+            document.getElementById("kg-alert-helper").style.display = isWeight ? "block" : "none";
+            document.getElementById("kg-shortcuts").style.display = isWeight ? "flex" : "none";
+            document.getElementById("modal-quantity").value = isWeight ? "1.000" : "1";
+            document.getElementById("purchase-modal").style.display = "flex";
+        }
+        function closeModal(id) { document.getElementById(id).style.display = "none"; }
+        function setModalQuantity(v) { document.getElementById("modal-quantity").value = v; }
+        function confirmAddToCart() {
+            const qty = parseFloat(document.getElementById("modal-quantity").value); const prod = products.find(p => p.id == activeProductId);
+            if(prod && qty > 0) { const ex = cart.find(i => i.product.id === prod.id); if(ex) ex.quantity += qty; else cart.push({ product: prod, quantity: qty }); updateCartBadge(); closeModal('purchase-modal'); document.getElementById("next-step-modal").style.display = "flex"; }
+        }
+        function goToCartFromModal() { closeModal('next-step-modal'); openCartModal(); }
+        function updateCartBadge() { document.getElementById("global-cart-count").innerText = cart.reduce((t, i) => t + i.quantity, 0).toFixed(0); }
+        
+        function openCartModal() {
+            const list = document.getElementById("cart-items-list"); list.innerHTML = ""; subtotalProducts = 0;
+            if(cart.length === 0) { list.innerHTML = "<p style='text-align:center;padding:15px;'>Carrinho vazio.</p>"; } 
+            else {
+                cart.forEach((item, index) => {
+                    const sub = item.product.price * item.quantity; subtotalProducts += sub;
+                    list.innerHTML += `<div style="display:flex;justify-content:space-between;margin-bottom:12px;background:#f8fafc;padding:10px;border-radius:8px;"><div><strong>${item.product.name}</strong><br><small>${item.quantity} x R$ ${item.product.price.toFixed(2)}</small></div><div style="display:flex;align-items:center;gap:10px;"><span style="color:var(--primary);font-weight:700;">R$ ${sub.toFixed(2)}</span><button style="background:none;border:none;color:var(--danger);cursor:pointer;" onclick="removeCartItem(${index})">❌</button></div></div>`;
+                });
+            }
+            handleDeliveryMethodChange();
+            updateCartTotalWithFees();
+            if (isWaitingPaymentConfirm) changeModalToPostPaymentState(); else resetModalToInitialState();
+            document.getElementById("cart-modal").style.display = "flex";
+        }
+
+        /* ==================================== */
+        /* CÁLCULO E GESTÃO DAS TAXAS DE CARTÃO */
+        /* ==================================== */
+        function updateCartTotalWithFees() {
+            currentTaxValue = 0;
+            let installmentText = "";
+
+            if (selectedPaymentMethod === 'debito') {
+                currentTaxValue = subtotalProducts * 0.0199; // 1,99% Débito
+            } 
+            else if (selectedPaymentMethod === 'cartao') {
+                const instElement = document.getElementById("cc-installments");
+                if (instElement && instElement.value) {
+                    const parcelas = parseInt(instElement.value);
+                    let taxaPorcentagem = 0.0498; // 4,98% À vista de base
+
+                    if (parcelas === 1) {
+                        taxaPorcentagem = 0.0498; // À vista (apenas os 4,98%)
+                    } else if (parcelas >= 2 && parcelas <= 6) {
+                        taxaPorcentagem = 0.0498 + 0.0299; // Base + 2,99%
+                    } else if (parcelas >= 7 && parcelas <= 12) {
+                        taxaPorcentagem = 0.0498 + 0.0309; // Base + 3,09%
+                    }
+
+                    currentTaxValue = subtotalProducts * taxaPorcentagem;
+                    const vParcela = (subtotalProducts + currentTaxValue) / parcelas;
+                    installmentText = ` (em ${parcelas}x de R$ ${vParcela.toFixed(2)})`;
+                }
+            }
+
+            globalTotalValue = subtotalProducts + currentTaxValue;
+
+            document.getElementById("cart-subtotal-display").innerText = `R$ ${subtotalProducts.toFixed(2)}`;
+            document.getElementById("cart-tax-display").innerText = `R$ ${currentTaxValue.toFixed(2)}`;
+            document.getElementById("cart-total-value").innerText = `R$ ${globalTotalValue.toFixed(2)}${installmentText}`;
+        }
+
+        function generateInstallmentsOptions() {
+            const select = document.getElementById("cc-installments");
+            select.innerHTML = "";
+            
+            for (let i = 1; i <= 12; i++) {
+                let taxa = 0.0498;
+                if (i >= 2 && i <= 6) taxa = 0.0498 + 0.0299;
+                if (i >= 7 && i <= 12) taxa = 0.0498 + 0.0309;
+
+                const simuladoTotal = subtotalProducts + (subtotalProducts * taxa);
+                const valorPac = simuladoTotal / i;
+                
+                const option = document.createElement("option");
+                option.value = i;
+                option.text = `${i}x de R$ ${valorPac.toFixed(2)} ${(i===1) ? '(À vista)' : ''}`;
+                select.appendChild(option);
+            }
+        }
+
+        function selectPaymentCard(v) {
+            selectedPaymentMethod = v;
+            document.querySelectorAll(".payment-card").forEach(c => c.classList.remove("selected"));
+            document.querySelector(`.payment-card[data-value="${v}"]`).classList.add("selected");
+            
+            // Exibe ou oculta seletor de parcelas do crédito
+            document.getElementById("cc-installments-wrapper").style.display = (v === 'cartao') ? "block" : "none";
+            
+            if (v === 'cartao') generateInstallmentsOptions();
+
+            const b = document.getElementById("mp-pay-button");
+            if (v === "especie") {
+                b.innerText = "🚀 Finalizar Pedido"; b.style.background = "var(--success)";
+            } else {
+                b.innerText = "🚀 Ir para o Pagamento"; b.style.background = "var(--mp-blue)";
+            }
+            updateCartTotalWithFees();
+        }
+
+        function removeCartItem(idx) { cart.splice(idx, 1); updateCartBadge(); openCartModal(); }
+        function handleDeliveryMethodChange() { const m = document.getElementById("delivery-method").value; document.getElementById("card-especie").style.display = m === "Retirada no Local" ? "flex" : "none"; if(m !== "Retirada no Local" && selectedPaymentMethod === "especie") selectPaymentCard("pix"); }
+        function changeModalToPostPaymentState() { document.getElementById("cart-inputs-wrapper").style.display = "none"; document.getElementById("post-pay-alert").style.display = "block"; const b = document.getElementById("mp-pay-button"); b.disabled = false; b.style.background = "var(--success)"; b.innerText = "✅ Já paguei! Enviar para o WhatsApp"; b.onclick = sendFinalWhatsAppNotification; }
+        function resetModalToInitialState() { document.getElementById("cart-inputs-wrapper").style.display = "block"; document.getElementById("post-pay-alert").style.display = "none"; localStorage.removeItem("jc_payment_waiting"); const b = document.getElementById("mp-pay-button"); b.onclick = processOrderCheckout; selectPaymentCard(selectedPaymentMethod); }
+        
+        function processOrderCheckout() {
+            const name = document.getElementById("customer-name").value; if(!name) { alert("Digite seu nome!"); return; } if(cart.length === 0) return;
+            if(selectedPaymentMethod === "especie") { sendOrderToWhatsApp("A combinar na Entrega", true); closeModal('cart-modal'); return; }
+            
+            const b = document.getElementById("mp-pay-button"); b.disabled = true; b.innerText = "⏳ Conectando ao Mercado Pago...";
+            
+            fetch("https://api.mercadopago.com/checkout/preferences", {
+                method: "POST",
+                headers: { "Authorization": `Bearer ${MP_ACCESS_TOKEN}`, "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    items: [{ title: `Pedido JC Pescados - ${name}`, quantity: 1, currency_id: "BRL", unit_price: parseFloat(globalTotalValue.toFixed(2)) }],
+                    payer: { name },
+                    back_urls: { success: window.location.href, pending: window.location.href, failure: window.location.href },
+                    auto_return: "approved"
+                })
+            }).then(r => r.json()).then(d => { if(d.init_point) { localStorage.setItem("jc_payment_waiting", "true"); window.open(d.init_point, '_blank'); changeModalToPostPaymentState(); } }).catch(() => { alert("Erro ao gerar pagamento."); b.disabled = false; resetModalToInitialState(); });
+        }
+
+        function sendFinalWhatsAppNotification() { sendOrderToWhatsApp(`PAGO VIA ${selectedPaymentMethod.toUpperCase()}`, true); resetModalToInitialState(); closeModal('cart-modal'); }
+        
+        function sendOrderToWhatsApp(status = "Pendente", clear = true) {
+            countWhatsAppClick(); const name = document.getElementById("customer-name").value; const method = document.getElementById("delivery-method").value;
+            let nParcelas = selectedPaymentMethod === 'cartao' ? document.getElementById("cc-installments").value : "1";
+            
+            let t = `*NOVO PEDIDO - JC PESCADOS*\n\n`;
+            t += `*Cliente:* ${name}\n`;
+            t += `*Envio:* ${method}\n`;
+            t += `*Forma de Pagamento:* ${selectedPaymentMethod.toUpperCase()}\n`;
+            if(selectedPaymentMethod === 'cartao') t += `*Plano Selecionado:* ${nParcelas}x no Crédito\n`;
+            t += `*Status do Pagamento:* ${status}\n\n`;
+            
+            t += `*PRODUTOS:*\n`;
+            cart.forEach(i => { const sub = i.product.price * i.quantity; t += `- ${i.quantity} x ${i.product.name} = R$ ${sub.toFixed(2)}\n`; });
+            
+            t += `\nSubtotal Produtos: R$ ${subtotalProducts.toFixed(2)}`;
+            t += `\nTaxas Administrativas: R$ ${currentTaxValue.toFixed(2)}`;
+            t += `\n*TOTAL FINAL DO PEDIDO: R$ ${globalTotalValue.toFixed(2)}*`;
+            
+            if(clear) { cart = []; updateCartBadge(); }
+            window.open(`https://wa.me/5586994494783?text=${encodeURIComponent(t)}`, '_blank');
+        }
+
+        /* FUNÇÕES ADMIN ADICIONAIS */
         function populateAdminDropdowns() {
             const selectEdit = document.getElementById("admin-select-product"); const selectPromo = document.getElementById("admin-promo-product");
             selectEdit.innerHTML = ""; selectPromo.innerHTML = "";
@@ -1180,73 +1197,9 @@
             if(!name || isNaN(price)) { alert("Preencha campos!"); return; }
             productsRef.push({ name, price, oldPrice: price, isPromo: false, img, stock: "disponivel", category, featuredOrder: "normal" }).then(() => { alert("Criado!"); document.getElementById("new-name").value = ""; document.getElementById("new-price").value = ""; });
         }
-        function clearAllMetrics() { if(confirm("Zerar?")) statsRef.set({ visitas: 0, cliquesWhats: 0, rascunhos: {} }); }
+        function clearAllMetrics() { if(confirm("Zerar?")) statsRef.set({ visitas: 0, cliquesWhats: 0 }); }
         function toggleAdminDashboard() { const dash = document.getElementById("admin-dashboard"); if(dash.style.display === "block") { dash.style.display = "none"; } else { document.getElementById("admin-secret-input").value = ""; document.getElementById("admin-pass-prompt").style.display = "flex"; } }
         function validateAdminPassword() { if(document.getElementById("admin-secret-input").value === "Brasil4ever!@#") { closeModal('admin-pass-prompt'); document.getElementById("admin-dashboard").style.display = "block"; } else { alert("Senha incorreta!"); } }
-        function setModalQuantity(v) { document.getElementById("modal-quantity").value = v; }
-        function openPurchaseModal(id) {
-            activeProductId = id; const prod = products.find(p => p.id == id); document.getElementById("modal-product-title").innerText = prod.name;
-            const isWeight = prod.name.toLowerCase().includes("kg") || prod.name.toLowerCase().includes("duzia") || ["camarao","peixes","salmao","lagosta","polvo","lula"].includes(prod.category);
-            document.getElementById("kg-alert-helper").style.display = isWeight ? "block" : "none";
-            document.getElementById("kg-shortcuts").style.display = isWeight ? "flex" : "none";
-            document.getElementById("modal-quantity").value = isWeight ? "1.000" : "1";
-            document.getElementById("purchase-modal").style.display = "flex";
-        }
-        function closeModal(id) { document.getElementById(id).style.display = "none"; }
-        function confirmAddToCart() {
-            const qty = parseFloat(document.getElementById("modal-quantity").value); const prod = products.find(p => p.id == activeProductId);
-            if(prod && qty > 0) { const ex = cart.find(i => i.product.id === prod.id); if(ex) ex.quantity += qty; else cart.push({ product: prod, quantity: qty }); updateCartBadge(); syncCartDraftToFirebaseOnly(); closeModal('purchase-modal'); document.getElementById("next-step-modal").style.display = "flex"; }
-        }
-        function goToCartFromModal() { closeModal('next-step-modal'); openCartModal(); }
-        function updateCartBadge() { document.getElementById("global-cart-count").innerText = cart.reduce((t, i) => t + i.quantity, 0).toFixed(0); }
-        
-        function openCartModal() {
-            const list = document.getElementById("cart-items-list"); list.innerHTML = ""; globalTotalValue = 0;
-            if(cart.length === 0) { list.innerHTML = "<p style='text-align:center;padding:15px;'>Carrinho vazio.</p>"; } 
-            else {
-                cart.forEach((item, index) => {
-                    const sub = item.product.price * item.quantity; globalTotalValue += sub;
-                    list.innerHTML += `<div style="display:flex;justify-content:space-between;margin-bottom:12px;background:#f8fafc;padding:10px;border-radius:8px;"><div><strong>${item.product.name}</strong><br><small>${item.quantity} x R$ ${item.product.price.toFixed(2)}</small></div><div style="display:flex;align-items:center;gap:10px;"><span style="color:var(--primary);font-weight:700;">R$ ${sub.toFixed(2)}</span><button style="background:none;border:none;color:var(--danger);cursor:pointer;" onclick="removeCartItem(${index})">❌</button></div></div>`;
-                });
-            }
-            document.getElementById("cart-total-value").innerText = `R$ ${globalTotalValue.toFixed(2)}`;
-            handleDeliveryMethodChange();
-            if (isWaitingPaymentConfirm) changeModalToPostPaymentState(); else resetModalToInitialState();
-            document.getElementById("cart-modal").style.display = "flex";
-        }
-        
-        function removeCartItem(idx) { cart.splice(idx, 1); updateCartBadge(); openCartModal(); syncCartDraftToFirebaseOnly(); }
-        function selectPaymentCard(v) { selectedPaymentMethod = v; document.querySelectorAll(".payment-card").forEach(c => c.classList.remove("selected")); document.querySelector(`.payment-card[data-value="${v}"]`).classList.add("selected"); const b = document.getElementById("mp-pay-button"); b.innerText = v === "especie" ? "🚀 Finalizar Pedido" : "🚀 Ir para o Pagamento"; b.style.background = v === "especie" ? "var(--success)" : "var(--mp-blue)"; }
-        function handleDeliveryMethodChange() { const m = document.getElementById("delivery-method").value; document.getElementById("card-especie").style.display = m === "Retirada no Local" ? "flex" : "none"; if(m !== "Retirada no Local" && selectedPaymentMethod === "especie") selectPaymentCard("pix"); }
-        function changeModalToPostPaymentState() { document.getElementById("cart-inputs-wrapper").style.display = "none"; document.getElementById("post-pay-alert").style.display = "block"; const b = document.getElementById("mp-pay-button"); b.disabled = false; b.style.background = "var(--success)"; b.innerText = "✅ Já paguei! Enviar para o WhatsApp"; b.onclick = sendFinalWhatsAppNotification; }
-        function resetModalToInitialState() { document.getElementById("cart-inputs-wrapper").style.display = "block"; document.getElementById("post-pay-alert").style.display = "none"; setPaymentStateInStorage(false); const b = document.getElementById("mp-pay-button"); b.onclick = processOrderCheckout; selectPaymentCard(selectedPaymentMethod); }
-        
-        function processOrderCheckout() {
-            const name = document.getElementById("customer-name").value; if(!name) { alert("Digite seu nome!"); return; } if(cart.length === 0) return;
-            if(selectedPaymentMethod === "especie") { sendOrderToWhatsApp("A combinar na Entrega/Retirada", true); closeModal('cart-modal'); return; }
-            const b = document.getElementById("mp-pay-button"); b.disabled = true; b.innerText = "⏳ Conectando ao Mercado Pago...";
-            
-            fetch("https://api.mercadopago.com/checkout/preferences", {
-                method: "POST",
-                headers: { "Authorization": `Bearer ${MP_ACCESS_TOKEN}`, "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    items: cart.map(i => ({ title: i.product.name, quantity: 1, currency_id: "BRL", unit_price: parseFloat(i.product.price * i.quantity) })),
-                    payer: { name },
-                    back_urls: { success: window.location.href, pending: window.location.href, failure: window.location.href },
-                    auto_return: "approved"
-                })
-            }).then(r => r.json()).then(d => { if(d.init_point) { setPaymentStateInStorage(true); window.open(d.init_point, '_blank'); changeModalToPostPaymentState(); } }).catch(() => { alert("Erro ao gerar pagamento."); b.disabled = false; resetModalToInitialState(); });
-        }
-
-        function sendFinalWhatsAppNotification() { sendOrderToWhatsApp(`PAGO VIA ${selectedPaymentMethod.toUpperCase()}`, true); resetModalToInitialState(); closeModal('cart-modal'); }
-        function sendOrderToWhatsApp(status = "Pendente", clear = true) {
-            countWhatsAppClick(); const name = document.getElementById("customer-name").value; const method = document.getElementById("delivery-method").value;
-            let t = `*NOVO PEDIDO - JC PESCADOS*\n\n*Cliente:* ${name}\n*Envio:* ${method}\n*Pagamento:* ${selectedPaymentMethod.toUpperCase()} (${status})\n\n*PRODUTOS:*\n`;
-            let total = 0; cart.forEach(i => { const sub = i.product.price * i.quantity; total += sub; t += `- ${i.quantity} x ${i.product.name} = R$ ${sub.toFixed(2)}\n`; });
-            t += `\n*TOTAL FINAL: R$ ${total.toFixed(2)}*`;
-            if(clear) { const n = document.getElementById("customer-name").value; if(n) statsRef.child("rascunhos").child(n.replace(/[.#$[\]]/g, "")).remove(); cart = []; updateCartBadge(); }
-            window.open(`https://wa.me/5586994494783?text=${encodeURIComponent(t)}`, '_blank');
-        }
     </script>
 </body>
 </html>
