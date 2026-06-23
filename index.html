@@ -604,7 +604,6 @@
             animation: selectPulse 0.3s ease-in-out;
         }
 
-        /* Variações de Cores ao Selecionar */
         .payment-card[data-value="pix"].selected { border-color: var(--mp-blue); box-shadow: 0 0 12px rgba(0, 158, 227, 0.15); }
         .payment-card[data-value="cartao"].selected { border-color: var(--primary); box-shadow: 0 0 12px rgba(0, 123, 138, 0.15); }
         .payment-card[data-value="especie"].selected { border-color: var(--success); box-shadow: 0 0 12px rgba(37, 211, 102, 0.15); }
@@ -687,7 +686,6 @@
             margin-top: auto;
         }
         
-        /* ESTILO PARA AS NOVAS METRICAS DO PAINEL ADM */
         .metrics-bar {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
@@ -779,7 +777,6 @@
                 <button class="dash-btn" style="background: var(--success);" onclick="addNewProduct()">Criar Produto</button>
             </div>
             
-            <!-- EXCLUSIVO: ABA DE MONITORAMENTO DE CLIENTES E VISITAS INTEGRADO NO SEU DASHBOARD -->
             <div class="dash-card" style="grid-column: span 1;">
                 <h3>📊 Visitas & Métricas</h3>
                 <div class="metrics-bar" style="grid-template-columns: 1fr 1fr; margin-top:0; padding-top:0; border:none;">
@@ -877,7 +874,6 @@
 
             <label style="font-size: 13px; font-weight: 700; color: var(--primary-dark); display: block; margin-bottom: 8px;">Selecione a Forma de Pagamento:</label>
             
-            <!-- CARDS VISUAIS PARA AS FORMAS DE PAGAMENTO -->
             <div class="payment-methods-grid">
                 <div class="payment-card selected" data-value="pix" onclick="selectPaymentCard('pix'); saveCartDraftToStorage();">
                     <div class="icon-circle">⚡</div>
@@ -900,7 +896,7 @@
                 <div class="payment-card" id="card-especie" data-value="especie" style="display:none;" onclick="selectPaymentCard('especie'); saveCartDraftToStorage();">
                     <div class="icon-circle">💵</div>
                     <div class="details">
-                        <span class="title">Espécie (Dinheiro)</span>
+                        <span class="title">Espèce (Dinheiro)</span>
                         <span class="subtitle">Efetue o pagamento em mãos na retirada</span>
                     </div>
                     <div class="radio-dot"></div>
@@ -931,6 +927,27 @@
         </div>
     </div>
 
+    <!-- NOVO MODAL DE PERGUNTA DE CONCLUSÃO DE PAGAMENTO -->
+    <div id="payment-check-modal" class="modal" style="z-index: 1100;">
+        <div class="modal-content" style="text-align: center; max-width: 460px;">
+            <h3 style="font-size: 20px;">Você já concluiu seu pagamento? 🤔</h3>
+            <p style="margin-bottom: 25px; color:#64748b; font-size: 14px; line-height: 1.5;">
+                Caso tenha finalizado a transação na aba do Mercado Pago, confirme abaixo para nos enviar os detalhes. Se preferir, você pode pagar diretamente com o suporte.
+            </p>
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+                <button class="buy-btn" style="background: var(--success);" onclick="handleCheckPaymentResponse('sim')">
+                    ✅ Sim, já concluí o pagamento!
+                </button>
+                <button class="buy-btn" style="background: #128c7e;" onclick="handleCheckPaymentResponse('whats')">
+                    💬 Desejo pagar via Whats com colaborador
+                </button>
+                <button class="buy-btn" style="background: #64748b; font-size: 13px; padding: 8px;" onclick="closeModal('payment-check-modal')">
+                    Voltar para o Carrinho
+                </button>
+            </div>
+        </div>
+    </div>
+
     <footer>
         <p>&copy; 2026 JC Pescados. Todos os direitos reservados.</p>
     </footer>
@@ -948,7 +965,7 @@
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
         const productsRef = database.ref("produtos");
-        const statsRef = database.ref("metricas_loja"); // Nova referência para visitas e logs do painel
+        const statsRef = database.ref("metricas_loja");
 
         const MP_PUBLIC_KEY = "APP_USR-e68e3b26-1267-45c0-903e-b4493dfa9e09";
         const MP_ACCESS_TOKEN = "APP_USR-1319596414441796-062312-76de006650bb82824f0b4c22c8f79d40-3169714868";
@@ -963,7 +980,6 @@
         let selectedPaymentMethod = 'pix';
 
         document.addEventListener("DOMContentLoaded", () => {
-            // Registrar visita assim que abrir a página
             registerStoreVisit();
 
             productsRef.on("value", (snapshot) => {
@@ -976,15 +992,12 @@
                         products.push({ id: key, ...data[key] });
                     });
                     
-                    // CRUCIAL: Se o cliente voltou do Pix/Cartão, reidrata o carrinho atualizando os preços com base no Firebase
                     loadCartDraftFromStorage();
-
                     renderStoreProducts(currentFilter);
                     populateAdminDropdowns();
                 }
             });
 
-            // Ouvinte para atualizar métricas em tempo real no painel do administrador
             statsRef.on("value", (snapshot) => {
                 const data = snapshot.val() || { visitas: 0, cliquesWhats: 0, rascunhos: {} };
                 document.getElementById("dash-stat-visitas").innerText = data.visitas || 0;
@@ -1001,7 +1014,6 @@
             });
         });
 
-        // FUNÇÃO DE PERSISTÊNCIA LOCAL: Salva o estado do carrinho, nome e métodos no celular
         function saveCartDraftToStorage() {
             if (cart.length === 0) {
                 localStorage.removeItem("jc_cart_draft");
@@ -1015,7 +1027,6 @@
             };
             localStorage.setItem("jc_cart_draft", JSON.stringify(draft));
 
-            // Salva também uma cópia limpa no Firebase para monitoramento na aba de controle do Admin
             if (draft.customerName.trim().length > 2) {
                 statsRef.child("rascunhos").child(draft.customerName.replace(/[.#$[\]]/g, "")).set({
                     nome: draft.customerName,
@@ -1026,7 +1037,6 @@
             }
         }
 
-        // FUNÇÃO DE RECUPERAÇÃO AUTOMÁTICA: Lê o cache e atualiza tudo cruzando dados com o banco
         function loadCartDraftFromStorage() {
             const raw = localStorage.getItem("jc_cart_draft");
             if (!raw) return;
@@ -1035,12 +1045,10 @@
                 if (draft && draft.items) {
                     const freshCart = [];
                     draft.items.forEach(cachedItem => {
-                        // Busca o produto correspondente direto da lista atualizada do Firebase
                         const realProduct = products.find(p => p.id === cachedItem.id);
-                        // Só recoloca se o produto ainda existir e não estiver marcado como esgotado no painel
                         if (realProduct && realProduct.stock !== "esgotado") {
                             freshCart.push({
-                                product: realProduct, // Preço, foto e meta atualizados agora!
+                                product: realProduct,
                                 quantity: cachedItem.quantity
                             });
                         }
@@ -1048,7 +1056,6 @@
                     cart = freshCart;
                     updateCartBadge();
 
-                    // Preenche novamente os campos salvos para poupar digitação do cliente
                     if(draft.customerName) document.getElementById("customer-name").value = draft.customerName;
                     if(draft.deliveryMethod) {
                         document.getElementById("delivery-method").value = draft.deliveryMethod;
@@ -1378,7 +1385,7 @@
                 else cart.push({ product: prod, quantity: qty });
                 
                 updateCartBadge();
-                saveCartDraftToStorage(); // Salva rascunho com o novo item adicionado
+                saveCartDraftToStorage();
                 
                 document.getElementById("purchase-modal").style.display = "none";
                 document.getElementById("next-step-modal").style.display = "flex";
@@ -1426,7 +1433,7 @@
             document.getElementById("cart-total-value").innerText = `R$ ${globalTotalValue.toFixed(2)}`;
             handleDeliveryMethodChange(); 
             document.getElementById("cart-modal").style.display = "flex";
-            saveCartDraftToStorage(); // Atualiza os totais salvos localmente
+            saveCartDraftToStorage();
         }
 
         function removeCartItem(index) {
@@ -1436,7 +1443,6 @@
             saveCartDraftToStorage();
         }
 
-        /* GERENCIA A SELEÇÃO DOS NOVOS CARDS DE PAGAMENTO */
         function selectPaymentCard(value) {
             selectedPaymentMethod = value;
             document.querySelectorAll(".payment-card").forEach(card => {
@@ -1478,7 +1484,6 @@
             if(!name) { alert("Por favor, digite seu nome primeiro!"); return; }
             if(cart.length === 0) { alert("Carrinho vazio!"); return; }
 
-            // Salva o último estado crítico antes de instanciar o gateway externo
             saveCartDraftToStorage();
 
             if(selectedPaymentMethod === "especie") {
@@ -1496,7 +1501,6 @@
                 unit_price: isProductSoldByWeight(item.product) ? parseFloat(item.product.price * item.quantity) : parseFloat(item.product.price)
             }));
 
-            /* REDIRECIONAMENTO EXECUTADO NA MESMA TELA DO DISPOSITIVO CELULAR */
             const preferenceData = {
                 items: itemsMapped,
                 payer: { name: name },
@@ -1527,9 +1531,10 @@
                 .then(response => response.json())
                 .then(data => {
                     if(data.init_point) {
-                        document.getElementById("pix-mp-iframe").src = data.init_point;
-                        closeModal('cart-modal');
-                        document.getElementById("pix-payment-modal").style.display = "flex";
+                        // Abre o Mercado Pago em uma nova aba para o cliente pagar
+                        window.open(data.init_point, "_blank");
+                        // MANTÉM o carrinho aberto e joga por cima o modal da pergunta
+                        document.getElementById("payment-check-modal").style.display = "flex";
                     } else {
                         throw new Error("Erro ao estruturar preferência de Pix.");
                     }
@@ -1561,15 +1566,10 @@
                 .then(response => response.json())
                 .then(data => {
                     if(data.init_point) {
-                        payButton.innerText = "💳 Redirecionando...";
-                        // Abre na mesma aba para evitar perda total do contexto operacional no celular
-                        window.open(data.init_point, "_self");
-                        
-                        setTimeout(() => { 
-                            sendOrderToWhatsApp(`SOLICITADO / ANEXAR COMPROVANTE DO CARTÃO`); 
-                            payButton.innerText = "Finalizar e Pagar no Cartão";
-                            payButton.disabled = false;
-                        }, 1200);
+                        // Abre o checkout do cartão em uma nova aba
+                        window.open(data.init_point, "_blank");
+                        // MANTÉM o carrinho aberto e joga por cima o modal da pergunta
+                        document.getElementById("payment-check-modal").style.display = "flex";
                     } else {
                         throw new Error("Erro na API.");
                     }
@@ -1577,9 +1577,23 @@
                 .catch(error => {
                     console.error(error);
                     alert("Erro ao conectar ao checkout do Cartão.");
-                    payButton.innerText = "Finalizar e Pagar no Cartão";
+                })
+                .finally(() => {
+                    payButton.innerText = "💳 Finalizar e Pagar no Cartão";
                     payButton.disabled = false;
                 });
+            }
+        }
+
+        // FUNÇÃO QUE CAPTURA A RESPOSTA DO NOVO MODAL E ENVIA DETALHADO PRO WHATSAPP
+        function handleCheckPaymentResponse(responseType) {
+            closeModal('payment-check-modal');
+            closeModal('cart-modal');
+            
+            if (responseType === 'sim') {
+                sendOrderToWhatsApp(`CONCLUÍDO VIA ${selectedPaymentMethod.toUpperCase()} (COMPROVANTE EM ANEXO)`);
+            } else if (responseType === 'whats') {
+                sendOrderToWhatsApp(`DESEJA PAGAR VIA WHATSAPP COM COLABORADOR`);
             }
         }
 
@@ -1622,7 +1636,6 @@
 
             text += `\n*TOTAL FINAL: R$ ${total.toFixed(2)}*`;
 
-            // Limpa o cache do carrinho local do cliente já que ele concluiu o envio para o WhatsApp
             clearCartAndCache();
 
             const encoded = encodeURIComponent(text);
