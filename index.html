@@ -459,6 +459,9 @@
             border: 2px solid #000;
         }
 
+        /* ==================================== */
+        /* MODAIS CORRIGIDOS E TOTALMENTE RESPONSIVOS */
+        /* ==================================== */
         .modal {
             display: none;
             position: fixed;
@@ -471,15 +474,17 @@
             backdrop-filter: blur(4px);
             align-items: center;
             justify-content: center;
-            padding: 20px;
+            padding: 12px; /* Garante margem em celulares muito pequenos */
         }
 
         .modal-content {
             background: white;
-            padding: 30px;
+            padding: 28px;
             border-radius: var(--radius);
-            max-width: 450px;
+            max-width: 460px;
             width: 100%;
+            max-height: 88vh; /* Define altura máxima de segurança para caber em qualquer tela */
+            overflow-y: auto; /* Cria rolagem interna elegante se o conteúdo passar do tamanho da tela */
             box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
             position: relative;
             animation: slideUp 0.3s ease;
@@ -487,19 +492,21 @@
 
         .close-btn {
             position: absolute;
-            top: 20px;
-            right: 20px;
+            top: 18px;
+            right: 18px;
             font-size: 24px;
             cursor: pointer;
             color: #64748b;
             background: none;
             border: none;
+            z-index: 10;
         }
 
         .modal h3 {
             margin-bottom: 15px;
             color: var(--primary-dark);
             font-size: 22px;
+            padding-right: 30px; /* Impede o título de ficar por baixo do botão fechar (X) */
         }
 
         .modal input, .modal select {
@@ -603,6 +610,7 @@
             justify-content: center;
             font-size: 18px;
             background: #e2e8f0;
+            flex-shrink: 0;
         }
 
         .payment-card[data-value="pix"].selected .icon-circle { background: #e0f2fe; color: var(--mp-blue); }
@@ -634,6 +642,7 @@
             border-radius: 50%;
             margin-left: auto;
             position: relative;
+            flex-shrink: 0;
         }
 
         .payment-card.selected .radio-dot { border-color: currentColor; }
@@ -660,6 +669,34 @@
             padding: 15px;
             margin: 15px 0;
             text-align: center;
+        }
+
+        /* ==================================== */
+        /* MEDIA QUERIES PARA CELULARES PEQUENOS */
+        /* ==================================== */
+        @media (max-width: 480px) {
+            .modal-content {
+                padding: 18px; /* Reduz margens internas em celulares compactos */
+                max-height: 94vh; /* Dá mais espaço vertical útil no celular */
+            }
+            .modal h3 {
+                font-size: 19px;
+            }
+            .payment-card {
+                padding: 10px;
+                gap: 8px;
+            }
+            .payment-card .icon-circle {
+                width: 30px;
+                height: 30px;
+                font-size: 15px;
+            }
+            .payment-card .details .title {
+                font-size: 13px;
+            }
+            .payment-card .details .subtitle {
+                font-size: 10px;
+            }
         }
 
         footer {
@@ -712,7 +749,7 @@
         <div class="logo-container">
             <img src="logo.jpeg" onerror="this.src='https://images.unsplash.com/photo-1551248429-40975aa4de74?w=150'" alt="JC Pescados">
             <h1>JC PESCADOS</h1>
-            <p>Bem Vindo a nossa Loja, mais de 5 anos sendo referência no atacado e varejo de frutos do mar</p>
+            <p>Bem-vindo à nossa Loja! Há mais de 5 anos sendo referência no atacado e varejo de frutos do mar frescos e selecionados</p>
         </div>
     </header>
 
@@ -886,6 +923,14 @@
                 <p style="font-weight: 700; color: var(--primary-dark);">Janela de Pagamento Aberta!</p>
                 <p style="font-size: 12px; color: #475569; margin-bottom: 10px;">Assim que concluir no Mercado Pago, clique abaixo para enviar o pedido.</p>
             </div>
+
+            <div id="pix-pay-container" style="display: none; background: #f0fdf4; border: 2px dashed var(--mp-blue); border-radius: 12px; padding: 15px; margin: 15px 0; text-align: center;">
+                <p style="font-weight: 700; color: var(--primary-dark);">Escaneie o QR Code ou Copie o Código</p>
+                <p style="font-size: 16px; font-weight: 800; color: var(--destaque-color); margin: 5px 0;">Valor a Pagar: <span id="pix-final-total">R$ 0,00</span></p>
+                <img src="qrcode.jpeg" alt="QR Code Pix" style="max-width: 180px; width: 100%; margin: 10px auto; display: block; border: 1px solid #cbd5e1; border-radius: 8px;">
+                <textarea id="pix-code-text" readonly style="width: 100%; height: 60px; padding: 8px; font-size: 11px; border: 1px solid #cbd5e1; border-radius: 6px; resize: none; margin-bottom: 8px; background: #fff;">00020126360014br.gov.bcb.pix0114400864570001855204000053039865802BR5914BCGFEBADH702336009Sao Paulo610901227-20062240520daqr31697148687479276304F759</textarea>
+                <button class="dash-btn" style="background: var(--mp-blue); margin-bottom: 0;" onclick="copyPixCode()">📋 Copiar Código Pix</button>
+            </div>
             
             <button class="buy-btn" style="background: var(--mp-blue); margin-top: 10px;" id="mp-pay-button" onclick="processOrderCheckout()">
                 🚀 Finalizar e Ir para o Pagamento
@@ -997,16 +1042,14 @@
             grid.innerHTML = "";
             let filtered = filter === 'destaque' ? products.filter(p => p.featuredOrder && p.featuredOrder !== "normal").sort((a, b) => parseInt(a.featuredOrder) - parseInt(b.featuredOrder)) : products.filter(p => p.category === filter);
 
-            // NOVA LÓGICA: Coloca os produtos esgotados no final da fila, mantendo os disponíveis na frente
             filtered.sort((a, b) => {
                 const aEsgotado = a.stock === 'esgotado' ? 1 : 0;
                 const bEsgotado = b.stock === 'esgotado' ? 1 : 0;
                 
                 if (aEsgotado !== bEsgotado) {
-                    return aEsgotado - bEsgotado; // Disponível (0) vem antes de Esgotado (1)
+                    return aEsgotado - bEsgotado;
                 }
                 
-                // Se ambos tiverem o mesmo status de estoque e for a aba destaque, mantém a ordem numérica escolhida
                 if (filter === 'destaque') {
                     return parseInt(a.featuredOrder) - parseInt(b.featuredOrder);
                 }
@@ -1160,7 +1203,7 @@
             if (v === 'cartao') generateInstallmentsOptions();
 
             const b = document.getElementById("mp-pay-button");
-            if (v === "especie") {
+            if (v === "especie" || v === "pix") {
                 b.innerText = "🚀 Finalizar Pedido"; b.style.background = "var(--success)";
             } else {
                 b.innerText = "🚀 Ir para o Pagamento"; b.style.background = "var(--mp-blue)";
@@ -1186,10 +1229,33 @@
             b.innerText = "✅ Já paguei! Enviar para o WhatsApp"; 
             b.onclick = sendFinalWhatsAppNotification; 
         }
+
+        function changeModalToPixState() {
+            document.getElementById("cart-inputs-wrapper").style.display = "none"; 
+            document.getElementById("pix-pay-container").style.display = "block"; 
+            document.getElementById("pix-final-total").innerText = `R$ ${globalTotalValue.toFixed(2)}`;
+            const b = document.getElementById("mp-pay-button"); 
+            b.disabled = false; 
+            b.style.background = "var(--success)"; 
+            b.innerText = "✅ Já paguei! Enviar para o WhatsApp"; 
+            b.onclick = sendFinalWhatsAppNotification; 
+        }
+
+        function copyPixCode() {
+            const copyText = document.getElementById("pix-code-text");
+            copyText.select();
+            copyText.setSelectionRange(0, 99999);
+            navigator.clipboard.writeText(copyText.value).then(() => {
+                alert("Código Pix copiado com sucesso!");
+            }).catch(() => {
+                alert("Erro ao copiar o código automaticamente. Por favor, copie manualmente.");
+            });
+        }
         
         function resetModalToInitialState() { 
             document.getElementById("cart-inputs-wrapper").style.display = "block"; 
             document.getElementById("post-pay-alert").style.display = "none"; 
+            document.getElementById("pix-pay-container").style.display = "none"; 
             localStorage.removeItem("jc_payment_waiting"); 
             localStorage.removeItem("jc_customer_name");
             localStorage.removeItem("jc_cc_installments");
@@ -1212,6 +1278,11 @@
                 sendOrderToWhatsApp("A combinar na Entrega", true); 
                 closeModal('cart-modal'); 
                 return; 
+            }
+
+            if(selectedPaymentMethod === "pix") {
+                changeModalToPixState();
+                return;
             }
             
             const b = document.getElementById("mp-pay-button"); 
