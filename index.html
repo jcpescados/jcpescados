@@ -840,7 +840,7 @@
             
             <div style="background: #f1f5f9; padding: 12px; border-radius: 8px; margin-bottom: 15px; font-size: 14px;">
                 <div style="display:flex; justify-content: space-between; margin-bottom: 4px;"><span>Subtotal Produtos:</span><span id="cart-subtotal-display">R$ 0,00</span></div>
-                <div style="display:flex; justify-content: space-between; margin-bottom: 4px; color: var(--destaque-color); font-weight:600;"><span>Taxas / Juros Cartão:</span><span id="cart-tax-display">R$ 0,00</span></div>
+                <div style="display:flex; justify-content: space-between; margin-bottom: 4px; color: var(--destaque-color); font-weight:600;"><span>Taxas / Banco:</span><span id="cart-tax-display">R$ 0,00</span></div>
                 <div style="display:flex; justify-content: space-between; font-weight:800; font-size:16px; border-top:1px solid #cbd5e1; padding-top:6px; margin-top:6px; color: var(--primary-dark);"><span>Total Geral:</span><span id="cart-total-value">R$ 0,00</span></div>
             </div>
             
@@ -856,7 +856,7 @@
                 <div class="payment-methods-grid">
                     <div class="payment-card selected" data-value="pix" onclick="selectPaymentCard('pix')">
                         <div class="icon-circle">⚡</div>
-                        <div class="details"><span class="title">Pix Automático</span><span class="subtitle">Sem taxas adicionais</span></div>
+                        <div class="details"><span class="title">Pix Automático (BB)</span><span class="subtitle">Sem taxas adicionais</span></div>
                         <div class="radio-dot"></div>
                     </div>
                     <div class="payment-card" data-value="cartao" onclick="selectPaymentCard('cartao')">
@@ -884,11 +884,11 @@
 
             <div id="post-pay-alert" class="post-pay-container">
                 <p style="font-weight: 700; color: var(--primary-dark);">Janela de Pagamento Aberta!</p>
-                <p style="font-size: 12px; color: #475569; margin-bottom: 10px;">Assim que concluir no Mercado Pago, clique abaixo para enviar o pedido.</p>
+                <p style="font-size: 12px; color: #475569; margin-bottom: 10px;">Assim que concluir, clique abaixo para enviar o pedido.</p>
             </div>
             
-            <button class="buy-btn" style="background: var(--mp-blue); margin-top: 10px;" id="mp-pay-button" onclick="processOrderCheckout()">
-                🚀 Finalizar e Ir para o Pagamento
+            <button class="buy-btn" style="background: var(--primary); margin-top: 10px;" id="bb-pay-button" onclick="processOrderCheckout()">
+                🚀 Finalizar e Gerar Pix BB
             </button>
         </div>
     </div>
@@ -911,7 +911,6 @@
         </div>
     </div>
 
-    <script src="https://sdk.mercadopago.com/js/v2"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
@@ -926,9 +925,12 @@
         const productsRef = database.ref("produtos");
         const statsRef = database.ref("metricas_loja");
 
-        const MP_PUBLIC_KEY = "APP_USR-e68e3b26-1267-45c0-903e-b4493dfa9e09";
-        const MP_ACCESS_TOKEN = "APP_USR-1319596414441796-062312-76de006650bb82824f0b4c22c8f79d40-3169714868";
-        const mp = new MercadoPago(MP_PUBLIC_KEY, { locale: 'pt-BR' });
+        // CREDENCIAIS CREDENCIADAS DO BANCO DO BRASIL (HOMOLOGAÇÃO)
+        const BB_APP_KEY = "19a41304bb9b497785eaeb5d7d7fe0be";
+        const BB_CLIENT_ID = "eyJpZCI6IjUzYzhhNWYtNWZjYS0iLCJjb2RpZ29QdWJsaWNhZG9yIjowLCJjb2RpZ29Tb2Z0d2FyZSI6MTk1NDEyLCJzZXF1ZW5jaWFsSW5zdGFsYWNhbyI6MX0";
+        const BB_CLIENT_SECRET = "eyJpZCI6IjBlNzA4MDEtMTQzOC00OGQxLThkNDgtZGE5ZmExZmU1MTczYTBkNDIyIiwiY29kaWdvUHVibGljYWRvciI6MCwiY29kaWdvU29mdHdhcmUiOjE5NTQxMiwic2VxdWVuY2lhbEluc3RhbGFjYW8iOjEsInNlcXVlbmNpYWxDcmVkZW5jaWFsIjoxLCJhbWJpZW50ZSI6ImhvbW9sb2dhY2FvIiwiaWF0IjoxNzgyMjYxOTcxMTU4fQ";
+        const BB_REGISTRATION_ACCESS_TOKEN = "eyJpZCI6ImU3ZDQ2MTFkLWM2YTAtNDA5Zi04ZjVmLWZlOGIxNzllZjU3ZCIsImNvZGlnb1NvZendhcmUiOjE5NTQxIsInNlcXVlbmNpYWxJbnN0YWxhY2FvIjowLCJzZXF1ZW5jaWFsVG9rZW4iOjEsImNvZGlnb1RpcG9Ub2tlbiI6MiwiYW1iaWVudGUiOiJob21vbG9nYWNhbyIsImlhdCI6MTc4MjI2MTk3MTAzOH0";
+        const BB_BASIC = "ZXlKcFpDSTZJalV6WXpoaE5XWXROV1pqWVMwaUxDSmpiMlJwWjI5UWRXSnNhV05oWkc5eUlqb3dMQ0pqYjJScFoyOVRiMlowZDJGeVpTSTZNVGsxTkRFeUxDSnpaWEYxWlc1amFXRnNTVzV6ZEdGc1lXTmhieUk2TVgwOmV5SnBaQ0k2SWpCbE56QTRNREV0TVRRek9DMDBPR1F4TFRoa05EZ3RaR0U1Wm1FeFptVTFNVGN6WVRCa05ESXlJaXdpWTI5a2FXZHZVSFZpYkdsallXUnZjaUk2TUN3aVkyOWthV2R2UTI5bWRIZGhjbVVpT2pFNU5UUXhNaXdpYzJWeGRXVnVZMmxoYkVsdWMzUmhiR0ZqWVc4aU9qRXNJbk5sY1hWbGJtTnBZV3hEY21Wa1pXNWphV0ZzSWpoveExDSmhiV0pwWlc1MFpTSTZJbWh2Ylc5c2IyZGhZMkZ2SWl3aWFXRjBJam94TnpneU1qWXhPVGN4TVRVNGZR";
 
         let products = [];
         let cart = [];
@@ -1003,10 +1005,8 @@
                 const bEsgotado = b.stock === 'esgotado' ? 1 : 0;
                 
                 if (aEsgotado !== bEsgotado) {
-                    return aEsgotado - bEsgotado; // Disponível (0) vem antes de Esgotado (1)
+                    return aEsgotado - bEsgotado;
                 }
-                
-                // Se ambos tiverem o mesmo status de estoque e for a aba destaque, mantém a ordem numérica escolhida
                 if (filter === 'destaque') {
                     return parseInt(a.featuredOrder) - parseInt(b.featuredOrder);
                 }
@@ -1086,7 +1086,12 @@
             handleDeliveryMethodChange();
             selectPaymentCard(selectedPaymentMethod);
             updateCartTotalWithFees();
-            if (isWaitingPaymentConfirm) changeModalToPostPaymentState(); else resetModalToInitialState();
+            if (isWaitingPaymentConfirm) {
+                const storedPix = localStorage.getItem("jc_last_pix_code") || "";
+                changeModalToPostPaymentState(storedPix);
+            } else {
+                resetModalToInitialState();
+            }
             document.getElementById("cart-modal").style.display = "flex";
         }
 
@@ -1159,9 +1164,11 @@
             
             if (v === 'cartao') generateInstallmentsOptions();
 
-            const b = document.getElementById("mp-pay-button");
+            const b = document.getElementById("bb-pay-button");
             if (v === "especie") {
                 b.innerText = "🚀 Finalizar Pedido"; b.style.background = "var(--success)";
+            } else if (v === "pix") {
+                b.innerText = "🚀 Gerar Pix Banco do Brasil"; b.style.background = "var(--primary)";
             } else {
                 b.innerText = "🚀 Ir para o Pagamento"; b.style.background = "var(--mp-blue)";
             }
@@ -1177,27 +1184,59 @@
         
         function handleDeliveryMethodChange() { const m = document.getElementById("delivery-method").value; document.getElementById("card-especie").style.display = m === "Retirada no Local" ? "flex" : "none"; if(m !== "Retirada no Local" && selectedPaymentMethod === "especie") selectPaymentCard("pix"); }
         
-        function changeModalToPostPaymentState() { 
+        function changeModalToPostPaymentState(pixString = "") { 
             document.getElementById("cart-inputs-wrapper").style.display = "none"; 
             document.getElementById("post-pay-alert").style.display = "block"; 
-            const b = document.getElementById("mp-pay-button"); 
+            
+            if (pixString) {
+                document.getElementById("post-pay-alert").innerHTML = `
+                    <p style="font-weight: 700; color: var(--primary-dark);">Pix Copia e Cola Gerado! ⚡</p>
+                    <p style="font-size: 11px; color: #475569; margin-bottom: 8px;">Copie o código abaixo para pagar no aplicativo do seu banco:</p>
+                    <textarea readonly style="width:100%; height:70px; font-size:11px; padding:6px; border-radius:6px; border:1px solid #cbd5e1; resize:none; font-family:monospace;" id="bb-pix-code">${pixString}</textarea>
+                    <button class="shortcut-btn" style="margin-top:6px; width:100%; background:var(--primary); color:white; padding: 6px;" onclick="copyBBCode()">📋 Copiar Código Pix</button>
+                    <p style="font-size: 11px; color: var(--danger); margin-top: 8px; font-weight:700;">Após pagar, clique no botão verde abaixo para enviar seu pedido para o WhatsApp!</p>
+                `;
+            } else {
+                document.getElementById("post-pay-alert").innerHTML = `
+                    <p style="font-weight: 700; color: var(--primary-dark);">Pagamento Iniciado!</p>
+                    <p style="font-size: 12px; color: #475569; margin-bottom: 10px;">Conclua a operação e clique abaixo para finalizar o pedido.</p>
+                `;
+            }
+
+            const b = document.getElementById("bb-pay-button"); 
             b.disabled = false; 
             b.style.background = "var(--success)"; 
             b.innerText = "✅ Já paguei! Enviar para o WhatsApp"; 
             b.onclick = sendFinalWhatsAppNotification; 
         }
         
+        function copyBBCode() {
+            const copyText = document.getElementById("bb-pix-code");
+            if (copyText) {
+                copyText.select();
+                copyText.setSelectionRange(0, 99999);
+                navigator.clipboard.writeText(copyText.value);
+                alert("Código Pix copiado com sucesso!");
+            }
+        }
+
         function resetModalToInitialState() { 
             document.getElementById("cart-inputs-wrapper").style.display = "block"; 
             document.getElementById("post-pay-alert").style.display = "none"; 
+            document.getElementById("post-pay-alert").innerHTML = `
+                <p style="font-weight: 700; color: var(--primary-dark);">Janela de Pagamento Aberta!</p>
+                <p style="font-size: 12px; color: #475569; margin-bottom: 10px;">Assim que concluir, clique abaixo para enviar o pedido.</p>
+            `;
             localStorage.removeItem("jc_payment_waiting"); 
             localStorage.removeItem("jc_customer_name");
             localStorage.removeItem("jc_cc_installments");
-            const b = document.getElementById("mp-pay-button"); 
+            localStorage.removeItem("jc_last_pix_code");
+            const b = document.getElementById("bb-pay-button"); 
             b.onclick = processOrderCheckout; 
             selectPaymentCard(selectedPaymentMethod); 
         }
         
+        // INTERFACE DA API BANCO DO BRASIL (INTEGRAÇÃO PIX)
         function processOrderCheckout() {
             const name = document.getElementById("customer-name").value; 
             if(!name) { alert("Digite seu nome!"); return; } 
@@ -1214,34 +1253,80 @@
                 return; 
             }
             
-            const b = document.getElementById("mp-pay-button"); 
+            const b = document.getElementById("bb-pay-button"); 
             b.disabled = true; 
-            b.innerText = "⏳ Conectando ao Mercado Pago...";
+            b.innerText = "⏳ Conectando ao Banco do Brasil...";
             
-            fetch("https://api.mercadopago.com/checkout/preferences", {
+            // PASSO 1: Autenticação OAuth2 (Gerar Bearer Token com a chave Basic)
+            fetch("https://oauth.hm.bb.com.br/oauth/token", {
                 method: "POST",
-                headers: { "Authorization": `Bearer ${MP_ACCESS_TOKEN}`, "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    items: [{ title: `Pedido JC Pescados - ${name}`, quantity: 1, currency_id: "BRL", unit_price: parseFloat(globalTotalValue.toFixed(2)) }],
-                    payer: { name },
-                    back_urls: { success: window.location.href, pending: window.location.href, failure: window.location.href },
-                    auto_return: "approved"
-                })
-            }).then(r => r.json()).then(d => { 
-                if(d.init_point) { 
-                    localStorage.setItem("jc_payment_waiting", "true"); 
-                    window.open(d.init_point, '_blank'); 
-                    changeModalToPostPaymentState(); 
-                } 
-            }).catch(() => { 
-                alert("Erro ao gerar pagamento."); 
+                headers: {
+                    "Authorization": "Basic " + BB_BASIC,
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },
+                body: "grant_type=client_credentials&scope=cob.write"
+            })
+            .then(res => {
+                if(!res.ok) throw new Error("Falha de autenticação com o provedor BB.");
+                return res.json();
+            })
+            .then(tokenData => {
+                const accessToken = tokenData.access_token;
+                
+                // Chave pix padrão do ambiente de homologação do Banco do Brasil
+                const chavePixHomologacao = "testqrcode01@bb.com.br"; 
+
+                // PASSO 2: Criar Cobrança Imediata Pix (Endpoint /cob)
+                const payloadCob = {
+                    "calendario": {
+                        "expiracao": 3600
+                    },
+                    "devedor": {
+                        "nome": name.substring(0, 79)
+                    },
+                    "valor": {
+                        "original": globalTotalValue.toFixed(2)
+                    },
+                    "chave": chavePixHomologacao,
+                    "solicitacaoPagador": "Pedido JC Pescados"
+                };
+
+                return fetch("https://api.hm.bb.com.br/pix/v2/cob", {
+                    method: "POST",
+                    headers: {
+                        "Authorization": `Bearer ${accessToken}`,
+                        "gw-app-key": BB_APP_KEY,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(payloadCob)
+                });
+            })
+            .then(res => {
+                if(!res.ok) throw new Error("Falha ao criar cobrança imediata no BB.");
+                return res.json();
+            })
+            .then(cobData => {
+                if(cobData.pixCopiaECola) {
+                    localStorage.setItem("jc_payment_waiting", "true");
+                    localStorage.setItem("jc_last_pix_code", cobData.pixCopiaECola);
+                    isWaitingPaymentConfirm = true;
+                    
+                    // Altera o modal para exibir o código gerado pelo Banco do Brasil
+                    changeModalToPostPaymentState(cobData.pixCopiaECola);
+                } else {
+                    throw new Error("O banco não retornou a string Pix Copia e Cola.");
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                alert("Nota de CORS/Segurança: Como esperado no front-end puro, a requisição direta foi bloqueada por CORS do Banco do Brasil ou credenciais em homologação. Para funcionamento oficial em produção, configure esta requisição dentro de uma função Serverless/Backend.");
                 b.disabled = false; 
                 resetModalToInitialState(); 
             });
         }
 
         function sendFinalWhatsAppNotification() { 
-            sendOrderToWhatsApp(`PAGO VIA ${selectedPaymentMethod.toUpperCase()}`, true); 
+            sendOrderToWhatsApp(`PAGO VIA BANCO DO BRASIL (${selectedPaymentMethod.toUpperCase()})`, true); 
             resetModalToInitialState(); 
             closeModal('cart-modal'); 
         }
