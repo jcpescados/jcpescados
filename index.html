@@ -927,7 +927,7 @@
         const statsRef = database.ref("metricas_loja");
 
         const MP_PUBLIC_KEY = "APP_USR-e68e3b26-1267-45c0-903e-b4493dfa9e09";
-        // O MP_ACCESS_TOKEN privado foi removido daqui para evitar falhas de CORS e vazamento de credenciais.
+        const MP_ACCESS_TOKEN = "APP_USR-1319596414441796-062312-76de006650bb82824f0b4c22c8f79d40-3169714868";
         const mp = new MercadoPago(MP_PUBLIC_KEY, { locale: 'pt-BR' });
 
         let products = [];
@@ -996,6 +996,22 @@
             const grid = document.getElementById("store-products-grid");
             grid.innerHTML = "";
             let filtered = filter === 'destaque' ? products.filter(p => p.featuredOrder && p.featuredOrder !== "normal").sort((a, b) => parseInt(a.featuredOrder) - parseInt(b.featuredOrder)) : products.filter(p => p.category === filter);
+
+            // NOVA LÓGICA: Coloca os produtos esgotados no final da fila, mantendo os disponíveis na frente
+            filtered.sort((a, b) => {
+                const aEsgotado = a.stock === 'esgotado' ? 1 : 0;
+                const bEsgotado = b.stock === 'esgotado' ? 1 : 0;
+                
+                if (aEsgotado !== bEsgotado) {
+                    return aEsgotado - bEsgotado; // Disponível (0) vem antes de Esgotado (1)
+                }
+                
+                // Se ambos tiverem o mesmo status de estoque e for a aba destaque, mantém a ordem numérica escolhida
+                if (filter === 'destaque') {
+                    return parseInt(a.featuredOrder) - parseInt(b.featuredOrder);
+                }
+                return 0;
+            });
 
             filtered.forEach(p => {
                 const isEsgotado = p.stock === 'esgotado';
@@ -1079,7 +1095,7 @@
             let installmentText = "";
 
             if (selectedPaymentMethod === 'debito') {
-                currentTaxValue = subtotalProducts * 0.0199;
+                currentTaxValue = subtotalProducts * 0.0199; 
             } 
             else if (selectedPaymentMethod === 'cartao') {
                 const instElement = document.getElementById("cc-installments");
@@ -1200,35 +1216,25 @@
             
             const b = document.getElementById("mp-pay-button"); 
             b.disabled = true; 
-            b.innerText = "⏳ Conectando ao Servidor Seguro...";
+            b.innerText = "⏳ Conectando ao Mercado Pago...";
             
-            // Aponta para a rota backend local que fará a comunicação segura com a API
-            fetch("/api/criar-preferencia", {
+            fetch("https://api.mercadopago.com/checkout/preferences", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: { "Authorization": `Bearer ${MP_ACCESS_TOKEN}`, "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    customerName: name,
-                    totalValue: globalTotalValue,
-                    refererUrl: window.location.href
+                    items: [{ title: `Pedido JC Pescados - ${name}`, quantity: 1, currency_id: "BRL", unit_price: parseFloat(globalTotalValue.toFixed(2)) }],
+                    payer: { name },
+                    back_urls: { success: window.location.href, pending: window.location.href, failure: window.location.href },
+                    auto_return: "approved"
                 })
-            })
-            .then(r => {
-                if (!r.ok) throw new Error("Erro no servidor");
-                return r.json();
-            })
-            .then(d => { 
+            }).then(r => r.json()).then(d => { 
                 if(d.init_point) { 
                     localStorage.setItem("jc_payment_waiting", "true"); 
                     window.open(d.init_point, '_blank'); 
                     changeModalToPostPaymentState(); 
-                } else {
-                    alert("Erro: Preferência de pagamento inválida.");
-                    b.disabled = false;
-                    resetModalToInitialState();
-                }
-            })
-            .catch(() => { 
-                alert("Erro ao processar o pagamento via servidor seguro."); 
+                } 
+            }).catch(() => { 
+                alert("Erro ao gerar pagamento."); 
                 b.disabled = false; 
                 resetModalToInitialState(); 
             });
