@@ -81,7 +81,7 @@
             max-width: 1200px;
             margin: 0 auto;
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
             gap: 20px;
         }
 
@@ -474,7 +474,7 @@
             backdrop-filter: blur(4px);
             align-items: center;
             justify-content: center;
-            padding: 12px; /* Garante margem em celulares muito pequenos */
+            padding: 12px;
         }
 
         .modal-content {
@@ -483,8 +483,8 @@
             border-radius: var(--radius);
             max-width: 460px;
             width: 100%;
-            max-height: 88vh; /* Define altura máxima de segurança para caber em qualquer tela */
-            overflow-y: auto; /* Cria rolagem interna elegante se o conteúdo passar do tamanho da tela */
+            max-height: 88vh;
+            overflow-y: auto;
             box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
             position: relative;
             animation: slideUp 0.3s ease;
@@ -506,7 +506,7 @@
             margin-bottom: 15px;
             color: var(--primary-dark);
             font-size: 22px;
-            padding-right: 30px; /* Impede o título de ficar por baixo do botão fechar (X) */
+            padding-right: 30px;
         }
 
         .modal input, .modal select {
@@ -541,7 +541,7 @@
 
         .shortcut-container {
             display: flex;
-            gap: 8px;
+            gap: 6px;
             margin-bottom: 15px;
             flex-wrap: wrap;
         }
@@ -549,9 +549,9 @@
         .shortcut-btn {
             background: #e2e8f0;
             border: none;
-            padding: 6px 12px;
+            padding: 6px 10px;
             border-radius: 20px;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s;
@@ -661,6 +661,45 @@
         .payment-card[data-value="debito"].selected .radio-dot::after { background: var(--accent); }
         .payment-card[data-value="especie"].selected .radio-dot::after { background: var(--success); }
 
+        /* Estilos da Seção de Destaques Extras do Cartão de Crédito */
+        .credit-highlights {
+            background: #f1f5f9;
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 10px;
+            margin-bottom: 15px;
+            font-size: 12px;
+            text-align: left;
+            border-left: 4px solid var(--primary);
+        }
+        .credit-highlights p {
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #475569;
+            font-weight: 500;
+        }
+        .credit-highlights p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Seção informativa do Produto no modal de Compra */
+        .product-desc-box {
+            background: #f0f7f8;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #334155;
+            margin-bottom: 15px;
+            text-align: left;
+            line-height: 1.4;
+            border: 1px solid #d1e7dd;
+        }
+        .product-desc-box strong {
+            color: var(--primary-dark);
+        }
+
         .post-pay-container {
             display: none;
             background: #f0fdf4;
@@ -676,8 +715,8 @@
         /* ==================================== */
         @media (max-width: 480px) {
             .modal-content {
-                padding: 18px; /* Reduz margens internas em celulares compactos */
-                max-height: 94vh; /* Dá mais espaço vertical útil no celular */
+                padding: 18px;
+                max-height: 94vh;
             }
             .modal h3 {
                 font-size: 19px;
@@ -758,7 +797,13 @@
             <div class="dash-card">
                 <h3>🔄 Editar/Excluir Produto</h3>
                 <select id="admin-select-product" onchange="loadProductToAdmin()"></select>
+                <input type="text" id="admin-name" placeholder="Nome do Produto">
                 <input type="number" id="admin-price" placeholder="Novo Preço (R$)">
+                <select id="admin-unit">
+                    <option value="kg">Por Quilo (kg)</option>
+                    <option value="unid">Por Unidade (unid)</option>
+                    <option value="duzia">Por Dúzia (duzia)</option>
+                </select>
                 <input type="text" id="admin-img" placeholder="Link da Nova Foto (URL)">
                 <select id="admin-stock">
                     <option value="disponivel">Disponível em Estoque</option>
@@ -769,6 +814,9 @@
                     <option value="normal">Não destacar</option>
                     <option value="1">1º Lugar</option><option value="2">2º Lugar</option>
                     <option value="3">3º Lugar</option><option value="4">4º Lugar</option>
+                    <option value="5">5º Lugar</option><option value="6">6º Lugar</option>
+                    <option value="7">7º Lugar</option><option value="8">8º Lugar</option>
+                    <option value="9">9º Lugar</option><option value="10">10º Lugar</option>
                 </select>
                 <button class="dash-btn" onclick="saveProductChanges()">Salvar Alterações</button>
                 <button class="dash-btn" style="background: var(--danger);" onclick="deleteSelectedProduct()">🗑️ Excluir Produto</button>
@@ -787,9 +835,14 @@
 
             <div class="dash-card">
                 <h3>👑 Inserir Novo Produto</h3>
-                <div class="admin-alert-box">⚠️ ADICIONE A UNIDADE NO NOME!</div>
+                <div class="admin-alert-box">⚠️ SELECIONE A MEDIDA CORRETA ABAIXO!</div>
                 <input type="text" id="new-name" placeholder="Nome do Produto">
                 <input type="number" id="new-price" placeholder="Preço Inicial (R$)">
+                <select id="new-unit">
+                    <option value="kg">Por Quilo (kg)</option>
+                    <option value="unid">Por Unidade (unid)</option>
+                    <option value="duzia">Por Dúzia (duzia)</option>
+                </select>
                 <select id="new-category">
                     <option value="caranguejo">Caranguejo</option>
                     <option value="camarao">Camarão</option>
@@ -844,17 +897,17 @@
         🛒 <div class="cart-badge" id="global-cart-count">0</div>
     </a>
 
+    <!-- Modal de Compra com Info do Produto e Receitas -->
     <div id="purchase-modal" class="modal">
         <div class="modal-content">
             <button class="close-btn" onclick="closeModal('purchase-modal')">&times;</button>
             <h3 id="modal-product-title">Adicionar ao Carrinho</h3>
+            
+            <div id="product-details-info" class="product-desc-box"></div>
+
             <div id="kg-alert-helper" class="kg-alert-box" style="display:none;">⚠️ Venda controlada por Peso / Unidade Fracionada.</div>
-            <div id="kg-shortcuts" class="shortcut-container" style="display:none;">
-                <button class="shortcut-btn" onclick="setModalQuantity('0.500')">500g</button>
-                <button class="shortcut-btn" onclick="setModalQuantity('1.000')">1 Kg / Dúzia</button>
-                <button class="shortcut-btn" onclick="setModalQuantity('2.000')">2 Kg / Dúzias</button>
-            </div>
-            <input type="number" id="modal-quantity" value="1" min="1" step="1">
+            <div id="kg-shortcuts" class="shortcut-container" style="display:none;"></div>
+            <input type="number" id="modal-quantity" value="1" min="0.1" step="0.1">
             <button class="buy-btn" style="background: var(--primary);" onclick="confirmAddToCart()">Confirmar e Adicionar</button>
         </div>
     </div>
@@ -882,9 +935,9 @@
             </div>
             
             <div id="cart-inputs-wrapper">
-                <input type="text" id="customer-name" placeholder="Digite seu Nome para entrega">
+                <input type="text" id="customer-name" placeholder="Digite seu Nome para entrega" oninput="saveInputsToLocalStorage()">
                 <label style="font-size: 13px; font-weight: 700; color: var(--primary-dark); display: block; margin-bottom: 6px;">Método de Envio:</label>
-                <select id="delivery-method" onchange="handleDeliveryMethodChange(); updateCartTotalWithFees();">
+                <select id="delivery-method" onchange="handleDeliveryMethodChange(); updateCartTotalWithFees(); saveInputsToLocalStorage();">
                     <option value="Entrega a Domicílio">Entrega a Domicílio</option>
                     <option value="Retirada no Local">Retirada no Local</option>
                 </select>
@@ -915,7 +968,16 @@
 
                 <div id="cc-installments-wrapper" style="display: none; margin-bottom: 15px;">
                     <label style="font-size: 13px; font-weight: 700; color: var(--primary-dark); display: block; margin-bottom: 6px;">Escolha o Parcelamento:</label>
-                    <select id="cc-installments" onchange="updateCartTotalWithFees()"></select>
+                    <select id="cc-installments" onchange="updateCartTotalWithFees(); saveInputsToLocalStorage();"></select>
+                    
+                    <!-- 5 Destaques Extras de Segurança e Confiança no Modal de Cartão -->
+                    <div class="credit-highlights">
+                        <p>🔒 <strong>Ambiente 100% Seguro:</strong> Seus dados protegidos via criptografia ponta a ponta.</p>
+                        <p>⚡ <strong>Aprovação Imediata:</strong> Processamento em tempo real pelo Mercado Pago.</p>
+                        <p>🛒 <strong>Pedido Guardado:</strong> Se sair do site, seus produtos continuam salvos no carrinho.</p>
+                        <p>🤝 <strong>Garantia JC Pescados:</strong> Só liberamos produtos frescos e de procedência rigorosa.</p>
+                        <p>📱 <strong>Suporte Prontidão:</strong> Envio imediato do espelho de compra detalhado via WhatsApp.</p>
+                    </div>
                 </div>
             </div>
 
@@ -987,6 +1049,41 @@
         let selectedPaymentMethod = 'pix';
         let isWaitingPaymentConfirm = false;
 
+        const productGuides = {
+            caranguejo: {
+                desc: "Caranguejo nativo, com carne extremamente macia, saborosa e limpa.",
+                recipe: "Dica de Chef: Cozinhe com leite de coco, cheiro-verde, pimentão e um toque de azeite de dendê por 20 minutos."
+            },
+            camarao: {
+                desc: "Camarões selecionados, fresquinhos, ideais para petiscos ou pratos principais elegantes.",
+                recipe: "Dica de Chef: Alho e Óleo rápido! Sele na frigideira bem quente com azeite, muito alho laminado e finalize com limão."
+            },
+            peixes: {
+                desc: "Peixe fresco da região, cortado com precisão e excelente teor de suculência.",
+                recipe: "Dica de Chef: Perfeito para uma Moqueca tradicional com pimentões coloridos, cebola e coentro bem frescos."
+            },
+            polvo: {
+                desc: "Polvo limpo e macio, excelente textura que absorve muito bem temperos refinados.",
+                recipe: "Dica de Chef: Cozinhe na pressão por 12min sem água (apenas com uma cebola inteira) e depois grelhe no azeite com alecrim."
+            },
+            salmao: {
+                desc: "Salmão premium rico em Ômega-3, textura firme e cor viva incomparável.",
+                recipe: "Dica de Chef: Grelhe o filé com a pele para baixo até dourar, e sirva com molho de maracujá ou redução de alcaparras."
+            },
+            lagosta: {
+                desc: "A realeza dos frutos do mar. Carne nobre, adocicada e extremamente macia.",
+                recipe: "Dica de Chef: Corte ao meio, pincele manteiga de ervas fina e leve à grelha ou forno por apenas 8 a 10 minutos."
+            },
+            lula: {
+                desc: "Lula limpa no ponto certo, super versátil para anéis crocantes ou risotos riquíssimos.",
+                recipe: "Dica de Chef: Corte em anéis, passe na farinha de trigo temperada com sal e páprica e frite em óleo bem quente por 2 minutos."
+            },
+            outros: {
+                desc: "Fruto do mar selecionado com o alto padrão de qualidade garantido pela equipe JC Pescados.",
+                recipe: "Dica de Chef: Refogue com legumes frescos e azeite extravirgem para um acompanhamento leve e saudável."
+            }
+        };
+
         function toggleVtexMenu() {
             document.getElementById("vtexMenuWrapper").classList.toggle("menu-open");
         }
@@ -998,15 +1095,19 @@
                 cart = JSON.parse(localStorage.getItem("jc_cart_backup"));
                 updateCartBadge();
             }
-            if (localStorage.getItem("jc_customer_name")) {
-                setTimeout(() => {
-                    const elName = document.getElementById("customer-name");
-                    if(elName) elName.value = localStorage.getItem("jc_customer_name");
-                }, 500);
-            }
-            if (localStorage.getItem("jc_payment_method")) {
-                selectedPaymentMethod = localStorage.getItem("jc_payment_method");
-            }
+
+            setTimeout(() => {
+                if (localStorage.getItem("jc_customer_name")) {
+                    document.getElementById("customer-name").value = localStorage.getItem("jc_customer_name");
+                }
+                if (localStorage.getItem("jc_delivery_method")) {
+                    document.getElementById("delivery-method").value = localStorage.getItem("jc_delivery_method");
+                }
+                if (localStorage.getItem("jc_payment_method")) {
+                    selectedPaymentMethod = localStorage.getItem("jc_payment_method");
+                }
+                handleDeliveryMethodChange();
+            }, 600);
 
             productsRef.on("value", (snapshot) => {
                 products = [];
@@ -1037,6 +1138,18 @@
             window.open(`https://wa.me/5586994494783?text=${encodeURIComponent("Olá, gostaria de tirar uma dúvida.")}`, '_blank');
         }
 
+        function saveInputsToLocalStorage() {
+            const name = document.getElementById("customer-name").value;
+            const delMethod = document.getElementById("delivery-method").value;
+            
+            localStorage.setItem("jc_customer_name", name);
+            localStorage.setItem("jc_delivery_method", delMethod);
+            localStorage.setItem("jc_payment_method", selectedPaymentMethod);
+            if(selectedPaymentMethod === 'cartao' && document.getElementById("cc-installments")) {
+                localStorage.setItem("jc_cc_installments", document.getElementById("cc-installments").value);
+            }
+        }
+
         function renderStoreProducts(filter = 'destaque') {
             const grid = document.getElementById("store-products-grid");
             grid.innerHTML = "";
@@ -1045,15 +1158,7 @@
             filtered.sort((a, b) => {
                 const aEsgotado = a.stock === 'esgotado' ? 1 : 0;
                 const bEsgotado = b.stock === 'esgotado' ? 1 : 0;
-                
-                if (aEsgotado !== bEsgotado) {
-                    return aEsgotado - bEsgotado;
-                }
-                
-                if (filter === 'destaque') {
-                    return parseInt(a.featuredOrder) - parseInt(b.featuredOrder);
-                }
-                return 0;
+                return aEsgotado - bEsgotado;
             });
 
             filtered.forEach(p => {
@@ -1064,6 +1169,8 @@
                 let actionButtonHtml = p.category === "outros" ? 
                     `<a href="https://wa.me/5586994494783?text=${encodeURIComponent('Quero: ' + p.name)}" target="_blank" class="whats-btn" onclick="countWhatsAppClick()">Comprar via Whats</a>` : 
                     `<button class="buy-btn ${isEsgotado ? 'out-of-stock' : ''}" ${isEsgotado ? 'disabled' : ''} onclick="openPurchaseModal('${p.id}')">${isEsgotado ? 'Sem Estoque' : '🛒 Adicionar'}</button>`;
+
+                const displayUnit = p.unit ? p.unit : "kg";
 
                 card.innerHTML = `
                     <div class="product-img-wrapper">
@@ -1076,7 +1183,7 @@
                         <div class="product-title">${p.name}</div>
                         <div class="product-price-box">
                             ${p.isPromo ? `<span class="price-old">R$ ${parseFloat(p.oldPrice).toFixed(2)}</span>` : ''}
-                            <span class="price-current">R$ ${parseFloat(p.price).toFixed(2)}</span>
+                            <span class="price-current">R$ ${parseFloat(p.price).toFixed(2)} <span style="font-size:13px; font-weight:500; color:#64748b;">/ ${displayUnit}</span></span>
                         </div>
                         ${actionButtonHtml}
                     </div>
@@ -1094,17 +1201,48 @@
         }
 
         function openPurchaseModal(id) {
-            activeProductId = id; const prod = products.find(p => p.id == id); document.getElementById("modal-product-title").innerText = prod.name;
-            const isWeight = prod.name.toLowerCase().includes("kg") || prod.name.toLowerCase().includes("duzia") || ["camarao","peixes","salmao","lagosta","polvo","lula"].includes(prod.category);
-            document.getElementById("kg-alert-helper").style.display = isWeight ? "block" : "none";
-            document.getElementById("kg-shortcuts").style.display = isWeight ? "flex" : "none";
-            document.getElementById("modal-quantity").value = isWeight ? "1.000" : "1";
+            activeProductId = id; 
+            const prod = products.find(p => p.id == id); 
+            document.getElementById("modal-product-title").innerText = prod.name;
+            
+            const guide = productGuides[prod.category] || productGuides['outros'];
+            document.getElementById("product-details-info").innerHTML = `<strong>Sobre:</strong> ${guide.desc}<br><br>💡 <em>${guide.recipe}</em>`;
+
+            const unit = prod.unit ? prod.unit : "kg";
+            const isWeight = (unit === 'kg' || ["camarao","peixes","salmao","lagosta","polvo","lula"].includes(prod.category));
+            
+            document.getElementById("kg-alert-helper").style.display = "block";
+            const shortcutsContainer = document.getElementById("kg-shortcuts");
+            shortcutsContainer.style.display = "flex";
+            shortcutsContainer.innerHTML = "";
+
+            if (unit === 'kg') {
+                // Adiciona atalhos de 100g em 100g até 1kg
+                for (let i = 1; i <= 10; i++) {
+                    let val = (i / 10).toFixed(3);
+                    let label = i === 10 ? "1 kg" : `${i * 100}g`;
+                    shortcutsContainer.innerHTML += `<button class="shortcut-btn" onclick="setModalQuantity('${val}')">${label}</button>`;
+                }
+                document.getElementById("modal-quantity").value = "1.000";
+            } else if (unit === 'duzia') {
+                shortcutsContainer.innerHTML = `<button class="shortcut-btn" onclick="setModalQuantity('1')">1 Dúzia</button>`;
+                shortcutsContainer.innerHTML += `<button class="shortcut-btn" onclick="setModalQuantity('2')">2 Dúzias</button>`;
+                document.getElementById("modal-quantity").value = "1";
+            } else {
+                shortcutsContainer.innerHTML = `<button class="shortcut-btn" onclick="setModalQuantity('1')">1 Unid</button>`;
+                shortcutsContainer.innerHTML += `<button class="shortcut-btn" onclick="setModalQuantity('2')">2 Unid</button>`;
+                document.getElementById("modal-quantity").value = "1";
+            }
+
             document.getElementById("purchase-modal").style.display = "flex";
         }
+
         function closeModal(id) { document.getElementById(id).style.display = "none"; }
         function setModalQuantity(v) { document.getElementById("modal-quantity").value = v; }
+        
         function confirmAddToCart() {
-            const qty = parseFloat(document.getElementById("modal-quantity").value); const prod = products.find(p => p.id == activeProductId);
+            const qty = parseFloat(document.getElementById("modal-quantity").value); 
+            const prod = products.find(p => p.id == activeProductId);
             if(prod && qty > 0) { 
                 const ex = cart.find(i => i.product.id === prod.id); 
                 if(ex) ex.quantity += qty; else cart.push({ product: prod, quantity: qty }); 
@@ -1114,6 +1252,7 @@
                 document.getElementById("next-step-modal").style.display = "flex"; 
             }
         }
+
         function goToCartFromModal() { closeModal('next-step-modal'); openCartModal(); }
         function updateCartBadge() { document.getElementById("global-cart-count").innerText = cart.reduce((t, i) => t + i.quantity, 0).toFixed(0); }
         
@@ -1123,7 +1262,8 @@
             else {
                 cart.forEach((item, index) => {
                     const sub = item.product.price * item.quantity; subtotalProducts += sub;
-                    list.innerHTML += `<div style="display:flex;justify-content:space-between;margin-bottom:12px;background:#f8fafc;padding:10px;border-radius:8px;"><div><strong>${item.product.name}</strong><br><small>${item.quantity} x R$ ${item.product.price.toFixed(2)}</small></div><div style="display:flex;align-items:center;gap:10px;"><span style="color:var(--primary);font-weight:700;">R$ ${sub.toFixed(2)}</span><button style="background:none;border:none;color:var(--danger);cursor:pointer;" onclick="removeCartItem(${index})">❌</button></div></div>`;
+                    const displayUnit = item.product.unit ? item.product.unit : "kg";
+                    list.innerHTML += `<div style="display:flex;justify-content:space-between;margin-bottom:12px;background:#f8fafc;padding:10px;border-radius:8px;"><div><strong>${item.product.name}</strong><br><small>${item.quantity} ${displayUnit} x R$ ${item.product.price.toFixed(2)}</small></div><div style="display:flex;align-items:center;gap:10px;"><span style="color:var(--primary);font-weight:700;">R$ ${sub.toFixed(2)}</span><button style="background:none;border:none;color:var(--danger);cursor:pointer;" onclick="removeCartItem(${index})">❌</button></div></div>`;
                 });
             }
             handleDeliveryMethodChange();
@@ -1209,6 +1349,7 @@
                 b.innerText = "🚀 Ir para o Pagamento"; b.style.background = "var(--mp-blue)";
             }
             updateCartTotalWithFees();
+            saveInputsToLocalStorage();
         }
 
         function removeCartItem(idx) { 
@@ -1218,7 +1359,11 @@
             openCartModal(); 
         }
         
-        function handleDeliveryMethodChange() { const m = document.getElementById("delivery-method").value; document.getElementById("card-especie").style.display = m === "Retirada no Local" ? "flex" : "none"; if(m !== "Retirada no Local" && selectedPaymentMethod === "especie") selectPaymentCard("pix"); }
+        function handleDeliveryMethodChange() { 
+            const m = document.getElementById("delivery-method").value; 
+            document.getElementById("card-especie").style.display = m === "Retirada no Local" ? "flex" : "none"; 
+            if(m !== "Retirada no Local" && selectedPaymentMethod === "especie") selectPaymentCard("pix"); 
+        }
         
         function changeModalToPostPaymentState() { 
             document.getElementById("cart-inputs-wrapper").style.display = "none"; 
@@ -1257,8 +1402,6 @@
             document.getElementById("post-pay-alert").style.display = "none"; 
             document.getElementById("pix-pay-container").style.display = "none"; 
             localStorage.removeItem("jc_payment_waiting"); 
-            localStorage.removeItem("jc_customer_name");
-            localStorage.removeItem("jc_cc_installments");
             const b = document.getElementById("mp-pay-button"); 
             b.onclick = processOrderCheckout; 
             selectPaymentCard(selectedPaymentMethod); 
@@ -1269,10 +1412,7 @@
             if(!name) { alert("Digite seu nome!"); return; } 
             if(cart.length === 0) return;
             
-            localStorage.setItem("jc_customer_name", name);
-            if(selectedPaymentMethod === 'cartao') {
-                localStorage.setItem("jc_cc_installments", document.getElementById("cc-installments").value);
-            }
+            saveInputsToLocalStorage();
             
             if(selectedPaymentMethod === "especie") { 
                 sendOrderToWhatsApp("A combinar na Entrega", true); 
@@ -1351,7 +1491,8 @@
             
             cart.forEach(i => {
                 const sub = i.product.price * i.quantity;
-                t += `• ${i.quantity}x _${i.product.name}_\n`;
+                const displayUnit = i.product.unit ? i.product.unit : "kg";
+                t += `• ${i.quantity} ${displayUnit} x _${i.product.name}_\n`;
                 t += `  Ref: R$ ${i.product.price.toFixed(2)} | *Subtotal:* R$ ${sub.toFixed(2)}\n\n`;
             });
             
@@ -1379,11 +1520,30 @@
         }
         function loadProductToAdmin() {
             const id = document.getElementById("admin-select-product").value; const prod = products.find(p => p.id == id);
-            if(prod) { document.getElementById("admin-price").value = prod.price; document.getElementById("admin-img").value = prod.img; document.getElementById("admin-stock").value = prod.stock; document.getElementById("admin-featured-order").value = prod.featuredOrder || "normal"; }
+            if(prod) { 
+                document.getElementById("admin-name").value = prod.name || "";
+                document.getElementById("admin-price").value = prod.price; 
+                document.getElementById("admin-unit").value = prod.unit || "kg"; 
+                document.getElementById("admin-img").value = prod.img; 
+                document.getElementById("admin-stock").value = prod.stock; 
+                document.getElementById("admin-featured-order").value = prod.featuredOrder || "normal"; 
+            }
         }
         function saveProductChanges() {
             const id = document.getElementById("admin-select-product").value; const prod = products.find(p => p.id == id);
-            if(prod) { const newPrice = parseFloat(document.getElementById("admin-price").value); const updates = { price: newPrice, img: document.getElementById("admin-img").value, stock: document.getElementById("admin-stock").value, featuredOrder: document.getElementById("admin-featured-order").value }; if(!prod.isPromo) updates.oldPrice = newPrice; productsRef.child(id).update(updates).then(() => alert("Atualizado!")); }
+            if(prod) { 
+                const newPrice = parseFloat(document.getElementById("admin-price").value); 
+                const updates = { 
+                    name: document.getElementById("admin-name").value,
+                    price: newPrice, 
+                    unit: document.getElementById("admin-unit").value,
+                    img: document.getElementById("admin-img").value, 
+                    stock: document.getElementById("admin-stock").value, 
+                    featuredOrder: document.getElementById("admin-featured-order").value 
+                }; 
+                if(!prod.isPromo) updates.oldPrice = newPrice; 
+                productsRef.child(id).update(updates).then(() => alert("Atualizado com sucesso!")); 
+            }
         }
         function deleteSelectedProduct() { const id = document.getElementById("admin-select-product").value; const prod = products.find(p => p.id == id); if(prod && confirm(`Excluir ${prod.name}?`)) productsRef.child(id).remove().then(() => alert("Excluído!")); }
         function savePromotionChanges() {
@@ -1391,9 +1551,13 @@
             if(prod) { const promoPrice = parseFloat(document.getElementById("admin-promo-price").value); const isActive = document.getElementById("admin-promo-active").value === 'sim'; const updates = {}; if(isActive && !isNaN(promoPrice)) { if(!prod.isPromo) updates.oldPrice = prod.price; updates.price = promoPrice; updates.isPromo = true; } else { updates.price = prod.oldPrice || prod.price; updates.isPromo = false; } productsRef.child(id).update(updates).then(() => alert("Promoção salva!")); }
         }
         function addNewProduct() {
-            const name = document.getElementById("new-name").value; const price = parseFloat(document.getElementById("new-price").value); const category = document.getElementById("new-category").value; const img = document.getElementById("new-img").value || 'https://images.unsplash.com/photo-1551248429-40975aa4de74?w=400';
-            if(!name || isNaN(price)) { alert("Preencha campos!"); return; }
-            productsRef.push({ name, price, oldPrice: price, isPromo: false, img, stock: "disponivel", category, featuredOrder: "normal" }).then(() => { alert("Criado!"); document.getElementById("new-name").value = ""; document.getElementById("new-price").value = ""; });
+            const name = document.getElementById("new-name").value; 
+            const price = parseFloat(document.getElementById("new-price").value); 
+            const category = document.getElementById("new-category").value; 
+            const unit = document.getElementById("new-unit").value; 
+            const img = document.getElementById("new-img").value || 'https://images.unsplash.com/photo-1551248429-40975aa4de74?w=400';
+            if(!name || isNaN(price)) { alert("Preencha os campos!"); return; }
+            productsRef.push({ name, price, oldPrice: price, isPromo: false, img, stock: "disponivel", category, unit, featuredOrder: "normal" }).then(() => { alert("Criado com sucesso!"); document.getElementById("new-name").value = ""; document.getElementById("new-price").value = ""; });
         }
         function clearAllMetrics() { if(confirm("Zerar?")) statsRef.set({ visitas: 0, cliquesWhats: 0 }); }
         function toggleAdminDashboard() { const dash = document.getElementById("admin-dashboard"); if(dash.style.display === "block") { dash.style.display = "none"; } else { document.getElementById("admin-secret-input").value = ""; document.getElementById("admin-pass-prompt").style.display = "flex"; } }
