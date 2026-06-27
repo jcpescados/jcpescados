@@ -684,6 +684,48 @@
             margin-bottom: 0;
         }
 
+        /* Box Elegante para o Endereço de Retirada */
+        .pickup-location-box {
+            background: #e0f2f1;
+            border: 1px solid #b2dfdb;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 15px;
+            text-align: left;
+            border-left: 5px solid var(--primary);
+        }
+        .pickup-location-box h4 {
+            color: var(--primary-dark);
+            font-size: 14px;
+            font-weight: 800;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .pickup-location-box p {
+            font-size: 13px;
+            color: #1e293b;
+            line-height: 1.4;
+            margin-bottom: 10px;
+        }
+        .pickup-maps-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--primary);
+            color: #ffffff;
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: background 0.2s;
+        }
+        .pickup-maps-link:hover {
+            background: var(--primary-dark);
+        }
+
         /* Seção informativa do Produto no modal de Compra */
         .product-desc-box {
             background: #f0f7f8;
@@ -935,12 +977,27 @@
             </div>
             
             <div id="cart-inputs-wrapper">
-                <input type="text" id="customer-name" placeholder="Digite seu Nome para entrega" oninput="saveInputsToLocalStorage()">
+                <input type="text" id="customer-name" placeholder="Digite seu Nome completo" oninput="saveInputsToLocalStorage()">
+                
                 <label style="font-size: 13px; font-weight: 700; color: var(--primary-dark); display: block; margin-bottom: 6px;">Método de Envio:</label>
                 <select id="delivery-method" onchange="handleDeliveryMethodChange(); updateCartTotalWithFees(); saveInputsToLocalStorage();">
                     <option value="Entrega a Domicílio">Entrega a Domicílio</option>
                     <option value="Retirada no Local">Retirada no Local</option>
                 </select>
+
+                <!-- Área Dinâmica: Endereço de Entrega ou Local de Retirada -->
+                <div id="delivery-address-wrapper" style="display: block;">
+                    <input type="text" id="customer-address" placeholder="Endereço Completo (Rua, Número, Bairro, Cidade)" oninput="saveInputsToLocalStorage()">
+                    <input type="text" id="customer-reference" placeholder="Ponto de Referência (Opcional)" oninput="saveInputsToLocalStorage()">
+                </div>
+
+                <div id="pickup-location-wrapper" class="pickup-location-box" style="display: none;">
+                    <h4>📍 Nosso Endereço para Retirada:</h4>
+                    <p>JC Pescados<br>R. Alberto Leal Nunes, 1925 - Lourival Parente<br>Teresina - PI, 64023-450</p>
+                    <a href="https://www.google.com/maps/dir//JC+Pescados,+R.+Alberto+Leal+Nunes,+1925+-+Lourival+Parente,+Teresina+-+PI,+64023-450/@-5.1333465,-42.7862041,12z?entry=ttu" target="_blank" class="pickup-maps-link">
+                        🗺️ Ver Localização no Maps
+                    </a>
+                </div>
 
                 <label style="font-size: 13px; font-weight: 700; color: var(--primary-dark); display: block; margin-bottom: 8px;">Forma de Pagamento:</label>
                 <div class="payment-methods-grid">
@@ -1100,6 +1157,12 @@
                 if (localStorage.getItem("jc_customer_name")) {
                     document.getElementById("customer-name").value = localStorage.getItem("jc_customer_name");
                 }
+                if (localStorage.getItem("jc_customer_address")) {
+                    document.getElementById("customer-address").value = localStorage.getItem("jc_customer_address");
+                }
+                if (localStorage.getItem("jc_customer_reference")) {
+                    document.getElementById("customer-reference").value = localStorage.getItem("jc_customer_reference");
+                }
                 if (localStorage.getItem("jc_delivery_method")) {
                     document.getElementById("delivery-method").value = localStorage.getItem("jc_delivery_method");
                 }
@@ -1141,9 +1204,13 @@
         function saveInputsToLocalStorage() {
             const name = document.getElementById("customer-name").value;
             const delMethod = document.getElementById("delivery-method").value;
+            const address = document.getElementById("customer-address").value;
+            const reference = document.getElementById("customer-reference").value;
             
             localStorage.setItem("jc_customer_name", name);
             localStorage.setItem("jc_delivery_method", delMethod);
+            localStorage.setItem("jc_customer_address", address);
+            localStorage.setItem("jc_customer_reference", reference);
             localStorage.setItem("jc_payment_method", selectedPaymentMethod);
             if(selectedPaymentMethod === 'cartao' && document.getElementById("cc-installments")) {
                 localStorage.setItem("jc_cc_installments", document.getElementById("cc-installments").value);
@@ -1217,7 +1284,6 @@
             shortcutsContainer.innerHTML = "";
 
             if (unit === 'kg') {
-                // Adiciona atalhos de 100g em 100g até 1kg
                 for (let i = 1; i <= 10; i++) {
                     let val = (i / 10).toFixed(3);
                     let label = i === 10 ? "1 kg" : `${i * 100}g`;
@@ -1361,8 +1427,17 @@
         
         function handleDeliveryMethodChange() { 
             const m = document.getElementById("delivery-method").value; 
-            document.getElementById("card-especie").style.display = m === "Retirada no Local" ? "flex" : "none"; 
-            if(m !== "Retirada no Local" && selectedPaymentMethod === "especie") selectPaymentCard("pix"); 
+            
+            if (m === "Retirada no Local") {
+                document.getElementById("delivery-address-wrapper").style.display = "none";
+                document.getElementById("pickup-location-wrapper").style.display = "block";
+                document.getElementById("card-especie").style.display = "flex";
+            } else {
+                document.getElementById("delivery-address-wrapper").style.display = "block";
+                document.getElementById("pickup-location-wrapper").style.display = "none";
+                document.getElementById("card-especie").style.display = "none";
+                if (selectedPaymentMethod === "especie") selectPaymentCard("pix");
+            }
         }
         
         function changeModalToPostPaymentState() { 
@@ -1410,6 +1485,13 @@
         function processOrderCheckout() {
             const name = document.getElementById("customer-name").value; 
             if(!name) { alert("Digite seu nome!"); return; } 
+            
+            const method = document.getElementById("delivery-method").value;
+            if (method === "Entrega a Domicílio") {
+                const address = document.getElementById("customer-address").value;
+                if (!address) { alert("Por favor, digite seu endereço de entrega!"); return; }
+            }
+            
             if(cart.length === 0) return;
             
             saveInputsToLocalStorage();
@@ -1462,6 +1544,8 @@
             
             const name = localStorage.getItem("jc_customer_name") || document.getElementById("customer-name").value;
             const method = document.getElementById("delivery-method").value;
+            const address = localStorage.getItem("jc_customer_address") || document.getElementById("customer-address").value;
+            const reference = localStorage.getItem("jc_customer_reference") || document.getElementById("customer-reference").value;
             let nParcelas = selectedPaymentMethod === 'cartao' ? (localStorage.getItem("jc_cc_installments") || document.getElementById("cc-installments").value) : "1";
             
             const agora = new Date();
@@ -1477,7 +1561,15 @@
             t += `*Horário:* ${horaFormatada}h\n\n`;
             
             t += `🚚 *LOGÍSTICA E ENTREGA*\n`;
-            t += `*Forma de Envio:* ${method}\n\n`;
+            t += `*Forma de Envio:* ${method}\n`;
+            if (method === "Entrega a Domicílio") {
+                t += `*Endereço:* ${address}\n`;
+                if(reference) t += `*Referência:* ${reference}\n`;
+            } else {
+                t += `*Local de Retirada:* R. Alberto Leal Nunes, 1925 - Lourival Parente\n`;
+                t += `*Localização:* https://www.google.com/maps/dir//JC+Pescados,+R.+Alberto+Leal+Nunes,+1925+-+Lourival+Parente,+Teresina+-+PI,+64023-450/@-5.1333465,-42.7862041,12z\n`;
+            }
+            t += `\n`;
             
             t += `💳 *PAGAMENTO*\n`;
             t += `*Meio de Pagamento:* ${selectedPaymentMethod.toUpperCase()}\n`;
@@ -1506,6 +1598,8 @@
             if(clear) { 
                 cart = [];
                 localStorage.removeItem("jc_cart_backup");
+                localStorage.removeItem("jc_customer_address");
+                localStorage.removeItem("jc_customer_reference");
                 updateCartBadge();
             }
             window.open(`https://wa.me/5586994494783?text=${encodeURIComponent(t)}`, '_blank');
