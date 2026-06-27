@@ -141,22 +141,30 @@
         }
 
         /* ==================================== */
-        /* ESTRUTURA DO MENU DROPDOWN ESTILO VTEX */
+        /* MENU INTERATIVO E CHAMATIVO PARA LEIGOS */
         /* ==================================== */
         .vtex-menu-wrapper {
             background: #ffffff;
             border-radius: var(--radius);
-            padding: 14px 20px;
-            box-shadow: var(--shadow);
+            padding: 18px 20px;
+            box-shadow: 0 10px 25px rgba(0, 123, 138, 0.15);
             margin-bottom: 30px;
             position: relative;
             z-index: 200;
+            border: 2px solid var(--primary);
+            animation: pulseMenuBorder 2.5s infinite;
+        }
+
+        @keyframes pulseMenuBorder {
+            0% { box-shadow: 0 10px 25px rgba(0, 123, 138, 0.15); border-color: var(--primary); }
+            50% { box-shadow: 0 10px 30px rgba(0, 123, 138, 0.35); border-color: var(--accent); }
+            100% { box-shadow: 0 10px 25px rgba(0, 123, 138, 0.15); border-color: var(--primary); }
         }
 
         .vtex-store-drawer-trigger {
             display: inline-flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
             color: var(--primary-dark);
             font-weight: 800;
             font-size: 16px;
@@ -166,13 +174,14 @@
             user-select: none;
             padding: 4px 0;
             width: 100%;
+            position: relative;
         }
 
         .vtex-store-drawer-trigger::after {
             content: '▼';
-            font-size: 10px;
-            margin-left: 6px;
-            color: #94a3b8;
+            font-size: 12px;
+            margin-left: auto;
+            color: var(--primary);
             transition: transform 0.2s ease;
         }
 
@@ -180,11 +189,32 @@
             transform: rotate(180deg);
         }
 
+        /* Tag Chamativa Dinâmica */
+        .menu-attention-tag {
+            background: var(--accent);
+            color: #000000;
+            font-size: 11px;
+            font-weight: 800;
+            padding: 4px 10px;
+            border-radius: 30px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            animation: flashTag 1.5s infinite;
+            display: inline-block;
+            box-shadow: 0 4px 10px rgba(255, 193, 7, 0.4);
+        }
+
+        @keyframes flashTag {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.85; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
         .category-filter-container {
             display: none;
             margin-top: 15px;
             padding-top: 15px;
-            border-top: 1px solid #e2e8f0;
+            border-top: 2px dashed #e2e8f0;
             animation: slideDownMenu 0.25s ease forwards;
         }
 
@@ -202,11 +232,11 @@
         .filter-btn {
             background: #f8fafc;
             border: 1px solid #e2e8f0;
-            padding: 10px 18px;
+            padding: 12px 20px;
             border-radius: 30px;
             cursor: pointer;
             font-weight: 700;
-            font-size: 13px;
+            font-size: 14px;
             color: #4a5568;
             transition: all 0.2s ease;
             display: inline-flex;
@@ -236,6 +266,12 @@
         @media (max-width: 600px) {
             .filter-btn.whats-filter-btn {
                 margin-left: 0;
+                width: 100%;
+                justify-content: center;
+            }
+            .filter-btn {
+                width: 100%;
+                justify-content: center;
             }
         }
 
@@ -661,7 +697,6 @@
         .payment-card[data-value="debito"].selected .radio-dot::after { background: var(--accent); }
         .payment-card[data-value="especie"].selected .radio-dot::after { background: var(--success); }
 
-        /* Estilos da Seção de Destaques Extras do Cartão de Crédito */
         .credit-highlights {
             background: #f1f5f9;
             border-radius: 8px;
@@ -684,7 +719,6 @@
             margin-bottom: 0;
         }
 
-        /* Box Elegante para o Endereço de Retirada */
         .pickup-location-box {
             background: #e0f2f1;
             border: 1px solid #b2dfdb;
@@ -726,7 +760,6 @@
             background: var(--primary-dark);
         }
 
-        /* Seção informativa do Produto no modal de Compra */
         .product-desc-box {
             background: #f0f7f8;
             padding: 12px;
@@ -752,9 +785,6 @@
             text-align: center;
         }
 
-        /* ==================================== */
-        /* MEDIA QUERIES PARA CELULARES PEQUENOS */
-        /* ==================================== */
         @media (max-width: 480px) {
             .modal-content {
                 padding: 18px;
@@ -911,12 +941,14 @@
     </div>
 
     <div class="main-store-container">
+        <!-- MENU TOTALMENTE ATUALIZADO E INTUITIVO PARA O CLIENTE LEIGO -->
         <div class="vtex-menu-wrapper" id="vtexMenuWrapper">
             <div class="vtex-store-drawer-trigger" onclick="toggleVtexMenu()">
-                <svg fill="currentColor" width="18" height="18" viewBox="0 0 16 16" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle;">
+                <svg fill="currentColor" width="20" height="20" viewBox="0 0 16 16" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle; color: var(--primary-dark);">
                     <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5z"/>
                 </svg>
-                <span>Produtos</span>
+                <span>🗂️ CATÁLOGO DE PRODUTOS</span>
+                <span class="menu-attention-tag">👉 CLIQUE AQUI</span>
             </div>
 
             <div class="category-filter-container">
@@ -939,7 +971,6 @@
         🛒 <div class="cart-badge" id="global-cart-count">0</div>
     </a>
 
-    <!-- Modal de Compra com Info do Produto e Receitas -->
     <div id="purchase-modal" class="modal">
         <div class="modal-content">
             <button class="close-btn" onclick="closeModal('purchase-modal')">&times;</button>
@@ -985,7 +1016,6 @@
                     <option value="Retirada no Local">Retirada no Local</option>
                 </select>
 
-                <!-- Área Dinâmica: Endereço de Entrega ou Local de Retirada -->
                 <div id="delivery-address-wrapper" style="display: block;">
                     <input type="text" id="customer-address" placeholder="Endereço Completo (Rua, Número, Bairro, Cidade)" oninput="saveInputsToLocalStorage()">
                     <input type="text" id="customer-reference" placeholder="Ponto de Referência (Opcional)" oninput="saveInputsToLocalStorage()">
@@ -1027,9 +1057,8 @@
                     <label style="font-size: 13px; font-weight: 700; color: var(--primary-dark); display: block; margin-bottom: 6px;">Escolha o Parcelamento:</label>
                     <select id="cc-installments" onchange="updateCartTotalWithFees(); saveInputsToLocalStorage();"></select>
                     
-                    <!-- 5 Destaques Extras de Segurança e Confiança no Modal de Cartão -->
                     <div class="credit-highlights">
-                        <p>🔒 <strong>Ambiente 100% Seguro:</strong> Seus dados protegidos via criptografia ponta a ponta.</p>
+                        <p>🔒 <strong>Ambiente 100% Secure:</strong> Seus dados protegidos via criptografia ponta a ponta.</p>
                         <p>⚡ <strong>Aprovação Imediata:</strong> Processamento em tempo real pelo Mercado Pago.</p>
                         <p>🛒 <strong>Pedido Guardado:</strong> Se sair do site, seus produtos continuam salvos no carrinho.</p>
                         <p>🤝 <strong>Garantia JC Pescados:</strong> Só liberamos produtos frescos e de procedência rigorosa.</p>
@@ -1276,7 +1305,6 @@
             document.getElementById("product-details-info").innerHTML = `<strong>Sobre:</strong> ${guide.desc}<br><br>💡 <em>${guide.recipe}</em>`;
 
             const unit = prod.unit ? prod.unit : "kg";
-            const isWeight = (unit === 'kg' || ["camarao","peixes","salmao","lagosta","polvo","lula"].includes(prod.category));
             
             document.getElementById("kg-alert-helper").style.display = "block";
             const shortcutsContainer = document.getElementById("kg-shortcuts");
